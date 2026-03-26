@@ -22,7 +22,7 @@ function FieldEditor({
           type="text"
           value={(value as string) || ''}
           onChange={(e) => updateContent(sectionId, field.key, e.target.value)}
-          className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
         />
       </div>
     );
@@ -37,7 +37,7 @@ function FieldEditor({
           value={(value as string) || ''}
           onChange={(e) => updateContent(sectionId, field.key, e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+          className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
         />
       </div>
     );
@@ -113,7 +113,7 @@ function FieldEditor({
                         value={subValue as string}
                         onChange={(e) => updateItemField(sectionId, field.key, idx, subField.key, e.target.value)}
                         rows={2}
-                        className="w-full px-2 py-1.5 text-sm text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                        className="w-full px-2 py-1.5 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
                       />
                     </div>
                   );
@@ -127,7 +127,7 @@ function FieldEditor({
                       type="text"
                       value={subValue as string}
                       onChange={(e) => updateItemField(sectionId, field.key, idx, subField.key, e.target.value)}
-                      className="w-full px-2 py-1.5 text-sm text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                      className="w-full px-2 py-1.5 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                     />
                   </div>
                 );
@@ -178,7 +178,7 @@ export default function ContentEditor() {
             id={variantSelectId}
             value={selectedSection.variantId}
             onChange={(e) => changeVariant(selectedSection.id, e.target.value)}
-            className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           >
             {def.variants.map(v => (
               <option key={v.variantId} value={v.variantId}>{v.variantName}</option>

@@ -197,7 +197,7 @@ export default function Toolbar() {
           value={projectName}
           onChange={(e) => renameProject(activeProjectId, e.target.value)}
           aria-label="Project name"
-          className="h-8 text-[13px] text-gray-700 bg-transparent rounded-md px-[10px] outline-none transition-all border border-transparent hover:border-gray-400 focus:border-gray-900 focus:text-gray-900 w-[100px]"
+          className="h-8 text-[13px] text-gray-700 placeholder-gray-500 bg-transparent rounded-md px-[10px] outline-none transition-all border border-transparent hover:border-gray-400 focus:border-gray-900 focus:text-gray-900 w-[100px]"
           placeholder="Project name"
         />
 
@@ -272,7 +272,7 @@ export default function Toolbar() {
                         onClick={(e) => e.stopPropagation()}
                         aria-label={`Rename page ${page.name}`}
                         autoFocus
-                        className="flex-1 text-[13px] px-1 py-0 border border-blue-400 rounded outline-none bg-white"
+                        className="flex-1 text-[13px] text-gray-900 px-1 py-0 border border-blue-400 rounded outline-none bg-white"
                       />
                     ) : (
                       <span className="flex-1">{page.name}</span>

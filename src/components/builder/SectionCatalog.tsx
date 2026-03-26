@@ -57,7 +57,7 @@ export default function SectionCatalog() {
             onChange={(e) => setSidebarSearch(e.target.value)}
             placeholder="Search sections..."
             aria-label="Search sections"
-            className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
+            className="w-full pl-8 pr-3 py-1.5 text-xs text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors"
           />
         </div>
       </div>
