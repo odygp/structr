@@ -6,7 +6,7 @@ export default function CtaSimple({ content, colorMode }: { content: Record<stri
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-16 px-6 ${c.bg} border-t border-b ${c.border}`}>
+    <section className={`py-10 md:py-16 px-4 md:px-6 ${c.bg} border-t border-b ${c.border}`}>
       <div className="max-w-3xl mx-auto text-center">
         <h2 className={`text-2xl font-bold ${c.text} mb-6`}>
           {(content.title as string) || 'Ready to get started?'}

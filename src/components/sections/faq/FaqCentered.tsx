@@ -7,7 +7,7 @@ export default function FaqCentered({ content, colorMode }: { content: Record<st
   const questions = (content.questions as Array<{ question: string; answer: string }>) || [];
 
   return (
-    <section className={`py-20 px-6 ${c.bg}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>

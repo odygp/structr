@@ -7,7 +7,7 @@ export default function PricingToggle({ content, colorMode }: { content: Record<
   const plans = (content.plans as Array<{ name: string; price: string; period?: string; description?: string; features?: string; highlighted?: boolean; ctaText?: string }>) || [];
 
   return (
-    <section className={`py-20 px-6 ${c.bg}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>

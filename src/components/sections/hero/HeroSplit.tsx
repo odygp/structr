@@ -15,7 +15,7 @@ export default function HeroSplit({ content, colorMode }: { content: Record<stri
             {content.subtitle as string}
           </p>
           {(content.showPrimaryButton || content.showSecondaryButton) && (
-            <div className="mt-10 flex items-center gap-4">
+            <div className="mt-10 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
               {content.showPrimaryButton !== false && content.ctaText && (
                 <button className={`${c.btnPrimary} rounded-lg px-6 py-3 text-sm font-medium`}>
                   {content.ctaText as string}

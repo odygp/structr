@@ -7,7 +7,7 @@ export default function AboutCentered({ content, colorMode }: { content: Record<
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-20 px-6 ${c.bg}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto text-center">
         <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-6`}>
           {content.title || 'About Us'}

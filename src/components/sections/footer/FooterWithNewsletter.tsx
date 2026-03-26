@@ -8,7 +8,7 @@ export default function FooterWithNewsletter({ content, colorMode }: { content: 
   const columns = content.columns || [];
 
   return (
-    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} pt-16 pb-8 px-6`}>
+    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} pt-10 md:pt-16 pb-6 md:pb-8 px-4 md:px-6`}>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {/* Logo + description + newsletter */}

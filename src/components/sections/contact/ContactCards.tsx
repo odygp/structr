@@ -7,7 +7,7 @@ export default function ContactCards({ content, colorMode }: { content: Record<s
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-20 px-6 ${c.bgAlt}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bgAlt}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>

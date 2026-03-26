@@ -8,7 +8,7 @@ export default function LogoWithTitle({ content, colorMode }: { content: Record<
   const logos = (content.logos as Array<{ name: string }>) || [];
 
   return (
-    <section className={`py-16 px-6 ${c.bg}`}>
+    <section className={`py-10 md:py-16 px-4 md:px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
         <div className="md:w-1/3 shrink-0">
           <h2 className={`text-2xl font-bold ${c.text}`}>

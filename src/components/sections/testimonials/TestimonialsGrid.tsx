@@ -7,7 +7,7 @@ export default function TestimonialsGrid({ content, colorMode }: { content: Reco
   const testimonials = (content.testimonials as Array<{ quote: string; author: string; role: string }>) || [];
 
   return (
-    <section className={`py-20 px-6 ${c.bgAlt}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bgAlt}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>

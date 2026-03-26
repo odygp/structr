@@ -10,7 +10,7 @@ export default function BlogFeatured({ content, colorMode }: { content: Record<s
   const secondary = posts.slice(1, 3);
 
   return (
-    <section className={`py-20 px-6 ${c.bg}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>

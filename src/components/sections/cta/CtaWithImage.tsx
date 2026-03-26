@@ -6,7 +6,7 @@ export default function CtaWithImage({ content, colorMode }: { content: Record<s
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-20 px-6 ${c.bgAlt}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bgAlt}`}>
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div>
           <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
@@ -16,7 +16,7 @@ export default function CtaWithImage({ content, colorMode }: { content: Record<s
             <p className={`text-lg ${c.textSecondary} mb-8`}>{content.subtitle as string}</p>
           )}
           {(content.showPrimaryButton || content.showSecondaryButton) && (
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
               {content.showPrimaryButton !== false && content.ctaText && (
                 <button className={`${c.btnPrimary} font-medium rounded-lg px-6 py-3`}>
                   {content.ctaText as string}
