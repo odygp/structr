@@ -204,18 +204,28 @@ export default function Toolbar() {
         <div className="h-4 w-px bg-gray-200 mx-[5px]" aria-hidden="true" />
 
         {/* Page selector */}
-        <div className="relative">
+        <div className="relative flex items-center">
+          {/* Editable page name */}
+          <input
+            type="text"
+            value={activePage?.name || 'Home'}
+            onChange={(e) => {
+              if (activePage) renamePage(activePage.id, e.target.value);
+            }}
+            aria-label="Page name"
+            className="h-8 text-[13px] font-medium text-gray-900 bg-transparent rounded-md pl-[10px] pr-1 outline-none transition-all border border-transparent hover:border-gray-300 focus:border-gray-900 w-[80px]"
+          />
+          <span className="text-[11px] text-gray-500 mr-1" aria-hidden="true">({sections.length})</span>
+          {/* Dropdown trigger */}
           <button
             ref={pageButtonRef}
             onClick={() => setShowPageMenu(!showPageMenu)}
             aria-expanded={showPageMenu}
             aria-haspopup="true"
-            aria-label={`Page: ${activePage?.name || 'Home'}, ${sections.length} sections`}
-            className="flex items-center gap-1 h-8 px-[10px] text-[13px] font-medium text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+            aria-label={`Switch page. Current: ${activePage?.name || 'Home'}, ${sections.length} sections`}
+            className="h-8 px-1 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
           >
-            {activePage?.name || 'Home'}
-            <span className="text-[11px] text-gray-500 ml-1" aria-hidden="true">({sections.length})</span>
-            <ChevronDown className="w-4 h-4 text-gray-500" aria-hidden="true" />
+            <ChevronDown className="w-4 h-4" aria-hidden="true" />
           </button>
 
           {showPageMenu && (
