@@ -131,6 +131,8 @@ import ComparisonSideBySide from './comparison/ComparisonSideBySide';
 // Store
 import StoreGrid from './store/StoreGrid';
 import StoreList from './store/StoreList';
+import StoreWithFilters from './store/StoreWithFilters';
+import StoreSideFilters from './store/StoreSideFilters';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SectionComponentProps = { content: any; colorMode?: ColorMode };
@@ -266,4 +268,6 @@ export const componentRegistry: Record<string, ComponentType<SectionComponentPro
   // Store
   'store-grid': StoreGrid,
   'store-list': StoreList,
+  'store-with-filters': StoreWithFilters,
+  'store-side-filters': StoreSideFilters,
 };
