@@ -135,7 +135,7 @@ import StoreWithFilters from './store/StoreWithFilters';
 import StoreSideFilters from './store/StoreSideFilters';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type SectionComponentProps = { content: any; colorMode?: ColorMode };
+export type SectionComponentProps = { content: any; colorMode?: ColorMode; sectionId?: string };
 
 export const componentRegistry: Record<string, ComponentType<SectionComponentProps>> = {
   // Header

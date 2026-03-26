@@ -107,7 +107,7 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
           </button>
         </div>
       </div>
-      <Component content={section.content} colorMode={section.colorMode || 'light'} />
+      <Component content={section.content} colorMode={section.colorMode || 'light'} sectionId={section.id} />
     </div>
   );
 }
