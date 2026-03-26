@@ -79,7 +79,7 @@ function af(name, opts = {}) {
 // ── Button helper with TEXT + BOOLEAN properties ──
 
 function addButton(parent, comp, name, label, defaultText, style) {
-  const propKey = comp.addComponentProperty(label, "TEXT", defaultText);
+  const propKey = comp.addComponentProperty(label, "TEXT", defaultText || " ");
   const showKey = comp.addComponentProperty("Show " + label, "BOOLEAN", true);
 
   const isOutline = style === 'secondary';
@@ -87,7 +87,9 @@ function addButton(parent, comp, name, label, defaultText, style) {
 
   let btn;
   if (isLink) {
-    btn = txt(name, defaultText, 14, FM, C.gray500);
+    btn = txt(name, defaultText || " ", 14, FM, C.gray500);
+    // Append to parent first (must be in component tree before setting refs)
+    parent.appendChild(btn);
   } else {
     btn = af(name, {
       dir: "HORIZONTAL",
@@ -95,18 +97,12 @@ function addButton(parent, comp, name, label, defaultText, style) {
       stroke: isOutline ? C.gray300 : undefined,
       px: 24, py: 12, r: 8, ca: "CENTER"
     });
-    const btnText = txt(name + "Text", defaultText, 14, FM, isOutline ? C.gray700 : C.white);
-    btnText.componentPropertyReferences = { characters: propKey };
+    const btnText = txt(name + "Text", defaultText || " ", 14, FM, isOutline ? C.gray700 : C.white);
     btn.appendChild(btnText);
+    // Append to parent first, then set refs
+    parent.appendChild(btn);
   }
 
-  if (isLink) {
-    btn.componentPropertyReferences = { characters: propKey, visible: showKey };
-  } else {
-    btn.componentPropertyReferences = { visible: showKey };
-  }
-
-  parent.appendChild(btn);
   return { propKey, showKey };
 }
 
@@ -122,13 +118,11 @@ function buildHeroCentered(comp, content) {
   // Title with TEXT property
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
   const titleNode = txt("title", content.title || "Build something amazing", 48, FB, C.gray900, { w: 700, align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   comp.appendChild(titleNode);
 
   // Subtitle with TEXT property
   const subKey = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product.");
   const subNode = txt("subtitle", content.subtitle || "A short description.", 18, FR, C.gray500, { w: 600, align: "CENTER" });
-  subNode.componentPropertyReferences = { characters: subKey };
   comp.appendChild(subNode);
 
   // Buttons with TEXT + BOOLEAN properties
@@ -150,12 +144,10 @@ function buildHeroSplit(comp, content) {
 
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
   const titleNode = txt("title", content.title || "Build something amazing", 48, FB, C.gray900);
-  titleNode.componentPropertyReferences = { characters: titleKey };
   textCol.appendChild(titleNode);
 
   const subKey = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description");
   const subNode = txt("subtitle", content.subtitle || "Description", 18, FR, C.gray500, { w: 500 });
-  subNode.componentPropertyReferences = { characters: subKey };
   textCol.appendChild(subNode);
 
   const btns = af("buttons", { dir: "HORIZONTAL", g: 12 });
@@ -176,7 +168,6 @@ function buildHeroMinimal(comp, content) {
 
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
   const titleNode = txt("title", content.title || "Build something amazing", 56, FB, C.gray900, { w: 800, align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   comp.appendChild(titleNode);
 
   const btns = af("buttons", { dir: "HORIZONTAL", g: 12 });
@@ -193,7 +184,6 @@ function buildHeader(comp, content) {
 
   const logoKey = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
   const logoNode = txt("logo", content.logo || "Logo", 16, FS, C.gray900);
-  logoNode.componentPropertyReferences = { characters: logoKey };
   comp.appendChild(logoNode);
 
   const nav = af("nav", { dir: "HORIZONTAL", g: 24, ca: "CENTER" });
@@ -205,7 +195,6 @@ function buildHeader(comp, content) {
   const ctaKey = comp.addComponentProperty("CTA Text", "TEXT", content.ctaText || "Get Started");
   const btn = af("ctaButton", { dir: "HORIZONTAL", bg: C.gray900, px: 16, py: 8, r: 8, ca: "CENTER" });
   const btnText = txt("ctaText", content.ctaText || "Get Started", 13, FM, C.white);
-  btnText.componentPropertyReferences = { characters: ctaKey };
   btn.appendChild(btnText);
   comp.appendChild(btn);
 }
@@ -219,12 +208,10 @@ function buildFeatures(comp, content) {
   const header = af("header", { dir: "VERTICAL", g: 12, ca: "CENTER" });
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
   const titleNode = txt("title", content.title || "Features", 28, FB, C.gray900, { align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   header.appendChild(titleNode);
 
   const subKey = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Everything you need.");
   const subNode = txt("subtitle", content.subtitle || "Everything you need.", 16, FR, C.gray500, { w: 500, align: "CENTER" });
-  subNode.componentPropertyReferences = { characters: subKey };
   header.appendChild(subNode);
   comp.appendChild(header);
 
@@ -250,7 +237,6 @@ function buildPricing(comp, content) {
   const header = af("header", { dir: "VERTICAL", g: 12, ca: "CENTER" });
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Pricing");
   const titleNode = txt("title", content.title || "Pricing", 28, FB, C.gray900, { align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   header.appendChild(titleNode);
   comp.appendChild(header);
 
@@ -294,7 +280,6 @@ function buildTestimonials(comp, content) {
 
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Testimonials");
   const titleNode = txt("title", content.title || "Testimonials", 28, FB, C.gray900, { align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   comp.appendChild(titleNode);
 
   const cards = af("testimonials", { dir: "HORIZONTAL", g: 24 });
@@ -322,22 +307,18 @@ function buildCta(comp, content) {
 
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || "Ready to start?");
   const titleNode = txt("title", content.title || "Ready to start?", 28, FB, C.white, { align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   comp.appendChild(titleNode);
 
   const subKey = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Join thousands of users.");
   const subNode = txt("subtitle", content.subtitle || "Join thousands.", 16, FR, C.gray300, { w: 500, align: "CENTER" });
-  subNode.componentPropertyReferences = { characters: subKey };
   comp.appendChild(subNode);
 
   const ctaKey = comp.addComponentProperty("Button Text", "TEXT", content.ctaText || "Get Started");
   const btn = af("ctaButton", { dir: "HORIZONTAL", bg: C.white, px: 24, py: 12, r: 8, ca: "CENTER" });
   const btnText = txt("ctaText", content.ctaText || "Get Started", 14, FM, C.gray900);
-  btnText.componentPropertyReferences = { characters: ctaKey };
   btn.appendChild(btnText);
 
   const showKey = comp.addComponentProperty("Show Button", "BOOLEAN", true);
-  btn.componentPropertyReferences = { visible: showKey };
   comp.appendChild(btn);
 }
 
@@ -353,12 +334,10 @@ function buildFooter(comp, content) {
   const logoCol = af("logoCol", { dir: "VERTICAL", g: 8 });
   const logoKey = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
   const logoNode = txt("logo", content.logo || "Logo", 16, FS, C.white);
-  logoNode.componentPropertyReferences = { characters: logoKey };
   logoCol.appendChild(logoNode);
 
   const descKey = comp.addComponentProperty("Description", "TEXT", content.description || "Description");
   const descNode = txt("description", content.description || "Description", 12, FR, C.gray400, { w: 200 });
-  descNode.componentPropertyReferences = { characters: descKey };
   logoCol.appendChild(descNode);
   top.appendChild(logoCol);
 
@@ -375,7 +354,6 @@ function buildFooter(comp, content) {
 
   const copyKey = comp.addComponentProperty("Copyright", "TEXT", content.copyright || "© 2024");
   const copyNode = txt("copyright", content.copyright || "© 2024", 12, FR, C.gray500);
-  copyNode.componentPropertyReferences = { characters: copyKey };
   comp.appendChild(copyNode);
 }
 
@@ -387,13 +365,11 @@ function buildGeneric(comp, content, category) {
 
   const titleKey = comp.addComponentProperty("Title", "TEXT", content.title || category);
   const titleNode = txt("title", content.title || category, 28, FB, C.gray900, { align: "CENTER" });
-  titleNode.componentPropertyReferences = { characters: titleKey };
   comp.appendChild(titleNode);
 
   if (content.subtitle) {
     const subKey = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
     const subNode = txt("subtitle", content.subtitle, 16, FR, C.gray500, { w: 600, align: "CENTER" });
-    subNode.componentPropertyReferences = { characters: subKey };
     comp.appendChild(subNode);
   }
 }
