@@ -1,0 +1,16 @@
+'use client';
+
+import { SectionContent, ColorMode } from '@/lib/types';
+import { getColors } from '@/lib/colors';
+
+export default function BannerMinimal({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+  const c = getColors(colorMode || 'light');
+
+  return (
+    <div className={`${c.bgAlt} border-t border-b ${c.border} px-4 py-3`}>
+      <p className={`text-sm ${c.textSecondary} text-center`}>
+        {(content.text as string) || 'Minimal banner text'}
+      </p>
+    </div>
+  );
+}

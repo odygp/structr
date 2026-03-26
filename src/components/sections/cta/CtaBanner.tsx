@@ -1,0 +1,27 @@
+'use client';
+import { SectionContent, ColorMode } from '@/lib/types';
+import { getColors } from '@/lib/colors';
+
+export default function CtaBanner({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+  const c = getColors(colorMode || 'light');
+
+  return (
+    <section className={`py-12 px-6 ${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'}`}>
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {content.title || 'Ready to get started?'}
+          </h2>
+          {content.subtitle && (
+            <p className="text-gray-300">{content.subtitle}</p>
+          )}
+        </div>
+        {content.showPrimaryButton !== false && content.ctaText && (
+          <button className="bg-white text-gray-900 font-semibold rounded-lg px-6 py-3 whitespace-nowrap">
+            {content.ctaText}
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
