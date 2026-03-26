@@ -120,18 +120,25 @@ export default function Toolbar() {
       // Compress and encode as URL
       const pako = await import('pako');
       const compressed = pako.deflate(json);
-      // Convert to base64url
-      const base64 = btoa(String.fromCharCode(...compressed))
-        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      // Convert Uint8Array to base64url (chunk to avoid stack overflow)
+      let binary = '';
+      const bytes = new Uint8Array(compressed);
+      const chunkSize = 8192;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, i + chunkSize);
+        binary += String.fromCharCode.apply(null, Array.from(chunk));
+      }
+      const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       const shareUrl = `${window.location.origin}/api/share?d=${base64}`;
 
       await navigator.clipboard.writeText(shareUrl);
-      alert(`Share URL copied to clipboard!\n\nOpen the Structr plugin in Figma, paste this URL, and click Import.\n\nURL: ${shareUrl.substring(0, 80)}...`);
-    } catch {
+      alert(`Figma share URL copied!\n\nOpen the Structr plugin in Figma and paste this URL.\n\n${shareUrl.length > 100 ? shareUrl.substring(0, 100) + '...' : shareUrl}`);
+    } catch (err) {
+      console.error('Figma export error:', err);
       // Fallback: copy raw JSON
       try {
         await navigator.clipboard.writeText(json);
-        alert('JSON copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the JSON to import.');
+        alert('JSON copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the JSON.');
       } catch {
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
