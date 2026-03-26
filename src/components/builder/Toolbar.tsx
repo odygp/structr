@@ -422,15 +422,37 @@ export default function Toolbar() {
                   <FileJson className="w-4 h-4 text-gray-600" aria-hidden="true" />
                   Export JSON
                 </button>
-                <button
-                  role="menuitem"
-                  onClick={handleExportFigma}
-                  disabled={sections.length === 0}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                >
-                  <Share2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                  Export to Figma
-                </button>
+                <div className="border-t border-gray-100 mt-1 pt-1">
+                  <div className="px-3 py-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider">Figma</div>
+                  <button
+                    role="menuitem"
+                    onClick={handleExportFigma}
+                    disabled={sections.length === 0}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  >
+                    <Share2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
+                    Figma Link
+                  </button>
+                  <button
+                    role="menuitem"
+                    onClick={() => {
+                      const j = exportProjectJSON();
+                      const blob = new Blob([j], { type: 'application/json' });
+                      const u = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = u;
+                      a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
+                      a.click();
+                      URL.revokeObjectURL(u);
+                      setShowExportMenu(false);
+                    }}
+                    disabled={sections.length === 0}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+                  >
+                    <FileJson className="w-4 h-4 text-gray-600" aria-hidden="true" />
+                    Figma JSON
+                  </button>
+                </div>
                 <div className="border-t border-gray-100 mt-1 pt-1">
                   <button
                     role="menuitem"
