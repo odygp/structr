@@ -131,23 +131,25 @@ export default function Toolbar() {
       const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       const shareUrl = `${window.location.origin}/api/share?d=${base64}`;
 
-      await navigator.clipboard.writeText(shareUrl);
-      alert(`Figma share URL copied!\n\nOpen the Structr plugin in Figma and paste this URL.\n\n${shareUrl.length > 100 ? shareUrl.substring(0, 100) + '...' : shareUrl}`);
+      // Try clipboard first, then show prompt as fallback
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Figma share URL copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the URL.');
+      } catch {
+        // Clipboard blocked — show a prompt so user can copy manually
+        prompt('Copy this URL and paste it in the Structr Figma plugin:', shareUrl);
+      }
     } catch (err) {
       console.error('Figma export error:', err);
-      // Fallback: copy raw JSON
-      try {
-        await navigator.clipboard.writeText(json);
-        alert('JSON copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the JSON.');
-      } catch {
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      // Fallback: download JSON file
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('JSON file downloaded. Upload it in the Structr Figma plugin.');
     }
     setShowExportMenu(false);
     exportButtonRef.current?.focus();
