@@ -34,12 +34,19 @@
   <p class="subtitle">Import your wireframe into Figma</p>
 
   <div class="tabs">
-    <div class="tab active" data-tab="paste">Paste JSON</div>
+    <div class="tab active" data-tab="url">Paste URL</div>
+    <div class="tab" data-tab="paste">Paste JSON</div>
     <div class="tab" data-tab="file">Upload File</div>
   </div>
 
+  <!-- URL tab (default) -->
+  <div id="tab-url">
+    <input type="text" id="url-input" placeholder="Paste Structr share URL here..." style="width:100%; padding:12px; border:1px solid #d4d4d4; border-radius:8px; font-size:13px; outline:none; margin-bottom:8px;" />
+    <p style="font-size:11px; color:#888;">In Structr, click Export > Export to Figma to copy the URL.</p>
+  </div>
+
   <!-- Paste tab -->
-  <div id="tab-paste">
+  <div id="tab-paste" class="hidden">
     <textarea id="json-input" placeholder='Paste your Structr JSON export here...'></textarea>
   </div>
 
@@ -69,9 +76,31 @@
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         const tabId = tab.dataset.tab;
+        document.getElementById('tab-url').classList.toggle('hidden', tabId !== 'url');
         document.getElementById('tab-paste').classList.toggle('hidden', tabId !== 'paste');
         document.getElementById('tab-file').classList.toggle('hidden', tabId !== 'file');
       });
+    });
+
+    // URL input
+    const urlInput = document.getElementById('url-input');
+    urlInput.addEventListener('input', async () => {
+      const url = urlInput.value.trim();
+      if (!url) { importBtn.disabled = true; return; }
+      if (url.includes('/api/share') || url.includes('structr')) {
+        setStatus('Fetching project data...', 'loading');
+        importBtn.disabled = true;
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error('Failed to fetch: ' + resp.status);
+          jsonData = await resp.json();
+          importBtn.disabled = false;
+          setStatus('Loaded: ' + (jsonData.name || 'Project') + ' (' + (jsonData.pages ? jsonData.pages.length : 0) + ' pages)', 'success');
+        } catch(e) {
+          setStatus('Error fetching URL: ' + e.message, 'error');
+          jsonData = null;
+        }
+      }
     });
 
     // Paste input

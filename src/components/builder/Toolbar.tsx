@@ -117,17 +117,30 @@ export default function Toolbar() {
   const handleExportFigma = async () => {
     const json = exportProjectJSON();
     try {
-      await navigator.clipboard.writeText(json);
-      alert('JSON copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the JSON to import your wireframe.');
+      // Compress and encode as URL
+      const pako = await import('pako');
+      const compressed = pako.deflate(json);
+      // Convert to base64url
+      const base64 = btoa(String.fromCharCode(...compressed))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      const shareUrl = `${window.location.origin}/api/share?d=${base64}`;
+
+      await navigator.clipboard.writeText(shareUrl);
+      alert(`Share URL copied to clipboard!\n\nOpen the Structr plugin in Figma, paste this URL, and click Import.\n\nURL: ${shareUrl.substring(0, 80)}...`);
     } catch {
-      // Fallback: download as file
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      // Fallback: copy raw JSON
+      try {
+        await navigator.clipboard.writeText(json);
+        alert('JSON copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the JSON to import.');
+      } catch {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
     }
     setShowExportMenu(false);
     exportButtonRef.current?.focus();
