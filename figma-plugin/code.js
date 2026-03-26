@@ -98,7 +98,7 @@ function addButtons(container, comp, content) {
 // ── Builders ──
 
 function buildHeroCentered(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.gray50 }];
@@ -115,7 +115,7 @@ function buildHeroCentered(comp, content) {
 }
 
 function buildHeroSplit(comp, content) {
-  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
+  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.white }];
@@ -154,7 +154,7 @@ function buildHeroSplit(comp, content) {
 }
 
 function buildHeroMinimal(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 120; comp.paddingBottom = 120;
   comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.white }];
@@ -193,7 +193,7 @@ function buildHeader(comp, content) {
 }
 
 function buildFeatures(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.white }];
@@ -221,7 +221,7 @@ function buildFeatures(comp, content) {
 }
 
 function buildPricing(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.white }];
@@ -250,7 +250,7 @@ function buildPricing(comp, content) {
 }
 
 function buildTestimonials(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.gray50 }];
@@ -276,7 +276,7 @@ function buildTestimonials(comp, content) {
 }
 
 function buildCta(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.gray900 }];
@@ -298,7 +298,7 @@ function buildCta(comp, content) {
 }
 
 function buildFooter(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 48; comp.paddingBottom = 48;
   comp.itemSpacing = 32; comp.fills = [{ type: 'SOLID', color: C.gray900 }];
 
@@ -331,7 +331,7 @@ function buildFooter(comp, content) {
 }
 
 function buildGeneric(comp, content, category) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100); comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
   comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 64; comp.paddingBottom = 64;
   comp.itemSpacing = 16; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C.white }];
@@ -406,20 +406,31 @@ figma.ui.onmessage = async (msg) => {
 
     figma.ui.postMessage({ type: 'progress', message: 'Building components...' });
     const compPage = figma.createPage(); compPage.name = "⬡ Components";
-    const compSets = {}; let cx = 0;
+    const compSets = {}; let cy = 0;
 
     for (const [cat, vids] of used) {
       const comps = []; const catComps = {};
+
+      // Add category label
+      const label = txt("_label_" + cat, getCategoryLabel(cat), 24, FB, C.gray900);
+      compPage.appendChild(label); label.x = 0; label.y = cy; cy += 40;
+
       for (const vid of vids) {
         const comp = figma.createComponent();
         comp.name = `Variant=${getVariantName(vid)}`;
         getBuilder(cat, vid)(comp, getDefaultContent(cat), cat);
-        compPage.appendChild(comp); comp.x = cx; comp.y = 0;
+        compPage.appendChild(comp); comp.x = 0; comp.y = cy;
+        cy += (comp.height || 200) + 40;
         comps.push(comp); catComps[vid] = comp;
       }
-      if (comps.length > 1) { const set = figma.combineAsVariants(comps, compPage); set.name = getCategoryLabel(cat); set.x = cx; }
-      else if (comps.length === 1) comps[0].name = getCategoryLabel(cat);
-      compSets[cat] = catComps; cx += W + 200;
+      if (comps.length > 1) {
+        const set = figma.combineAsVariants(comps, compPage);
+        set.name = getCategoryLabel(cat); set.x = 0; set.y = cy - (comps.length * 240);
+        cy = set.y + set.height + 80;
+      } else if (comps.length === 1) {
+        comps[0].name = getCategoryLabel(cat);
+      }
+      compSets[cat] = catComps; cy += 60;
     }
 
     let total = 0;
