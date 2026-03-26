@@ -603,7 +603,7 @@ const categoryFallbacks: Record<string, Thumb> = {
   footer: thumbs['footer-4col']!,
 };
 
-export default function VariantThumbnail({ variantId }: { variantId: string }) {
+export default function VariantThumbnail({ variantId, variantName }: { variantId: string; variantName?: string }) {
   const category = variantId.split('-')[0];
   const renderer = thumbs[variantId] || categoryFallbacks[category];
 
@@ -614,6 +614,8 @@ export default function VariantThumbnail({ variantId }: { variantId: string }) {
       viewBox="0 0 120 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label={`Layout preview: ${variantName || variantId}`}
       className="w-full h-auto rounded border border-gray-200 bg-white"
     >
       {renderer ? renderer() : (
