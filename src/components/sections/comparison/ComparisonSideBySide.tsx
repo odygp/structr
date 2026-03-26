@@ -3,7 +3,7 @@ import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 
-export default function ComparisonSideBySide({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function ComparisonSideBySide({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const spacing = getSpacingClasses(content._spacing as string, 'comparison');
   const items = (content.items as Array<{ title: string; description: string; features: string; ctaText: string }>) || [];

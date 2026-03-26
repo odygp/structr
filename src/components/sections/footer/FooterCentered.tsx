@@ -3,7 +3,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function FooterCentered({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function FooterCentered({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const columns = (content.columns as Array<{ title: string; links: string }>) || [];
   const allLinks = columns.flatMap((col) =>

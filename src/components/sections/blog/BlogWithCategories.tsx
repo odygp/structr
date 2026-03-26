@@ -2,7 +2,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function BlogWithCategories({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function BlogWithCategories({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
   const categories = ['All', 'Design', 'Engineering', 'Product', 'Company'];

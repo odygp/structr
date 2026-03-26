@@ -5,7 +5,7 @@ import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 import { getGridColsClass } from '@/lib/columns';
 
-export default function StoreWithFilters({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function StoreWithFilters({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const spacing = getSpacingClasses(content._spacing as string, 'store');
   const gridCols = getGridColsClass(content._columns);

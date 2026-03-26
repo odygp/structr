@@ -3,7 +3,7 @@ import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 
-export default function ShowcaseCards({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function ShowcaseCards({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const spacing = getSpacingClasses(content._spacing as string, 'showcase');
   const categories = (content.categories as Array<{ label: string }>) || [];

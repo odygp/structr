@@ -2,7 +2,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function HeroMinimal({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function HeroMinimal({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   return (
     <section className={`${c.bgAlt} px-8 py-32`}>

@@ -3,7 +3,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function ContactCards({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function ContactCards({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
 
   return (

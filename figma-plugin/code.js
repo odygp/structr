@@ -58,9 +58,14 @@ function af(name, opts = {}) {
   const f = figma.createFrame();
   f.name = name;
   f.layoutMode = opts.dir || "VERTICAL";
-  if (opts.w) f.resize(opts.w, opts.h || 10);
-  f.primaryAxisSizingMode = opts.fh ? "FIXED" : "AUTO";
-  f.counterAxisSizingMode = opts.fw ? "FIXED" : "AUTO";
+  if (opts.w) {
+    f.resize(opts.w, opts.h || 100);
+    f.counterAxisSizingMode = "FIXED"; // lock width
+    f.primaryAxisSizingMode = opts.fh ? "FIXED" : "AUTO"; // height auto
+  } else {
+    f.primaryAxisSizingMode = opts.fh ? "FIXED" : "AUTO";
+    f.counterAxisSizingMode = opts.fw ? "FIXED" : "AUTO";
+  }
   f.fills = opts.bg ? [{ type: 'SOLID', color: opts.bg }] : [];
   if (opts.px) { f.paddingLeft = opts.px; f.paddingRight = opts.px; }
   if (opts.py) { f.paddingTop = opts.py; f.paddingBottom = opts.py; }
@@ -78,7 +83,7 @@ function af(name, opts = {}) {
 
 function buildHeader(root, content) {
   root.layoutMode = "HORIZONTAL";
-  root.resize(W, 10); root.primaryAxisSizingMode = "FIXED"; root.counterAxisSizingMode = "AUTO";
+  root.resize(W, 100); root.primaryAxisSizingMode = "FIXED"; root.counterAxisSizingMode = "AUTO";
   root.paddingLeft = 32; root.paddingRight = 32; root.paddingTop = 16; root.paddingBottom = 16;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -97,7 +102,7 @@ function buildHeader(root, content) {
 }
 
 function buildHero(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 24; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.gray50 }];
@@ -120,7 +125,7 @@ function buildHero(root, content) {
 }
 
 function buildLogos(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 40; root.paddingBottom = 40;
   root.itemSpacing = 20; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -133,7 +138,7 @@ function buildLogos(root, content) {
 }
 
 function buildFeatures(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 40; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -147,7 +152,7 @@ function buildFeatures(root, content) {
   const features = Array.isArray(content.features) ? content.features : [];
   features.forEach((f, i) => {
     const card = af(`feature_${i}`, { dir: "VERTICAL", bg: C.gray50, px: 24, py: 24, g: 12, r: 12 });
-    card.resize(260, 10); card.counterAxisSizingMode = "FIXED";
+    card.resize(260, 100); card.counterAxisSizingMode = "FIXED";
     const icon = box(32, 32, C.gray200, 8); icon.name = `featureIcon_${i}`; card.appendChild(icon);
     card.appendChild(txt(`featureTitle_${i}`, f.title || '', 15, FS, C.gray900));
     card.appendChild(txt(`featureDesc_${i}`, f.description || '', 13, FR, C.gray500, { w: 212 }));
@@ -157,7 +162,7 @@ function buildFeatures(root, content) {
 }
 
 function buildStats(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 64; root.paddingBottom = 64;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -175,7 +180,7 @@ function buildStats(root, content) {
 }
 
 function buildPricing(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 40; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -194,7 +199,7 @@ function buildPricing(root, content) {
     const cardSub = hl ? C.gray300 : C.gray500;
 
     const card = af(`plan_${i}`, { dir: "VERTICAL", bg: cardBg, px: 28, py: 28, g: 16, r: 16, stroke: hl ? undefined : C.gray200 });
-    card.resize(240, 10); card.counterAxisSizingMode = "FIXED";
+    card.resize(240, 100); card.counterAxisSizingMode = "FIXED";
     card.appendChild(txt(`planName_${i}`, p.name || '', 16, FS, cardText));
     card.appendChild(txt(`planDesc_${i}`, p.description || '', 12, FR, cardSub));
 
@@ -214,7 +219,7 @@ function buildPricing(root, content) {
       const btnBg = hl ? C.white : C.gray900;
       const btnColor = hl ? C.gray900 : C.white;
       const btn = af("cta", { dir: "HORIZONTAL", bg: btnBg, px: 20, py: 10, r: 8, ca: "CENTER", ma: "CENTER" });
-      btn.resize(184, 10); btn.counterAxisSizingMode = "FIXED";
+      btn.resize(184, 40); btn.counterAxisSizingMode = "FIXED";
       btn.appendChild(txt(`planCta_${i}`, p.ctaText, 13, FM, btnColor, { align: "CENTER" }));
       card.appendChild(btn);
     }
@@ -224,7 +229,7 @@ function buildPricing(root, content) {
 }
 
 function buildTestimonials(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.gray50 }];
@@ -234,7 +239,7 @@ function buildTestimonials(root, content) {
   const items = Array.isArray(content.testimonials) ? content.testimonials : [];
   items.forEach((t, i) => {
     const card = af(`testimonial_${i}`, { dir: "VERTICAL", bg: C.white, px: 24, py: 24, g: 16, r: 12 });
-    card.resize(280, 10); card.counterAxisSizingMode = "FIXED";
+    card.resize(280, 100); card.counterAxisSizingMode = "FIXED";
     card.appendChild(txt(`quote_${i}`, '"' + (t.quote || '') + '"', 13, FR, C.gray600, { w: 232 }));
     const auth = af("author", { dir: "HORIZONTAL", g: 10, ca: "CENTER" });
     const av = figma.createEllipse(); av.resize(36, 36); av.fills = [{ type: 'SOLID', color: C.gray300 }]; av.name = `avatar_${i}`;
@@ -250,7 +255,7 @@ function buildTestimonials(root, content) {
 }
 
 function buildFaq(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -261,7 +266,7 @@ function buildFaq(root, content) {
   root.appendChild(header);
 
   const list = af("questions", { dir: "VERTICAL", g: 0 });
-  list.resize(700, 10); list.counterAxisSizingMode = "FIXED";
+  list.resize(700, 100); list.counterAxisSizingMode = "FIXED";
   const questions = Array.isArray(content.questions) ? content.questions : [];
   questions.forEach((q, i) => {
     const item = af(`qa_${i}`, { dir: "VERTICAL", py: 20, g: 8 });
@@ -273,7 +278,7 @@ function buildFaq(root, content) {
 }
 
 function buildCta(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 24; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.gray900 }];
@@ -288,13 +293,13 @@ function buildCta(root, content) {
 }
 
 function buildFooter(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 48; root.paddingBottom = 48;
   root.itemSpacing = 32;
   root.fills = [{ type: 'SOLID', color: C.gray900 }];
 
   const top = af("top", { dir: "HORIZONTAL", g: 48 });
-  top.resize(W - 160, 10); top.counterAxisSizingMode = "FIXED";
+  top.resize(W - 160, 100); top.counterAxisSizingMode = "FIXED";
   const logoCol = af("logoCol", { dir: "VERTICAL", g: 8 });
   logoCol.appendChild(txt("logo", content.logo || 'Logo', 16, FS, C.white));
   if (content.description) logoCol.appendChild(txt("description", content.description, 12, FR, C.gray400, { w: 200 }));
@@ -315,7 +320,7 @@ function buildFooter(root, content) {
 }
 
 function buildBlog(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -329,7 +334,7 @@ function buildBlog(root, content) {
   const posts = Array.isArray(content.posts) ? content.posts : [];
   posts.forEach((p, i) => {
     const card = af(`post_${i}`, { dir: "VERTICAL", g: 12 });
-    card.resize(260, 10); card.counterAxisSizingMode = "FIXED";
+    card.resize(260, 100); card.counterAxisSizingMode = "FIXED";
     const img = box(260, 160, C.gray200, 12); img.name = `postImage_${i}`; card.appendChild(img);
     card.appendChild(txt(`postTitle_${i}`, p.title || '', 15, FS, C.gray900));
     card.appendChild(txt(`postExcerpt_${i}`, p.excerpt || '', 12, FR, C.gray500, { w: 260 }));
@@ -340,13 +345,13 @@ function buildBlog(root, content) {
 }
 
 function buildAbout(root, content) {
-  root.layoutMode = "HORIZONTAL"; root.resize(W, 10);
+  root.layoutMode = "HORIZONTAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 48; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
 
   const textCol = af("text", { dir: "VERTICAL", g: 16 });
-  textCol.resize(550, 10); textCol.counterAxisSizingMode = "FIXED";
+  textCol.resize(550, 100); textCol.counterAxisSizingMode = "FIXED";
   textCol.appendChild(txt("title", content.title || 'About', 28, FB, C.gray900));
   textCol.appendChild(txt("description", content.description || '', 16, FR, C.gray500, { w: 550 }));
   if (content.mission) textCol.appendChild(txt("mission", content.mission, 14, FR, C.gray500, { w: 550 }));
@@ -356,7 +361,7 @@ function buildAbout(root, content) {
 }
 
 function buildTeam(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -380,7 +385,7 @@ function buildTeam(root, content) {
 }
 
 function buildGallery(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -390,7 +395,7 @@ function buildGallery(root, content) {
   const images = Array.isArray(content.images) ? content.images : [];
   images.forEach((img, i) => {
     const card = af(`image_${i}`, { dir: "VERTICAL", g: 8 });
-    card.resize(400, 10); card.counterAxisSizingMode = "FIXED";
+    card.resize(400, 100); card.counterAxisSizingMode = "FIXED";
     const placeholder = box(400, 240, C.gray200, 12); placeholder.name = `imagePlaceholder_${i}`; card.appendChild(placeholder);
     card.appendChild(txt(`caption_${i}`, img.caption || '', 12, FR, C.gray500));
     grid.appendChild(card);
@@ -399,7 +404,7 @@ function buildGallery(root, content) {
 }
 
 function buildContact(root, content) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 80; root.paddingBottom = 80;
   root.itemSpacing = 32; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -414,7 +419,7 @@ function buildContact(root, content) {
 }
 
 function buildBanner(root, content) {
-  root.layoutMode = "HORIZONTAL"; root.resize(W, 10);
+  root.layoutMode = "HORIZONTAL"; root.resize(W, 100);
   root.paddingLeft = 32; root.paddingRight = 32; root.paddingTop = 10; root.paddingBottom = 10;
   root.itemSpacing = 16; root.counterAxisAlignItems = "CENTER"; root.primaryAxisAlignItems = "CENTER";
   root.primaryAxisSizingMode = "FIXED";
@@ -425,7 +430,7 @@ function buildBanner(root, content) {
 }
 
 function buildGeneric(root, content, category) {
-  root.layoutMode = "VERTICAL"; root.resize(W, 10);
+  root.layoutMode = "VERTICAL"; root.resize(W, 100);
   root.paddingLeft = 80; root.paddingRight = 80; root.paddingTop = 64; root.paddingBottom = 64;
   root.itemSpacing = 16; root.counterAxisAlignItems = "CENTER";
   root.fills = [{ type: 'SOLID', color: C.white }];
@@ -535,7 +540,7 @@ function getCategoryLabel(category) {
     header: 'Header', hero: 'Hero', logos: 'Logo Cloud', features: 'Features',
     stats: 'Stats', pricing: 'Pricing', testimonials: 'Testimonials', faq: 'FAQ',
     cta: 'CTA', footer: 'Footer', blog: 'Blog', about: 'About', team: 'Team',
-    gallery: 'Gallery', contact: 'Contact', banner: 'Banner',
+    gallery: 'Gallery', contact: 'Contact', banner: 'Banner', showcase: 'Showcase', error: 'Error Page', process: 'How It Works', downloads: 'Downloads', comparison: 'Comparison', store: 'Store',
   };
   return labels[category] || category;
 }
@@ -624,7 +629,7 @@ figma.ui.onmessage = async (msg) => {
 
       const pageFrame = figma.createFrame();
       pageFrame.name = pageData.name || 'Page';
-      pageFrame.resize(W, 10);
+      pageFrame.resize(W, 100);
       pageFrame.layoutMode = "VERTICAL";
       pageFrame.primaryAxisSizingMode = "AUTO";
       pageFrame.counterAxisSizingMode = "FIXED";

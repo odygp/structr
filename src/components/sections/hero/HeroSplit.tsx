@@ -2,7 +2,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function HeroSplit({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function HeroSplit({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   return (
     <section className={`${c.bg} px-8 py-24`}>

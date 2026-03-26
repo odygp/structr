@@ -2,7 +2,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function FaqSideTitle({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function FaqSideTitle({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const questions = (content.questions as Array<{ question: string; answer: string }>) || [];
 

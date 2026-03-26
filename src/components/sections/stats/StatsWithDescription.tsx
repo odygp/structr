@@ -2,7 +2,7 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 
-export default function StatsWithDescription({ content, colorMode }: { content: Record<string, any>; colorMode?: ColorMode }) {
+export default function StatsWithDescription({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const stats = (content.stats as Array<{ value: string; label: string }>) || [];
 
