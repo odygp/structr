@@ -7,10 +7,10 @@ export default function Pricing2Col({ content, colorMode }: { content: Record<st
   const plans = content.plans || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {content.title || 'Pricing Plans'}
           </h2>
           {content.subtitle && (
@@ -20,7 +20,7 @@ export default function Pricing2Col({ content, colorMode }: { content: Record<st
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 @md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {(plans as any[]).slice(0, 2).map((plan: any, index: number) => {
             const isHighlighted = plan.highlighted === true;
             const features = typeof plan.features === 'string'

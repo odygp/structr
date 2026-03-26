@@ -8,7 +8,7 @@ export default function BannerCookie({ content, colorMode }: { content: Record<s
 
   return (
     <div className="fixed bottom-0 left-0 right-0 py-4 px-6 z-50">
-      <div className={`max-w-3xl mx-auto ${c.bgCard} border ${c.border} rounded-2xl shadow-lg px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center gap-4`}>
+      <div className={`max-w-3xl mx-auto ${c.bgCard} border ${c.border} rounded-2xl shadow-lg px-6 py-5 flex flex-col @sm:flex-row items-start sm:items-center gap-4`}>
         <div className="flex-1">
           <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
             {(content.text as string) || 'We use cookies to improve your experience. By continuing to browse, you agree to our use of cookies.'}

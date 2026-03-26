@@ -7,10 +7,10 @@ export default function AboutSplit({ content, colorMode }: { content: Record<str
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
+      <div className="max-w-5xl mx-auto grid grid-cols-1 @md:grid-cols-2 gap-12 items-center">
         <div>
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {content.title || 'About Us'}
           </h2>
           {content.description && (

@@ -14,7 +14,7 @@ export default function Pricing3Col({ content, colorMode }: { content: Record<st
     <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {content.title || 'Pricing Plans'}
           </h2>
           {content.subtitle && (

@@ -8,10 +8,10 @@ export default function BlogWithCategories({ content, colorMode }: { content: Re
   const categories = ['All', 'Design', 'Engineering', 'Product', 'Company'];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'Blog'}
           </h2>
           {content.subtitle && (
@@ -35,7 +35,7 @@ export default function BlogWithCategories({ content, colorMode }: { content: Re
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 @md:grid-cols-3 gap-8">
           {posts.map((post, index) => (
             <div key={index} className={`${c.bgCard} border ${c.border} rounded-xl overflow-hidden`}>
               <div className={`w-full h-48 ${c.bgPlaceholder}`} />

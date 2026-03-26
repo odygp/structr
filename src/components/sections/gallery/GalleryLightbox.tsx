@@ -7,7 +7,7 @@ export default function GalleryLightbox({ content, colorMode }: { content: Recor
   const images = (content.images as { caption: string }[]) || [];
 
   return (
-    <section className={`py-10 md:py-16 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-10 @md:py-16 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h2 className={`text-2xl font-bold ${c.text}`}>
@@ -20,7 +20,7 @@ export default function GalleryLightbox({ content, colorMode }: { content: Recor
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 gap-6">
           {images.map((image, index) => (
             <div key={index} className="group relative cursor-pointer">
               <div className={`${c.bgPlaceholder} rounded-xl aspect-video`} />

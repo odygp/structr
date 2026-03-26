@@ -7,10 +7,10 @@ export default function ContactWithMap({ content, colorMode }: { content: Record
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-3`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-3`}>
             {content.title || 'Get in Touch'}
           </h2>
           {content.subtitle && (
@@ -18,7 +18,7 @@ export default function ContactWithMap({ content, colorMode }: { content: Record
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 @md:grid-cols-2 gap-10">
           {/* Form */}
           <div>
             <div className="space-y-4 mb-6">

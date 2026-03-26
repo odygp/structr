@@ -8,12 +8,12 @@ export default function LogoGrid({ content, colorMode }: { content: Record<strin
   const logos = (content.logos as Array<{ name: string }>) || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <h2 className={`text-center text-2xl font-bold ${c.text} mb-12`}>
           {(content.title as string) || 'Trusted by leading companies'}
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 @sm:grid-cols-3 gap-6">
           {logos.map((logo, index) => (
             <div
               key={index}

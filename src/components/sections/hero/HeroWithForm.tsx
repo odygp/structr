@@ -7,10 +7,10 @@ export default function HeroWithForm({ content, colorMode }: { content: Record<s
   return (
     <section className={`${c.bgAlt} px-8 py-24`}>
       <div className="max-w-3xl mx-auto text-center">
-        <h1 className={`text-3xl md:text-5xl font-bold ${c.text} leading-tight`}>
+        <h1 className={`text-3xl @md:text-5xl font-bold ${c.text} leading-tight`}>
           {content.title as string}
         </h1>
-        <p className={`mt-4 md:mt-6 text-lg md:text-xl ${c.textSecondary} leading-relaxed`}>
+        <p className={`mt-4 @md:mt-6 text-lg @md:text-xl ${c.textSecondary} leading-relaxed`}>
           {content.subtitle as string}
         </p>
         <div className="mt-10 flex items-center justify-center gap-3 max-w-md mx-auto">

@@ -7,10 +7,10 @@ export default function FaqSideTitle({ content, colorMode }: { content: Record<s
   const questions = (content.questions as Array<{ question: string; answer: string }>) || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 @md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'Frequently Asked Questions'}
           </h2>
           {content.subtitle && (

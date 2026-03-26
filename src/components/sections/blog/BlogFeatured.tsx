@@ -10,10 +10,10 @@ export default function BlogFeatured({ content, colorMode }: { content: Record<s
   const secondary = posts.slice(1, 3);
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'From the Blog'}
           </h2>
           {content.subtitle && (
@@ -36,7 +36,7 @@ export default function BlogFeatured({ content, colorMode }: { content: Record<s
         )}
 
         {secondary.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 @md:grid-cols-2 gap-8">
             {secondary.map((post, index) => (
               <div key={index} className={`border ${c.border} rounded-xl overflow-hidden`}>
                 <div className={`w-full h-48 ${c.bgPlaceholder}`} />

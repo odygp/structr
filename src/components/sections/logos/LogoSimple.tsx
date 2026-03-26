@@ -8,7 +8,7 @@ export default function LogoSimple({ content, colorMode }: { content: Record<str
   const logos = (content.logos as Array<{ name: string }>) || [];
 
   return (
-    <section className={`py-10 md:py-16 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-10 @md:py-16 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <h2 className={`text-center text-lg font-medium ${c.textSecondary} mb-10`}>
           {(content.title as string) || 'Trusted by leading companies'}

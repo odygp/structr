@@ -14,7 +14,7 @@ export default function TestimonialsCards({ content, colorMode }: { content: Rec
     <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
             {content.title || 'What Our Customers Say'}
           </h2>
         </div>

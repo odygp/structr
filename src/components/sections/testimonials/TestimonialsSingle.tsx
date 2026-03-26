@@ -10,10 +10,10 @@ export default function TestimonialsSingle({ content, colorMode }: { content: Re
   if (!testimonial) return null;
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bgAlt}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
             {content.title || 'What Our Customers Say'}
           </h2>
         </div>

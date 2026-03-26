@@ -14,7 +14,7 @@ export default function HeaderMega({ content, colorMode }: { content: Record<str
           {content.logo as string || 'Logo'}
         </div>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden @md:flex items-center gap-8">
           {links.map((link, i) => (
             <span key={i} className={`text-sm ${c.textSecondary} cursor-default inline-flex items-center gap-1`}>
               {link.label}

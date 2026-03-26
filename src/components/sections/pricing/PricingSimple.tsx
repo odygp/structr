@@ -7,10 +7,10 @@ export default function PricingSimple({ content, colorMode }: { content: Record<
   const plans = (content.plans as Array<{ name: string; price: string; period?: string; description?: string; features?: string; ctaText?: string }>) || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'Pricing Plans'}
           </h2>
           {content.subtitle && (
@@ -23,11 +23,11 @@ export default function PricingSimple({ content, colorMode }: { content: Record<
               ? plan.features.split(',').map((f: string) => f.trim())
               : [];
             return (
-              <div key={index} className="py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div key={index} className="py-8 flex flex-col @md:flex-row md:items-center md:justify-between gap-6">
                 <div className="flex-1">
                   <h3 className={`text-xl font-semibold ${c.text}`}>{plan.name}</h3>
                   <div className="mt-1">
-                    <span className={`text-2xl md:text-3xl font-bold ${c.text}`}>{plan.price}</span>
+                    <span className={`text-2xl @md:text-3xl font-bold ${c.text}`}>{plan.price}</span>
                     {plan.period && (
                       <span className="text-sm text-gray-500 ml-1">{plan.period}</span>
                     )}

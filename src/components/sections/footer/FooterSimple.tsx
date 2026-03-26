@@ -11,7 +11,7 @@ export default function FooterSimple({ content, colorMode }: { content: Record<s
   );
 
   return (
-    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} py-8 md:py-12 px-4 md:px-6`}>
+    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} py-8 @md:py-12 px-4 @md:px-6`}>
       <div className="max-w-5xl mx-auto text-center">
         <div className="text-white font-bold text-xl mb-6">
           {content.logo || 'Logo'}

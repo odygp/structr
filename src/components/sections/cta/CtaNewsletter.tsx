@@ -6,9 +6,9 @@ export default function CtaNewsletter({ content, colorMode }: { content: Record<
   const c = getColors(colorMode || 'light');
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bgAlt}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
       <div className="max-w-2xl mx-auto text-center">
-        <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+        <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
           {content.title || 'Subscribe to our newsletter'}
         </h2>
         {content.subtitle && (
@@ -16,7 +16,7 @@ export default function CtaNewsletter({ content, colorMode }: { content: Record<
             {content.subtitle}
           </p>
         )}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+        <div className="flex flex-col @sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
           <input
             type="email"
             placeholder="Enter your email"

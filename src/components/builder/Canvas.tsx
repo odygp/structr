@@ -193,7 +193,7 @@ export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
     >
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
-          <div className={`${viewportClass} mx-auto bg-white shadow-sm my-4 transition-all`}>
+          <div className={`${viewportClass} mx-auto bg-white shadow-sm my-4 transition-all @container`}>
             {sections.map((section, i) => (
               <SortableSection key={section.id} section={section} index={i} total={sections.length} />
             ))}

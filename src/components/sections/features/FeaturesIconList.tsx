@@ -10,7 +10,7 @@ export default function FeaturesIconList({ content, colorMode }: { content: Reco
     <section className={`${c.bg} px-8 py-24`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
             {content.title as string}
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>

@@ -12,7 +12,7 @@ export default function FaqAccordion({ content, colorMode }: { content: Record<s
     <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {content.title || 'Frequently Asked Questions'}
           </h2>
           {content.subtitle && (

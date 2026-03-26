@@ -8,9 +8,9 @@ export default function BlogMinimal({ content, colorMode }: { content: Record<st
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto">
-        <h2 className={`text-center text-2xl md:text-3xl font-bold ${c.text} mb-12`}>
+        <h2 className={`text-center text-2xl @md:text-3xl font-bold ${c.text} mb-12`}>
           {(content.title as string) || 'From the Blog'}
         </h2>
         <div className={`${c.divider} divide-y`}>

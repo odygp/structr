@@ -8,7 +8,7 @@ export default function GalleryMasonry({ content, colorMode }: { content: Record
   const images = (content.images as { caption: string }[]) || [];
 
   return (
-    <section className={`py-10 md:py-16 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-10 @md:py-16 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h2 className={`text-2xl font-bold ${c.text}`}>
@@ -21,7 +21,7 @@ export default function GalleryMasonry({ content, colorMode }: { content: Record
           )}
         </div>
 
-        <div className="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
+        <div className="columns-1 @sm:columns-2 @md:columns-3 gap-4 space-y-4">
           {images.map((image, index) => (
             <div key={index} className="break-inside-avoid">
               <div

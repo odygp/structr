@@ -11,7 +11,7 @@ export default function FooterCentered({ content, colorMode }: { content: Record
   );
 
   return (
-    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} pt-10 md:pt-16 pb-6 md:pb-8 px-4 md:px-6`}>
+    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} pt-10 @md:pt-16 pb-6 @md:pb-8 px-4 @md:px-6`}>
       <div className="max-w-4xl mx-auto text-center">
         <div className="text-white font-bold text-xl mb-4">
           {(content.logo as string) || 'Logo'}

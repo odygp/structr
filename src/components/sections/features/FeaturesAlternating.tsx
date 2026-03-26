@@ -9,7 +9,7 @@ export default function FeaturesAlternating({ content, colorMode }: { content: R
     <section className={`${c.bgAlt} px-8 py-24`}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
             {content.title as string}
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>
@@ -20,7 +20,7 @@ export default function FeaturesAlternating({ content, colorMode }: { content: R
           {features.map((feature, i) => (
             <div
               key={i}
-              className={`grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${
+              className={`grid grid-cols-1 @lg:grid-cols-2 gap-16 items-center ${
                 i % 2 === 1 ? 'lg:direction-rtl' : ''
               }`}
             >

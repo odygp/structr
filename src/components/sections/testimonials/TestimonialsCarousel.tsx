@@ -7,10 +7,10 @@ export default function TestimonialsCarousel({ content, colorMode }: { content: 
   const testimonials = (content.testimonials as any[]) || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bgAlt}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
             {content.title || 'What Our Customers Say'}
           </h2>
         </div>
@@ -22,7 +22,7 @@ export default function TestimonialsCarousel({ content, colorMode }: { content: 
           </button>
 
           {/* Cards */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="flex-1 grid grid-cols-1 @md:grid-cols-3 gap-6">
             {testimonials.slice(0, 3).map((testimonial: any, index: number) => (
               <div
                 key={index}

@@ -10,14 +10,14 @@ export default function FeaturesBento({ content, colorMode }: { content: Record<
     <section className={`${c.bg} px-8 py-24`}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
             {content.title as string}
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>
             {content.subtitle as string}
           </p>
         </div>
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-16 grid grid-cols-1 @md:grid-cols-3 gap-6">
           {features.map((feature, i) => (
             <div
               key={i}

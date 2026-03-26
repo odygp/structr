@@ -8,10 +8,10 @@ export default function TeamList({ content, colorMode }: { content: Record<strin
   const members = content.members || [];
 
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${c.bg}`}>
+    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
             {content.title || 'Our Team'}
           </h2>
           {content.subtitle && (
