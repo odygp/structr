@@ -398,7 +398,7 @@ figma.ui.onmessage = async (msg) => {
   try {
     await loadFonts();
     const project = msg.data;
-    if (!project?.pages?.length) { figma.ui.postMessage({ type: 'error', message: 'No pages found' }); return; }
+    if (!project || !project.pages || !project.pages.length) { figma.ui.postMessage({ type: 'error', message: 'No pages found' }); return; }
 
     figma.ui.postMessage({ type: 'progress', message: 'Analyzing...' });
     const used = new Map();
@@ -443,7 +443,7 @@ figma.ui.onmessage = async (msg) => {
 
       for (const s of secs) {
         try {
-          const cc = compSets[s.category]; if (!cc?.[s.variantId]) continue;
+          const cc = compSets[s.category]; if (!cc || !cc[s.variantId]) continue;
           const inst = cc[s.variantId].createInstance();
           await overrideInstance(inst, s.content, s.category);
           pf.appendChild(inst); inst.layoutSizingHorizontal = "FILL"; total++;
