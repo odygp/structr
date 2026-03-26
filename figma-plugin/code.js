@@ -186,7 +186,7 @@ function createAtoms(page) {
   avatar.layoutMode = "HORIZONTAL";
   avatar.counterAxisAlignItems = "CENTER";
   avatar.primaryAxisAlignItems = "CENTER";
-  var avKey = avatar.addComponentProperty("Size", "VARIANT", "Medium");
+  
   var avCircle = figma.createEllipse();
   avCircle.resize(40, 40); avCircle.fills = [{ type: 'SOLID', color: C['placeholder/avatar'] }];
   avCircle.name = "circle";
