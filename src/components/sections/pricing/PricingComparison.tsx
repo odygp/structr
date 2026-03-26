@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function PricingComparison({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const plans = (content.plans as any[]) || [];
 
   // Collect unique feature names from all plans
@@ -26,8 +28,8 @@ export default function PricingComparison({ content, colorMode, sectionId }: { c
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary} max-w-2xl mx-auto`}>
-              {content.subtitle}
-            </p>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
 

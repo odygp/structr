@@ -3,9 +3,11 @@ import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 import { getGridColsClass } from '@/lib/columns';
+import EditableText from '@/components/builder/EditableText';
 
 export default function FeaturesGrid({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'features');
   const gridCols = getGridColsClass(content._columns);
   const features = (content.features as Array<{title: string; description: string}>) || [];
@@ -14,10 +16,10 @@ export default function FeaturesGrid({ content, colorMode, sectionId }: { conten
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className={`text-3xl font-bold ${c.text}`}>
-            {content.title as string}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>
-            {content.subtitle as string}
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
         <div className={`mt-16 grid grid-cols-1 ${gridCols} gap-8`}>

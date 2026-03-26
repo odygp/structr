@@ -2,9 +2,11 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function ContactCentered({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
 
   return (
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
@@ -13,7 +15,9 @@ export default function ContactCentered({ content, colorMode, sectionId }: { con
           {content.title || 'Contact Us'}
         </h2>
         {content.subtitle && (
-          <p className={`${c.textSecondary} mb-8`}>{content.subtitle}</p>
+          <p className={`${c.textSecondary} mb-8`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
         )}
         <div className="flex flex-wrap items-center justify-center gap-6 mb-10">
           {content.email && (

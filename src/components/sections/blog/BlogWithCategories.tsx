@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function BlogWithCategories({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
   const categories = ['All', 'Design', 'Engineering', 'Product', 'Company'];
 
@@ -15,7 +17,9 @@ export default function BlogWithCategories({ content, colorMode, sectionId }: { 
             {(content.title as string) || 'Blog'}
           </h2>
           {content.subtitle && (
-            <p className={`text-lg ${c.textSecondary}`}>{content.subtitle as string}</p>
+            <p className={`text-lg ${c.textSecondary}`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
 

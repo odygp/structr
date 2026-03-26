@@ -2,9 +2,11 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function CtaCentered({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'cta');
 
   return (
@@ -14,7 +16,9 @@ export default function CtaCentered({ content, colorMode, sectionId }: { content
           {content.title || 'Ready to get started?'}
         </h2>
         {content.subtitle && (
-          <p className="text-lg text-gray-300 mb-8">{content.subtitle}</p>
+          <p className="text-lg text-gray-300 mb-8">
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
         )}
         {(content.showPrimaryButton || content.showSecondaryButton) && (
           <div className="flex flex-col @sm:flex-row items-center justify-center gap-4">

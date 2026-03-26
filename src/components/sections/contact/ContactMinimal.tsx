@@ -2,9 +2,11 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function ContactMinimal({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
 
   return (
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
@@ -13,7 +15,9 @@ export default function ContactMinimal({ content, colorMode, sectionId }: { cont
           {(content.title as string) || 'Contact Us'}
         </h2>
         {content.subtitle && (
-          <p className={`${c.textSecondary} mb-12`}>{content.subtitle as string}</p>
+          <p className={`${c.textSecondary} mb-12`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
         )}
         <div className="flex flex-col @md:flex-row items-center justify-center gap-12">
           {content.email && (

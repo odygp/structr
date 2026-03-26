@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function GalleryLightbox({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const images = (content.images as { caption: string }[]) || [];
 
   return (
@@ -15,8 +17,8 @@ export default function GalleryLightbox({ content, colorMode, sectionId }: { con
           </h2>
           {content.subtitle && (
             <p className={`mt-2 ${c.textSecondary}`}>
-              {content.subtitle as string}
-            </p>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
 

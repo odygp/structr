@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function CtaBanner({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
 
   return (
     <section className={`py-8 @md:py-12 px-4 @md:px-6 ${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'}`}>
@@ -13,7 +15,9 @@ export default function CtaBanner({ content, colorMode, sectionId }: { content: 
             {content.title || 'Ready to get started?'}
           </h2>
           {content.subtitle && (
-            <p className="text-gray-300">{content.subtitle}</p>
+            <p className="text-gray-300">
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
         {content.showPrimaryButton !== false && content.ctaText && (

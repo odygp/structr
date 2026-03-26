@@ -2,9 +2,11 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function ContactCards({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
 
   return (
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
@@ -14,7 +16,9 @@ export default function ContactCards({ content, colorMode, sectionId }: { conten
             {(content.title as string) || 'Contact Us'}
           </h2>
           {content.subtitle && (
-            <p className={c.textSecondary}>{content.subtitle as string}</p>
+            <p className={c.textSecondary}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
         <div className="grid grid-cols-1 @md:grid-cols-3 gap-8">

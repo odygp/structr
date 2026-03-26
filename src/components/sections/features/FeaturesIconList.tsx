@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function FeaturesIconList({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const features = (content.features as Array<{ title: string; description: string }>) || [];
 
   return (
@@ -11,10 +13,10 @@ export default function FeaturesIconList({ content, colorMode, sectionId }: { co
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
-            {content.title as string}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>
-            {content.subtitle as string}
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
         <div className={`divide-y ${c.divider}`}>

@@ -2,9 +2,11 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function Error404({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'error');
 
   return (
@@ -15,8 +17,8 @@ export default function Error404({ content, colorMode, sectionId }: { content: R
           {content.title as string || 'Page not found'}
         </h1>
         <p className={`mt-4 text-base @md:text-lg ${c.textSecondary} max-w-md`}>
-          {content.subtitle as string}
-        </p>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
         <button className={`mt-8 ${c.btnPrimary} px-6 py-3 rounded-lg text-sm font-medium`}>
           {content.ctaText as string || 'Go Home'}
         </button>

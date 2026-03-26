@@ -3,9 +3,11 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function StoreSideFilters({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'store');
   const products = Array.isArray(content.products) ? content.products : [];
 
@@ -22,7 +24,9 @@ export default function StoreSideFilters({ content, colorMode, sectionId }: { co
         {/* Header */}
         <div className="mb-8">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>{content.title || 'Products'}</h2>
-          {content.subtitle && <p className={`mt-2 ${c.textSecondary}`}>{content.subtitle}</p>}
+          {content.subtitle && <p className={`mt-2 ${c.textSecondary}`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>}
         </div>
 
         <div className="flex flex-col @lg:flex-row gap-8">

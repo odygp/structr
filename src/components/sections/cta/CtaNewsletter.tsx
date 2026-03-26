@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function CtaNewsletter({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
 
   return (
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
@@ -13,7 +15,7 @@ export default function CtaNewsletter({ content, colorMode, sectionId }: { conte
         </h2>
         {content.subtitle && (
           <p className={`text-lg ${c.textSecondary} mb-8`}>
-            {content.subtitle}
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         )}
         <div className="flex flex-col @sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">

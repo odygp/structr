@@ -2,9 +2,11 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function BlogFeatured({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
   const featured = posts[0];
   const secondary = posts.slice(1, 3);
@@ -17,7 +19,9 @@ export default function BlogFeatured({ content, colorMode, sectionId }: { conten
             {(content.title as string) || 'From the Blog'}
           </h2>
           {content.subtitle && (
-            <p className={`text-lg ${c.textSecondary}`}>{content.subtitle as string}</p>
+            <p className={`text-lg ${c.textSecondary}`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
 

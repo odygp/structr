@@ -2,9 +2,11 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function ShowcaseWithLinks({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'showcase');
   const categories = (content.categories as Array<{ label: string }>) || [];
   const items = (content.items as Array<{ title: string; description: string; category: string }>) || [];
@@ -15,7 +17,7 @@ export default function ShowcaseWithLinks({ content, colorMode, sectionId }: { c
         {/* Top bar: title + CTA */}
         <div className="flex items-center justify-between">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
-            {content.title as string}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           <button className={`${c.btnPrimary} px-5 py-2.5 rounded-lg text-sm font-medium`}>
             {content.ctaText as string || 'View All'}
@@ -46,8 +48,8 @@ export default function ShowcaseWithLinks({ content, colorMode, sectionId }: { c
                   {categories[0]?.label || 'Featured'}
                 </span>
                 <h3 className={`mt-3 text-xl @md:text-2xl font-bold ${c.text}`}>
-                  {content.title as string}
-                </h3>
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
+          </h3>
                 <p className={`mt-3 text-sm ${c.textSecondary} leading-relaxed`}>
                   Explore our curated selection of top products and content in this category.
                 </p>

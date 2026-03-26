@@ -4,9 +4,11 @@ import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 import { getGridColsClass } from '@/lib/columns';
+import EditableText from '@/components/builder/EditableText';
 
 export default function BlogGrid({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'blog');
   const gridCols = getGridColsClass(content._columns);
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
@@ -19,7 +21,9 @@ export default function BlogGrid({ content, colorMode, sectionId }: { content: R
             {(content.title as string) || 'From the Blog'}
           </h2>
           {content.subtitle && (
-            <p className={`text-lg ${c.textSecondary}`}>{content.subtitle as string}</p>
+            <p className={`text-lg ${c.textSecondary}`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
         <div className={`grid grid-cols-1 ${gridCols} gap-8`}>

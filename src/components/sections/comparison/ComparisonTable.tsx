@@ -2,9 +2,11 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function ComparisonTable({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'comparison');
   const items = (content.items as Array<{ feature: string; option1: string; option2: string; option3: string }>) || [];
 
@@ -13,10 +15,10 @@ export default function ComparisonTable({ content, colorMode, sectionId }: { con
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className={`text-3xl font-bold ${c.text}`}>
-            {content.title as string}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>
-            {content.subtitle as string}
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
         <div className="mt-12 overflow-x-auto">

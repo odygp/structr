@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function PricingToggle({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const plans = (content.plans as Array<{ name: string; price: string; period?: string; description?: string; features?: string; highlighted?: boolean; ctaText?: string }>) || [];
 
   return (
@@ -15,8 +17,8 @@ export default function PricingToggle({ content, colorMode, sectionId }: { conte
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary} max-w-2xl mx-auto mb-8`}>
-              {content.subtitle as string}
-            </p>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
           <div className={`inline-flex items-center gap-3 ${c.bgMuted} rounded-full px-1 py-1`}>
             <span className={`${c.bg} ${c.text} text-sm font-medium px-4 py-2 rounded-full shadow-sm`}>

@@ -2,9 +2,11 @@
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function FaqAccordion({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'faq');
   const questions = content.questions || [];
 
@@ -16,7 +18,9 @@ export default function FaqAccordion({ content, colorMode, sectionId }: { conten
             {content.title || 'Frequently Asked Questions'}
           </h2>
           {content.subtitle && (
-            <p className={`text-lg ${c.textSecondary}`}>{content.subtitle}</p>
+            <p className={`text-lg ${c.textSecondary}`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
         <div className={`divide-y ${c.divider} border-t border-b ${c.border}`}>

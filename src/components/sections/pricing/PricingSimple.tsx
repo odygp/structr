@@ -1,9 +1,11 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function PricingSimple({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const plans = (content.plans as Array<{ name: string; price: string; period?: string; description?: string; features?: string; ctaText?: string }>) || [];
 
   return (
@@ -14,7 +16,9 @@ export default function PricingSimple({ content, colorMode, sectionId }: { conte
             {(content.title as string) || 'Pricing Plans'}
           </h2>
           {content.subtitle && (
-            <p className={`text-lg ${c.textSecondary}`}>{content.subtitle as string}</p>
+            <p className={`text-lg ${c.textSecondary}`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
         <div className={`divide-y ${c.divider}`}>

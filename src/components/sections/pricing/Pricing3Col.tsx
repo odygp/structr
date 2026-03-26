@@ -3,9 +3,11 @@ import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 import { getGridColsClass } from '@/lib/columns';
+import EditableText from '@/components/builder/EditableText';
 
 export default function Pricing3Col({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'pricing');
   const gridCols = getGridColsClass(content._columns);
   const plans = content.plans || [];
@@ -19,8 +21,8 @@ export default function Pricing3Col({ content, colorMode, sectionId }: { content
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary} max-w-2xl mx-auto`}>
-              {content.subtitle}
-            </p>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
 

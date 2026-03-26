@@ -2,9 +2,11 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import EditableText from '@/components/builder/EditableText';
 
 export default function ContactWithMap({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
 
   return (
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
@@ -14,7 +16,9 @@ export default function ContactWithMap({ content, colorMode, sectionId }: { cont
             {content.title || 'Get in Touch'}
           </h2>
           {content.subtitle && (
-            <p className={`${c.textSecondary} max-w-xl mx-auto`}>{content.subtitle}</p>
+            <p className={`${c.textSecondary} max-w-xl mx-auto`}>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           )}
         </div>
 

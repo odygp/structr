@@ -2,9 +2,11 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import EditableText from '@/components/builder/EditableText';
 
 export default function DownloadSimple({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'downloads');
 
   return (
@@ -14,11 +16,11 @@ export default function DownloadSimple({ content, colorMode, sectionId }: { cont
           {/* Left: description */}
           <div>
             <h2 className={`text-3xl font-bold ${c.text}`}>
-              {content.title as string}
-            </h2>
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
+          </h2>
             <p className={`mt-4 text-lg ${c.textSecondary}`}>
-              {content.subtitle as string}
-            </p>
+            <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
+          </p>
           </div>
           {/* Right: app store buttons */}
           <div className="flex flex-col @md:flex-row gap-4 @md:justify-end">
