@@ -9,7 +9,7 @@ export default function FeaturesAlternating({ content, colorMode }: { content: R
     <section className={`${c.bgAlt} px-8 py-24`}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {content.title as string}
           </h2>
           <p className={`mt-4 text-lg ${c.textSecondary}`}>

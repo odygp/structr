@@ -10,7 +10,7 @@ export default function Pricing2Col({ content, colorMode }: { content: Record<st
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
             {content.title || 'Pricing Plans'}
           </h2>
           {content.subtitle && (
@@ -54,7 +54,7 @@ export default function Pricing2Col({ content, colorMode }: { content: Record<st
                   {plan.period && (
                     <span
                       className={`text-sm ml-1 ${
-                        isHighlighted ? c.hlTextSecondary : 'text-gray-400'
+                        isHighlighted ? c.hlTextSecondary : 'text-gray-500'
                       }`}
                     >
                       {plan.period}

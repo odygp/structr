@@ -9,7 +9,7 @@ export default function ContactCentered({ content, colorMode }: { content: Recor
   return (
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-2xl mx-auto text-center">
-        <h2 className={`text-3xl font-bold ${c.text} mb-4`}>
+        <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
           {content.title || 'Contact Us'}
         </h2>
         {content.subtitle && (

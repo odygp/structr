@@ -10,7 +10,7 @@ export default function AboutWithStats({ content, colorMode }: { content: Record
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={`text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'About Us'}
           </h2>
           {content.description && (

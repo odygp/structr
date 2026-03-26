@@ -10,7 +10,7 @@ export default function TestimonialsMinimal({ content, colorMode }: { content: R
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {(content.title as string) || 'What Our Customers Say'}
           </h2>
         </div>
@@ -22,7 +22,7 @@ export default function TestimonialsMinimal({ content, colorMode }: { content: R
               </p>
               <div className="mt-6">
                 <p className={`text-sm font-semibold ${c.text}`}>{testimonial.author}</p>
-                <p className="text-sm text-gray-400">{testimonial.role}</p>
+                <p className="text-sm text-gray-500">{testimonial.role}</p>
               </div>
             </div>
           ))}

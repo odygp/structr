@@ -15,7 +15,7 @@ export default function BlogGrid({ content, colorMode }: { content: Record<strin
     <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'From the Blog'}
           </h2>
           {content.subtitle && (

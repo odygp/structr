@@ -13,7 +13,7 @@ export default function TestimonialsSingle({ content, colorMode }: { content: Re
     <section className={`py-20 px-6 ${c.bgAlt}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {content.title || 'What Our Customers Say'}
           </h2>
         </div>
@@ -28,7 +28,7 @@ export default function TestimonialsSingle({ content, colorMode }: { content: Re
               <p className={`text-base font-semibold ${c.text}`}>
                 {testimonial.author}
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-500">
                 {testimonial.role}
               </p>
             </div>

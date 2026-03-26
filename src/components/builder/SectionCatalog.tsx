@@ -48,9 +48,9 @@ export default function SectionCatalog() {
     <nav aria-label="Section catalog" className="w-72 border-r border-gray-200 bg-white overflow-y-auto flex-shrink-0">
       <div className="p-4 border-b border-gray-200">
         <h2 className="font-semibold text-gray-900 text-sm">Sections</h2>
-        <p className="text-xs text-gray-500 mt-1">Click to add to your page</p>
+        <p className="text-xs text-gray-600 mt-1">Click to add to your page</p>
         <div className="relative mt-3">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" aria-hidden="true" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600" aria-hidden="true" />
           <input
             type="text"
             value={sidebarSearch}
@@ -99,12 +99,12 @@ export default function SectionCatalog() {
                 aria-expanded={isOpen}
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg"
               >
-                <IconComponent className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                <IconComponent className="w-4 h-4 text-gray-600" aria-hidden="true" />
                 <span className="flex-1 text-left">{def.categoryLabel}</span>
                 {isOpen ? (
-                  <ChevronDown className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                  <ChevronDown className="w-4 h-4 text-gray-600" aria-hidden="true" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                  <ChevronRight className="w-4 h-4 text-gray-600" aria-hidden="true" />
                 )}
               </button>
               {isOpen && (
@@ -119,7 +119,7 @@ export default function SectionCatalog() {
                       className="flex flex-col items-center p-2 rounded-lg border border-gray-100 hover:border-blue-300 hover:bg-blue-50/50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors group outline-none"
                     >
                       <VariantThumbnail variantId={variant.variantId} variantName={variant.variantName} />
-                      <span className="text-[11px] text-gray-600 group-hover:text-blue-600 mt-1.5 text-center leading-tight">{variant.variantName}</span>
+                      <span className="text-[11px] text-gray-700 group-hover:text-blue-600 mt-1.5 text-center leading-tight">{variant.variantName}</span>
                     </button>
                   ))}
                 </div>

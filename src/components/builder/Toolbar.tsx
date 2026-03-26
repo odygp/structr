@@ -197,7 +197,7 @@ export default function Toolbar() {
           value={projectName}
           onChange={(e) => renameProject(activeProjectId, e.target.value)}
           aria-label="Project name"
-          className="h-8 text-[13px] text-gray-600 bg-transparent rounded-md px-[10px] outline-none transition-all border border-transparent hover:border-gray-300 focus:border-gray-900 focus:text-gray-900 w-[100px]"
+          className="h-8 text-[13px] text-gray-700 bg-transparent rounded-md px-[10px] outline-none transition-all border border-transparent hover:border-gray-400 focus:border-gray-900 focus:text-gray-900 w-[100px]"
           placeholder="Project name"
         />
 
@@ -213,7 +213,7 @@ export default function Toolbar() {
               if (activePage) renamePage(activePage.id, e.target.value);
             }}
             aria-label="Page name"
-            className="h-8 text-[13px] font-medium text-gray-900 bg-transparent rounded-md pl-[10px] pr-1 outline-none transition-all border border-transparent hover:border-gray-300 focus:border-gray-900 w-[80px]"
+            className="h-8 text-[13px] font-medium text-gray-900 bg-transparent rounded-md pl-[10px] pr-1 outline-none transition-all border border-transparent hover:border-gray-400 focus:border-gray-900 w-[80px]"
           />
           <span className="text-[11px] text-gray-500 mr-1" aria-hidden="true">({sections.length})</span>
           {/* Dropdown trigger */}
@@ -223,7 +223,7 @@ export default function Toolbar() {
             aria-expanded={showPageMenu}
             aria-haspopup="true"
             aria-label={`Switch page. Current: ${activePage?.name || 'Home'}, ${sections.length} sections`}
-            className="h-8 px-1 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+            className="h-8 px-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
           >
             <ChevronDown className="w-4 h-4" aria-hidden="true" />
           </button>
@@ -356,7 +356,7 @@ export default function Toolbar() {
           className="flex items-center gap-1.5 h-8 px-[10px] text-[13px] text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
         >
           Share
-          <Share2 className="w-4 h-4 text-gray-500" aria-hidden="true" />
+          <Share2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
         </button>
 
         {/* Export dropdown */}
@@ -370,7 +370,7 @@ export default function Toolbar() {
             className="flex items-center gap-1.5 h-8 px-[10px] text-[13px] text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
           >
             Export
-            <Upload className="w-4 h-4 text-gray-500" aria-hidden="true" />
+            <Upload className="w-4 h-4 text-gray-600" aria-hidden="true" />
           </button>
 
           {showExportMenu && (
@@ -389,7 +389,7 @@ export default function Toolbar() {
                   disabled={sections.length === 0}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
                 >
-                  <FileCode className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                  <FileCode className="w-4 h-4 text-gray-600" aria-hidden="true" />
                   Export HTML
                 </button>
                 <button
@@ -397,7 +397,7 @@ export default function Toolbar() {
                   onClick={handleExportJSON}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50"
                 >
-                  <FileJson className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                  <FileJson className="w-4 h-4 text-gray-600" aria-hidden="true" />
                   Export JSON
                 </button>
                 <button
@@ -406,7 +406,7 @@ export default function Toolbar() {
                   disabled={sections.length === 0}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
                 >
-                  <Share2 className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                  <Share2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
                   Export to Figma
                 </button>
                 <div className="border-t border-gray-100 mt-1 pt-1">
@@ -415,7 +415,7 @@ export default function Toolbar() {
                     onClick={() => { fileInputRef.current?.click(); setShowExportMenu(false); exportButtonRef.current?.focus(); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50"
                   >
-                    <Download className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                    <Download className="w-4 h-4 text-gray-600" aria-hidden="true" />
                     Import JSON
                   </button>
                 </div>

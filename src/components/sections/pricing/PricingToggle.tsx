@@ -10,7 +10,7 @@ export default function PricingToggle({ content, colorMode }: { content: Record<
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'Pricing Plans'}
           </h2>
           {content.subtitle && (
@@ -50,7 +50,7 @@ export default function PricingToggle({ content, colorMode }: { content: Record<
                     {plan.price}
                   </span>
                   {plan.period && (
-                    <span className={`text-sm ml-1 ${isHighlighted ? c.hlTextSecondary : 'text-gray-400'}`}>
+                    <span className={`text-sm ml-1 ${isHighlighted ? c.hlTextSecondary : 'text-gray-500'}`}>
                       {plan.period}
                     </span>
                   )}

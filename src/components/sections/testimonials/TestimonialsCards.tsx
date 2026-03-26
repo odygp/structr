@@ -14,7 +14,7 @@ export default function TestimonialsCards({ content, colorMode }: { content: Rec
     <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {content.title || 'What Our Customers Say'}
           </h2>
         </div>
@@ -34,7 +34,7 @@ export default function TestimonialsCards({ content, colorMode }: { content: Rec
                   <p className={`text-sm font-semibold ${c.text}`}>
                     {testimonial.author}
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-500">
                     {testimonial.role}
                   </p>
                 </div>

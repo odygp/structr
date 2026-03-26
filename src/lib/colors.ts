@@ -17,7 +17,7 @@ export function getColors(mode: ColorMode) {
     // Text
     text: dark ? 'text-white' : 'text-gray-900',
     textSecondary: dark ? 'text-gray-300' : 'text-gray-600',
-    textMuted: dark ? 'text-gray-400' : 'text-gray-400',
+    textMuted: dark ? 'text-gray-400' : 'text-gray-500',
     textLight: dark ? 'text-gray-500' : 'text-gray-500',
 
     // Buttons

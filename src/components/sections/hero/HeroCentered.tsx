@@ -9,10 +9,10 @@ export default function HeroCentered({ content, colorMode }: { content: Record<s
   return (
     <section className={`${c.bgAlt} ${spacing}`}>
       <div className="max-w-3xl mx-auto text-center">
-        <h1 className={`text-5xl font-bold ${c.text} leading-tight`}>
+        <h1 className={`text-3xl md:text-5xl font-bold ${c.text} leading-tight`}>
           {content.title as string}
         </h1>
-        <p className={`mt-6 text-xl ${c.textSecondary} leading-relaxed`}>
+        <p className={`mt-4 md:mt-6 text-lg md:text-xl ${c.textSecondary} leading-relaxed`}>
           {content.subtitle as string}
         </p>
         {(content.showPrimaryButton || content.showSecondaryButton) && (

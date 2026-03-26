@@ -22,7 +22,7 @@ function FieldEditor({
           type="text"
           value={(value as string) || ''}
           onChange={(e) => updateContent(sectionId, field.key, e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
         />
       </div>
     );
@@ -37,7 +37,7 @@ function FieldEditor({
           value={(value as string) || ''}
           onChange={(e) => updateContent(sectionId, field.key, e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+          className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
         />
       </div>
     );
@@ -113,7 +113,7 @@ function FieldEditor({
                         value={subValue as string}
                         onChange={(e) => updateItemField(sectionId, field.key, idx, subField.key, e.target.value)}
                         rows={2}
-                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                        className="w-full px-2 py-1.5 text-sm text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
                       />
                     </div>
                   );
@@ -127,7 +127,7 @@ function FieldEditor({
                       type="text"
                       value={subValue as string}
                       onChange={(e) => updateItemField(sectionId, field.key, idx, subField.key, e.target.value)}
-                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                      className="w-full px-2 py-1.5 text-sm text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                     />
                   </div>
                 );
@@ -178,7 +178,7 @@ export default function ContentEditor() {
             id={variantSelectId}
             value={selectedSection.variantId}
             onChange={(e) => changeVariant(selectedSection.id, e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           >
             {def.variants.map(v => (
               <option key={v.variantId} value={v.variantId}>{v.variantName}</option>
@@ -192,7 +192,7 @@ export default function ContentEditor() {
               role="radio"
               aria-checked={selectedSection.colorMode === 'light'}
               onClick={() => selectedSection.colorMode === 'dark' && toggleColorMode(selectedSection.id)}
-              className={`flex-1 py-2 text-xs font-medium transition-colors ${selectedSection.colorMode === 'light' ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-50 text-gray-600'}`}
+              className={`flex-1 py-2 text-xs font-medium transition-colors ${selectedSection.colorMode === 'light' ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-100 text-gray-600'}`}
             >
               Light
             </button>
@@ -200,7 +200,7 @@ export default function ContentEditor() {
               role="radio"
               aria-checked={selectedSection.colorMode === 'dark'}
               onClick={() => selectedSection.colorMode === 'light' && toggleColorMode(selectedSection.id)}
-              className={`flex-1 py-2 text-xs font-medium transition-colors ${selectedSection.colorMode === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-600'}`}
+              className={`flex-1 py-2 text-xs font-medium transition-colors ${selectedSection.colorMode === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
             >
               Dark
             </button>
@@ -215,7 +215,7 @@ export default function ContentEditor() {
                 role="radio"
                 aria-checked={(selectedSection.content._spacing || 'default') === sp}
                 onClick={() => updateSectionSpacing(selectedSection.id, sp)}
-                className={`flex-1 py-2 text-xs font-medium capitalize ${(selectedSection.content._spacing || 'default') === sp ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-50 text-gray-600'}`}
+                className={`flex-1 py-2 text-xs font-medium capitalize ${(selectedSection.content._spacing || 'default') === sp ? 'bg-white text-gray-900 shadow-sm' : 'bg-gray-100 text-gray-600'}`}
               >
                 {sp}
               </button>
@@ -230,16 +230,16 @@ export default function ContentEditor() {
                 onClick={() => currentColumns > 2 && updateSectionColumns(selectedSection.id, currentColumns - 1)}
                 disabled={currentColumns <= 2}
                 aria-label="Decrease columns"
-                className="p-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-30"
+                className="p-1.5 border border-gray-400 rounded-lg hover:bg-gray-100 text-gray-700 disabled:opacity-30"
               >
                 <Minus className="w-3 h-3" aria-hidden="true" />
               </button>
-              <span className="text-sm font-medium text-gray-700 w-6 text-center" aria-live="polite">{currentColumns}</span>
+              <span className="text-sm font-semibold text-gray-900 w-6 text-center" aria-live="polite">{currentColumns}</span>
               <button
                 onClick={() => currentColumns < 4 && updateSectionColumns(selectedSection.id, currentColumns + 1)}
                 disabled={currentColumns >= 4}
                 aria-label="Increase columns"
-                className="p-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-30"
+                className="p-1.5 border border-gray-400 rounded-lg hover:bg-gray-100 text-gray-700 disabled:opacity-30"
               >
                 <Plus className="w-3 h-3" aria-hidden="true" />
               </button>

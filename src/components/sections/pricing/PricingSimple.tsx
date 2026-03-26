@@ -10,7 +10,7 @@ export default function PricingSimple({ content, colorMode }: { content: Record<
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text} mb-4`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-4`}>
             {(content.title as string) || 'Pricing Plans'}
           </h2>
           {content.subtitle && (
@@ -27,9 +27,9 @@ export default function PricingSimple({ content, colorMode }: { content: Record<
                 <div className="flex-1">
                   <h3 className={`text-xl font-semibold ${c.text}`}>{plan.name}</h3>
                   <div className="mt-1">
-                    <span className={`text-3xl font-bold ${c.text}`}>{plan.price}</span>
+                    <span className={`text-2xl md:text-3xl font-bold ${c.text}`}>{plan.price}</span>
                     {plan.period && (
-                      <span className="text-sm text-gray-400 ml-1">{plan.period}</span>
+                      <span className="text-sm text-gray-500 ml-1">{plan.period}</span>
                     )}
                   </div>
                   {features.length > 0 && (

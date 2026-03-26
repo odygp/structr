@@ -10,7 +10,7 @@ export default function StatsWithDescription({ content, colorMode }: { content: 
     <section className={`py-20 px-6 ${c.bgAlt}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {(content.title as string) || 'By the Numbers'}
           </h2>
         </div>

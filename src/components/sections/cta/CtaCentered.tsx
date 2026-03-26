@@ -10,7 +10,7 @@ export default function CtaCentered({ content, colorMode }: { content: Record<st
   return (
     <section className={`${spacing} ${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'}`}>
       <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
           {content.title || 'Ready to get started?'}
         </h2>
         {content.subtitle && (

@@ -10,7 +10,7 @@ export default function TestimonialsGrid({ content, colorMode }: { content: Reco
     <section className={`py-20 px-6 ${c.bgAlt}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {(content.title as string) || 'What Our Customers Say'}
           </h2>
         </div>
@@ -27,7 +27,7 @@ export default function TestimonialsGrid({ content, colorMode }: { content: Reco
                 <div className={`w-10 h-10 rounded-full ${c.bgAvatar} flex-shrink-0`} />
                 <div>
                   <p className={`text-sm font-semibold ${c.text}`}>{testimonial.author}</p>
-                  <p className="text-sm text-gray-400">{testimonial.role}</p>
+                  <p className="text-sm text-gray-500">{testimonial.role}</p>
                 </div>
               </div>
             </div>

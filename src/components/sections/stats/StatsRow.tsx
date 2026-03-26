@@ -14,7 +14,7 @@ export default function StatsRow({ content, colorMode }: { content: Record<strin
     <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className={`text-3xl font-bold ${c.text}`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text}`}>
             {(content.title as string) || 'By the Numbers'}
           </h2>
         </div>

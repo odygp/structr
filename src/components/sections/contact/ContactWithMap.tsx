@@ -10,7 +10,7 @@ export default function ContactWithMap({ content, colorMode }: { content: Record
     <section className={`py-20 px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold ${c.text} mb-3`}>
+          <h2 className={`text-2xl md:text-3xl font-bold ${c.text} mb-3`}>
             {content.title || 'Get in Touch'}
           </h2>
           {content.subtitle && (
