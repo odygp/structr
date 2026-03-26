@@ -157,6 +157,7 @@ export const sectionRegistry: SectionDefinition[] = [
       { variantId: 'features-with-image', variantName: 'With Image', defaultContent: { ...defaultFeaturesContent } },
       { variantId: 'features-bento', variantName: 'Bento Grid', defaultContent: { ...defaultFeaturesContent, features: [...defaultFeaturesContent.features, { title: 'Feature Four', description: 'A brief description of this amazing feature.' }] } },
       { variantId: 'features-icon-list', variantName: 'Icon List', defaultContent: { ...defaultFeaturesContent } },
+      { variantId: 'features-accordion', variantName: 'Accordion', defaultContent: { ...defaultFeaturesContent } },
     ],
   },
 
@@ -391,6 +392,126 @@ export const sectionRegistry: SectionDefinition[] = [
       { variantId: 'contact-minimal', variantName: 'Minimal', defaultContent: { title: 'Get in touch', subtitle: '', email: 'hello@example.com', phone: '+1 (555) 123-4567', address: '123 Main St, City, State 12345' } },
       { variantId: 'contact-cards', variantName: 'Cards', defaultContent: { title: 'Get in touch', subtitle: 'Reach out through any of these channels.', email: 'hello@example.com', phone: '+1 (555) 123-4567', address: '123 Main St, City, State 12345' } },
       { variantId: 'contact-with-map', variantName: 'With Map', defaultContent: { title: 'Get in touch', subtitle: 'We would love to hear from you.', email: 'hello@example.com', phone: '+1 (555) 123-4567', address: '123 Main St, City, State 12345' } },
+    ],
+  },
+
+  // ── Showcase ──
+  {
+    category: 'showcase',
+    categoryLabel: 'Showcase',
+    icon: 'Trophy',
+    contentSchema: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'ctaText', label: 'CTA Button', type: 'text' },
+      { key: 'categories', label: 'Categories', type: 'items', itemFields: [
+        { key: 'label', label: 'Label', type: 'text' },
+      ]},
+      { key: 'items', label: 'Items', type: 'items', itemFields: [
+        { key: 'title', label: 'Title', type: 'text' },
+        { key: 'description', label: 'Description', type: 'textarea' },
+        { key: 'category', label: 'Category', type: 'text' },
+        { key: 'price', label: 'Price', type: 'text' },
+      ]},
+    ],
+    variants: [
+      { variantId: 'showcase-cards', variantName: 'Cards', defaultContent: { title: 'Featured Products', ctaText: 'View All', categories: [{ label: 'All' }, { label: 'Popular' }, { label: 'New' }], items: [{ title: 'Product One', description: 'A great product for your needs.', category: 'Popular', price: '$29' }, { title: 'Product Two', description: 'Another excellent option.', category: 'New', price: '$49' }, { title: 'Product Three', description: 'Premium quality item.', category: 'Popular', price: '$39' }] } },
+      { variantId: 'showcase-with-links', variantName: 'With Links', defaultContent: { title: 'Our Collection', ctaText: 'Browse All', categories: [{ label: 'All' }, { label: 'Design' }, { label: 'Development' }], items: [{ title: 'Item One', description: 'A brief description of this item.', category: 'Design' }, { title: 'Item Two', description: 'Another great item to explore.', category: 'Development' }, { title: 'Item Three', description: 'Check out this featured item.', category: 'Design' }] } },
+    ],
+  },
+
+  // ── Error ──
+  {
+    category: 'error',
+    categoryLabel: 'Error Page',
+    icon: 'AlertTriangle',
+    contentSchema: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
+      { key: 'ctaText', label: 'Button Text', type: 'text' },
+    ],
+    variants: [
+      { variantId: 'error-404', variantName: '404 Page', defaultContent: { title: 'Page not found', subtitle: 'Sorry, we couldn\'t find the page you\'re looking for. It might have been moved or deleted.', ctaText: 'Go Home' } },
+      { variantId: 'error-simple', variantName: 'Simple Error', defaultContent: { title: 'Something went wrong', subtitle: 'An unexpected error occurred. Please try again later.', ctaText: 'Go Back' } },
+    ],
+  },
+
+  // ── Process ──
+  {
+    category: 'process',
+    categoryLabel: 'How It Works',
+    icon: 'ListOrdered',
+    contentSchema: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+      { key: 'steps', label: 'Steps', type: 'items', itemFields: [
+        { key: 'title', label: 'Step Title', type: 'text' },
+        { key: 'description', label: 'Description', type: 'textarea' },
+      ]},
+    ],
+    variants: [
+      { variantId: 'process-steps', variantName: 'Steps', defaultContent: { title: 'How it works', subtitle: 'Get started in three simple steps.', steps: [{ title: 'Sign Up', description: 'Create your free account in seconds.' }, { title: 'Configure', description: 'Set up your workspace and preferences.' }, { title: 'Launch', description: 'Start building and see results immediately.' }] } },
+      { variantId: 'process-timeline', variantName: 'Timeline', defaultContent: { title: 'Our process', subtitle: 'A step-by-step guide to getting started.', steps: [{ title: 'Discovery', description: 'We learn about your goals and requirements.' }, { title: 'Design', description: 'Our team creates a custom solution for you.' }, { title: 'Development', description: 'We build and test your product.' }, { title: 'Launch', description: 'Your product goes live with full support.' }] } },
+    ],
+  },
+
+  // ── Downloads ──
+  {
+    category: 'downloads',
+    categoryLabel: 'Downloads',
+    icon: 'Download',
+    contentSchema: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+      { key: 'items', label: 'Downloads', type: 'items', itemFields: [
+        { key: 'title', label: 'App Name', type: 'text' },
+        { key: 'description', label: 'Description', type: 'textarea' },
+        { key: 'ctaText', label: 'Button Text', type: 'text' },
+      ]},
+    ],
+    variants: [
+      { variantId: 'downloads-cards', variantName: 'Cards', defaultContent: { title: 'Download our apps', subtitle: 'Available on all your favorite platforms.', items: [{ title: 'Desktop App', description: 'Full-featured desktop experience for Mac and Windows.', ctaText: 'Download' }, { title: 'Mobile App', description: 'Stay connected on the go with iOS and Android.', ctaText: 'Download' }, { title: 'Browser Extension', description: 'Quick access right from your browser toolbar.', ctaText: 'Install' }] } },
+      { variantId: 'downloads-simple', variantName: 'Simple', defaultContent: { title: 'Get the app', subtitle: 'Download our mobile app and take your work anywhere.', ctaText: 'Download', items: [] } },
+    ],
+  },
+
+  // ── Comparison ──
+  {
+    category: 'comparison',
+    categoryLabel: 'Comparison',
+    icon: 'ArrowLeftRight',
+    contentSchema: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+      { key: 'items', label: 'Items', type: 'items', itemFields: [
+        { key: 'feature', label: 'Feature', type: 'text' },
+        { key: 'option1', label: 'Option 1', type: 'text' },
+        { key: 'option2', label: 'Option 2', type: 'text' },
+        { key: 'option3', label: 'Option 3', type: 'text' },
+      ]},
+    ],
+    variants: [
+      { variantId: 'comparison-table', variantName: 'Table', defaultContent: { title: 'Compare plans', subtitle: 'See which plan is right for you.', items: [{ feature: 'Users', option1: 'true', option2: 'true', option3: 'true' }, { feature: 'Storage', option1: 'true', option2: 'true', option3: 'true' }, { feature: 'Analytics', option1: 'false', option2: 'true', option3: 'true' }, { feature: 'Custom domain', option1: 'false', option2: 'false', option3: 'true' }, { feature: 'Priority support', option1: 'false', option2: 'false', option3: 'true' }] } },
+      { variantId: 'comparison-side-by-side', variantName: 'Side by Side', defaultContent: { title: 'Choose your plan', subtitle: 'Compare features side by side.', items: [{ title: 'Free', description: 'For individuals getting started.', features: 'Up to 3 projects, Basic analytics, Community support', ctaText: 'Get Started' }, { title: 'Pro', description: 'For teams that need more.', features: 'Unlimited projects, Advanced analytics, Priority support, Custom domain', ctaText: 'Upgrade to Pro' }] } },
+    ],
+  },
+
+  // ── Store ──
+  {
+    category: 'store',
+    categoryLabel: 'Store',
+    icon: 'ShoppingBag',
+    contentSchema: [
+      { key: 'title', label: 'Section Title', type: 'text' },
+      { key: 'subtitle', label: 'Section Subtitle', type: 'textarea' },
+      { key: 'products', label: 'Products', type: 'items', itemFields: [
+        { key: 'title', label: 'Product Name', type: 'text' },
+        { key: 'description', label: 'Description', type: 'textarea' },
+        { key: 'price', label: 'Price', type: 'text' },
+      ]},
+    ],
+    variants: [
+      { variantId: 'store-grid', variantName: 'Product Grid', defaultContent: { title: 'Our Products', subtitle: 'Browse our latest collection.', products: [{ title: 'Product Alpha', description: 'A premium product designed for professionals.', price: '$49.99' }, { title: 'Product Beta', description: 'An affordable option with great features.', price: '$29.99' }, { title: 'Product Gamma', description: 'Our best-selling item this season.', price: '$39.99' }] } },
+      { variantId: 'store-list', variantName: 'Product List', defaultContent: { title: 'Our Products', subtitle: 'Browse our latest collection.', products: [{ title: 'Product Alpha', description: 'A premium product designed for professionals.', price: '$49.99' }, { title: 'Product Beta', description: 'An affordable option with great features.', price: '$29.99' }, { title: 'Product Gamma', description: 'Our best-selling item this season.', price: '$39.99' }] } },
     ],
   },
 

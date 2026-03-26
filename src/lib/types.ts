@@ -16,7 +16,13 @@ export type SectionCategory =
   | 'logos'
   | 'blog'
   | 'gallery'
-  | 'banner';
+  | 'banner'
+  | 'showcase'
+  | 'error'
+  | 'process'
+  | 'downloads'
+  | 'comparison'
+  | 'store';
 
 // ── Content Field Schema ────────────────────────────
 

@@ -105,6 +105,33 @@ import FooterCentered from './footer/FooterCentered';
 import FooterMinimal from './footer/FooterMinimal';
 import FooterWithNewsletter from './footer/FooterWithNewsletter';
 
+// Showcase
+import ShowcaseCards from './showcase/ShowcaseCards';
+import ShowcaseWithLinks from './showcase/ShowcaseWithLinks';
+
+// Features (additional)
+import FeaturesAccordion from './features/FeaturesAccordion';
+
+// Error
+import Error404 from './error/Error404';
+import ErrorSimple from './error/ErrorSimple';
+
+// Process
+import ProcessSteps from './process/ProcessSteps';
+import ProcessTimeline from './process/ProcessTimeline';
+
+// Downloads
+import DownloadCards from './downloads/DownloadCards';
+import DownloadSimple from './downloads/DownloadSimple';
+
+// Comparison
+import ComparisonTable from './comparison/ComparisonTable';
+import ComparisonSideBySide from './comparison/ComparisonSideBySide';
+
+// Store
+import StoreGrid from './store/StoreGrid';
+import StoreList from './store/StoreList';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SectionComponentProps = { content: any; colorMode?: ColorMode };
 
@@ -212,4 +239,31 @@ export const componentRegistry: Record<string, ComponentType<SectionComponentPro
   'footer-centered': FooterCentered,
   'footer-minimal': FooterMinimal,
   'footer-with-newsletter': FooterWithNewsletter,
+
+  // Showcase
+  'showcase-cards': ShowcaseCards,
+  'showcase-with-links': ShowcaseWithLinks,
+
+  // Features (additional)
+  'features-accordion': FeaturesAccordion,
+
+  // Error
+  'error-404': Error404,
+  'error-simple': ErrorSimple,
+
+  // Process
+  'process-steps': ProcessSteps,
+  'process-timeline': ProcessTimeline,
+
+  // Downloads
+  'downloads-cards': DownloadCards,
+  'downloads-simple': DownloadSimple,
+
+  // Comparison
+  'comparison-table': ComparisonTable,
+  'comparison-side-by-side': ComparisonSideBySide,
+
+  // Store
+  'store-grid': StoreGrid,
+  'store-list': StoreList,
 };
