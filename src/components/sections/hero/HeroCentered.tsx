@@ -28,7 +28,7 @@ export default function HeroCentered({ content, colorMode, sectionId }: { conten
           tag="p"
           className={`mt-4 @md:mt-6 text-lg @md:text-xl ${c.textSecondary} leading-relaxed`}
         />
-        {(content.showPrimaryButton || content.showSecondaryButton) && (
+        {(content.showPrimaryButton || content.showSecondaryButton || content.showTertiaryButton) && (
           <div className="mt-10 flex flex-col @sm:flex-row items-center justify-center gap-3 @sm:gap-4">
             {content.showPrimaryButton !== false && content.ctaText && (
               <button className={`${c.btnPrimary} rounded-lg px-6 py-3 text-sm font-medium`}>
@@ -49,6 +49,16 @@ export default function HeroCentered({ content, colorMode, sectionId }: { conten
                   placeholder="Button"
                 />
               </button>
+            )}
+            {content.showTertiaryButton && content.ctaTertiaryText && (
+              <span className={`text-sm font-medium ${c.textSecondary} underline underline-offset-4 cursor-pointer`}>
+                <EditableText
+                  sectionId={id}
+                  fieldKey="ctaTertiaryText"
+                  value={content.ctaTertiaryText as string}
+                  placeholder="Link text"
+                />
+              </span>
             )}
           </div>
         )}
