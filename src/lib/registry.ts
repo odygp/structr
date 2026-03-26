@@ -453,8 +453,8 @@ export const sectionRegistry: SectionDefinition[] = [
       ]},
     ],
     variants: [
-      { variantId: 'process-steps', variantName: 'Steps', defaultContent: { title: 'How it works', subtitle: 'Get started in three simple steps.', steps: [{ title: 'Sign Up', description: 'Create your free account in seconds.' }, { title: 'Configure', description: 'Set up your workspace and preferences.' }, { title: 'Launch', description: 'Start building and see results immediately.' }] } },
-      { variantId: 'process-timeline', variantName: 'Timeline', defaultContent: { title: 'Our process', subtitle: 'A step-by-step guide to getting started.', steps: [{ title: 'Discovery', description: 'We learn about your goals and requirements.' }, { title: 'Design', description: 'Our team creates a custom solution for you.' }, { title: 'Development', description: 'We build and test your product.' }, { title: 'Launch', description: 'Your product goes live with full support.' }] } },
+      { variantId: 'process-steps', variantName: 'Steps', defaultContent: { title: 'How it works', subtitle: 'Get started in a few simple steps.', steps: [{ title: 'Sign Up', description: 'Create your free account in seconds.' }, { title: 'Configure', description: 'Set up your workspace and preferences.' }, { title: 'Build', description: 'Start creating with our intuitive tools.' }, { title: 'Launch', description: 'Go live and see results immediately.' }] } },
+      { variantId: 'process-timeline', variantName: 'Timeline', defaultContent: { title: 'Our process', subtitle: 'A step-by-step guide to getting started.', steps: [{ title: 'Discovery', description: 'We learn about your goals and requirements.' }, { title: 'Strategy', description: 'We create a plan tailored to your needs.' }, { title: 'Design', description: 'Our team designs a custom solution.' }, { title: 'Development', description: 'We build and test your product.' }, { title: 'Launch', description: 'Your product goes live with full support.' }, { title: 'Support', description: 'Ongoing maintenance and optimization.' }] } },
     ],
   },
 
