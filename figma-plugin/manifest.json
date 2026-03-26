@@ -8,6 +8,7 @@
   "editorType": ["figma"],
   "ui": "ui.html",
   "networkAccess": {
-    "allowedDomains": ["structr.vercel.app", "localhost"]
+    "allowedDomains": ["structr.vercel.app"],
+    "devAllowedDomains": ["localhost"]
   }
 }
