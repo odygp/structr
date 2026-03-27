@@ -342,7 +342,89 @@ function createMolecules(page, atoms) {
 // ORGANISMS — Section Components (using atoms + molecules)
 // ══════════════════════════════════════
 
+// Variant-specific builders for categories that need different layouts per variant
+var VARIANT_SPECIFIC = {
+  'hero-split': function(comp, content, atoms, molecules) {
+    comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+    comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+    var textCol = frame("textContent", { dir: "VERTICAL", g: 20 });
+    textCol.resize(550, 100); textCol.counterAxisSizingMode = "FIXED";
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
+    var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary']);
+    textCol.appendChild(tn); linkText(tn, tk);
+    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
+    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 500 });
+    textCol.appendChild(sn); linkText(sn, sk);
+    var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
+    var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn"; btns.appendChild(pb);
+    var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn"; btns.appendChild(sb);
+    textCol.appendChild(btns);
+    comp.appendChild(textCol);
+    var img = atoms.ImagePlaceholder.createInstance(); img.name = "image"; img.resize(520, 400);
+    comp.appendChild(img);
+  },
+  'hero-minimal': function(comp, content, atoms) {
+    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 120; comp.paddingBottom = 120;
+    comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
+    var tn = txt("title", content.title || "Build something amazing", 56, FB, C['text/primary'], { w: 800, align: "CENTER" });
+    comp.appendChild(tn); linkText(tn, tk);
+    var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
+    comp.appendChild(pb);
+  },
+  'hero-with-image': function(comp, content, atoms) {
+    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+    comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
+    var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary'], { w: 700, align: "CENTER" });
+    comp.appendChild(tn); linkText(tn, tk);
+    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
+    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
+    comp.appendChild(sn); linkText(sn, sk);
+    var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
+    btns.appendChild(findVariant(atoms.Button, "Primary").createInstance());
+    btns.appendChild(findVariant(atoms.Button, "Secondary").createInstance());
+    comp.appendChild(btns);
+    var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage"; img.resize(1100, 500);
+    comp.appendChild(img);
+  },
+  'hero-with-form': function(comp, content, atoms) {
+    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+    comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
+    var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary'], { w: 700, align: "CENTER" });
+    comp.appendChild(tn); linkText(tn, tk);
+    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
+    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
+    comp.appendChild(sn); linkText(sn, sk);
+    var formRow = frame("form", { dir: "HORIZONTAL", g: 8 });
+    var input = frame("emailInput", { dir: "HORIZONTAL", bg: C['surface/default'], stroke: C['border/strong'], px: 16, py: 12, r: 8 });
+    input.resize(320, 100); input.counterAxisSizingMode = "FIXED";
+    input.appendChild(txt("placeholder", "Enter your email", 14, FR, C['text/muted']));
+    formRow.appendChild(input);
+    var btn = findVariant(atoms.Button, "Primary").createInstance(); btn.name = "submitBtn";
+    formRow.appendChild(btn);
+    comp.appendChild(formRow);
+  },
+};
+
 function buildOrganism(comp, category, variantId, content, atoms, molecules) {
+  // Check for variant-specific builder first
+  var variantBuilder = VARIANT_SPECIFIC[variantId];
+  if (variantBuilder) { variantBuilder(comp, content, atoms, molecules); return; }
+  // Then category builder
   var builder = BUILDERS[category];
   if (builder) builder(comp, content, atoms, molecules);
   else buildGenericOrganism(comp, content, category);
@@ -847,20 +929,33 @@ function findVariant(set, styleName) {
   return children[0] || set;
 }
 
-// Default content
+// Default content — used for component definitions
 function getDefaultContent(cat) {
   var defaults = {
     header: { logo: 'Logo', links: [{ label: 'Features' }, { label: 'Pricing' }, { label: 'About' }], ctaText: 'Get Started' },
-    hero: { title: 'Build something amazing', subtitle: 'A short description.', ctaText: 'Get Started', ctaSecondaryText: 'Learn More' },
-    features: { title: 'Features', subtitle: 'Everything you need.', features: [{ title: 'Feature 1', description: 'Description' }, { title: 'Feature 2', description: 'Description' }, { title: 'Feature 3', description: 'Description' }] },
-    stats: { title: 'Stats', stats: [{ value: '10K+', label: 'Users' }, { value: '99%', label: 'Uptime' }, { value: '150+', label: 'Countries' }] },
-    testimonials: { title: 'Testimonials', testimonials: [{ quote: 'Great!', author: 'Jane', role: 'CEO' }, { quote: 'Amazing!', author: 'John', role: 'CTO' }, { quote: 'Love it!', author: 'Sarah', role: 'Designer' }] },
-    cta: { title: 'Ready to start?', subtitle: 'Join thousands.', ctaText: 'Get Started' },
-    footer: { logo: 'Logo', description: 'Description.', copyright: '© 2024', columns: [{ title: 'Product', links: 'Features, Pricing' }, { title: 'Company', links: 'About, Blog' }] },
-    faq: { title: 'FAQ', subtitle: 'Common questions.', questions: [{ question: 'How?', answer: 'Easy.' }, { question: 'Why?', answer: 'Because.' }] },
-    pricing: { title: 'Pricing', subtitle: 'Simple pricing.' },
+    hero: { title: 'Build something amazing today', subtitle: 'A short description of your product or service that explains the value proposition.', ctaText: 'Get Started', ctaSecondaryText: 'Learn More' },
+    logos: { title: 'Trusted by leading companies', logos: [{ name: 'Acme' }, { name: 'Globex' }, { name: 'Initech' }, { name: 'Umbrella' }, { name: 'Stark' }] },
+    features: { title: 'Everything you need', subtitle: 'Our platform provides all the tools you need to succeed.', features: [{ title: 'Feature One', description: 'A brief description of this feature.' }, { title: 'Feature Two', description: 'A brief description of this feature.' }, { title: 'Feature Three', description: 'A brief description of this feature.' }] },
+    stats: { title: 'Trusted by thousands', stats: [{ value: '10K+', label: 'Active Users' }, { value: '99.9%', label: 'Uptime' }, { value: '150+', label: 'Countries' }] },
+    pricing: { title: 'Simple, transparent pricing', subtitle: 'Choose the plan that works best for you.', plans: [{ name: 'Starter', price: '$9', period: '/mo', description: 'For individuals', features: 'Feature 1, Feature 2, Feature 3', ctaText: 'Get Started', highlighted: false }, { name: 'Pro', price: '$29', period: '/mo', description: 'For teams', features: 'Everything in Starter, Feature 4, Feature 5', ctaText: 'Get Started', highlighted: true }, { name: 'Enterprise', price: '$99', period: '/mo', description: 'For organizations', features: 'Everything in Pro, Feature 6, Priority support', ctaText: 'Contact Sales', highlighted: false }] },
+    testimonials: { title: 'What our customers say', testimonials: [{ quote: 'This product has completely transformed how we work.', author: 'Jane Cooper', role: 'CEO at TechCorp' }, { quote: 'The best investment we made this year.', author: 'John Smith', role: 'CTO at StartupXYZ' }, { quote: 'Simple, effective, and beautifully designed.', author: 'Sarah Johnson', role: 'Designer at CreativeCo' }] },
+    faq: { title: 'Frequently asked questions', subtitle: 'Find answers to common questions.', questions: [{ question: 'How do I get started?', answer: 'Simply sign up for a free account and follow the onboarding guide.' }, { question: 'Is there a free trial?', answer: 'Yes, we offer a 14-day free trial with full access to all features.' }, { question: 'Can I cancel anytime?', answer: 'Absolutely. Cancel your subscription at any time with no penalties.' }] },
+    cta: { title: 'Ready to get started?', subtitle: 'Join thousands of satisfied customers today.', ctaText: 'Start Free Trial' },
+    blog: { title: 'Latest from the blog', subtitle: 'Insights, tips, and news.', posts: [{ title: 'Getting Started Guide', excerpt: 'Learn how to set up your account.' }, { title: '10 Productivity Tips', excerpt: 'Discover best practices.' }, { title: 'What is New in V2', excerpt: 'Explore the latest features.' }] },
+    about: { title: 'About our company', description: 'We are a team of passionate individuals dedicated to building the best products.', mission: 'Our mission is to make technology accessible to everyone.' },
+    team: { title: 'Meet our team', subtitle: 'The people behind the product.', members: [{ name: 'Jane Cooper', role: 'CEO' }, { name: 'John Smith', role: 'CTO' }, { name: 'Sarah Johnson', role: 'Design Lead' }, { name: 'Michael Brown', role: 'Engineer' }] },
+    contact: { title: 'Get in touch', subtitle: 'We would love to hear from you.', email: 'hello@example.com', phone: '+1 (555) 123-4567' },
+    footer: { logo: 'Structr', description: 'Building the future of web design.', copyright: '2024 Structr. All rights reserved.', columns: [{ title: 'Product', links: 'Features, Pricing, Changelog' }, { title: 'Company', links: 'About, Blog, Careers' }, { title: 'Resources', links: 'Docs, Help, API' }] },
+    banner: { text: 'We just launched v2.0! Check out the new features.', ctaText: 'Learn More' },
+    process: { title: 'How it works', subtitle: 'Get started in a few simple steps.', steps: [{ title: 'Sign Up', description: 'Create your free account.' }, { title: 'Configure', description: 'Set up your workspace.' }, { title: 'Build', description: 'Start creating.' }, { title: 'Launch', description: 'Go live.' }] },
+    error: { title: 'Page not found', subtitle: 'Sorry, we could not find the page you are looking for.', ctaText: 'Go Home' },
+    store: { title: 'Our Products', subtitle: 'Browse our latest collection.', products: [{ title: 'Product Alpha', price: '$49.99' }, { title: 'Product Beta', price: '$29.99' }, { title: 'Product Gamma', price: '$39.99' }] },
+    gallery: { title: 'Our Work', subtitle: 'A showcase of what we have built.' },
+    showcase: { title: 'Featured', subtitle: 'Our latest highlights.' },
+    comparison: { title: 'Compare plans', subtitle: 'See which plan is right for you.' },
+    downloads: { title: 'Download our app', subtitle: 'Available on all platforms.' },
   };
-  return defaults[cat] || { title: cat, subtitle: 'Section description.' };
+  return defaults[cat] || { title: getCategoryLabel(cat), subtitle: 'Section description.' };
 }
 
 function getCategoryLabel(cat) {
