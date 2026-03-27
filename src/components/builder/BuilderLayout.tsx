@@ -169,7 +169,7 @@ function BuilderLayoutInner() {
 
       <div className="flex flex-1 overflow-hidden">
         <SectionCatalog />
-        <Canvas liveMessage={liveMessage} setLiveMessage={setLiveMessage} />
+        <Canvas liveMessage={liveMessage} setLiveMessage={setLiveMessage} isImporting={pendingPages.length > 0 && !pendingPages[0].done} />
 
         {/* Right sidebar: Comments or ContentEditor */}
         {commentsOpen ? (

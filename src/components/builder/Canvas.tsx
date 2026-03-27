@@ -58,9 +58,10 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
 interface CanvasProps {
   liveMessage?: string;
   setLiveMessage?: (msg: string) => void;
+  isImporting?: boolean;
 }
 
-export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
+export default function Canvas({ liveMessage, setLiveMessage, isImporting }: CanvasProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sections = useBuilderStore(s => {
     const proj = s.projects.find(p => p.id === s.activeProjectId);
@@ -151,6 +152,76 @@ export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
   };
 
   if (sections.length === 0) {
+    // Importing skeleton
+    if (isImporting) {
+      return (
+        <main id="canvas" aria-label="Canvas" className="flex-1 overflow-y-auto bg-[#f2f2f2]">
+          <div className="w-full px-[64px] flex flex-col mt-[48px] mb-[48px]">
+            {/* Skeleton sections */}
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="p-[6px]">
+                <div className="bg-white rounded-[12px] overflow-hidden animate-pulse">
+                  <div className={`p-8 ${i === 1 ? 'h-[60px]' : i === 2 ? 'h-[200px]' : i === 3 ? 'h-[80px]' : 'h-[160px]'}`}>
+                    <div className="flex flex-col items-center gap-3">
+                      {i === 1 && (
+                        <div className="flex items-center justify-between w-full">
+                          <div className="bg-[#e6e6e6] h-4 w-24 rounded" />
+                          <div className="flex gap-4">
+                            <div className="bg-[#e6e6e6] h-3 w-14 rounded" />
+                            <div className="bg-[#e6e6e6] h-3 w-14 rounded" />
+                            <div className="bg-[#e6e6e6] h-3 w-14 rounded" />
+                          </div>
+                          <div className="bg-[#1c1c1c] h-7 w-20 rounded-[6px] opacity-20" />
+                        </div>
+                      )}
+                      {i === 2 && (
+                        <>
+                          <div className="bg-[#e6e6e6] h-8 w-80 rounded mt-8" />
+                          <div className="bg-[#e6e6e6] h-4 w-64 rounded" />
+                          <div className="flex gap-3 mt-4">
+                            <div className="bg-[#1c1c1c] h-8 w-24 rounded-[6px] opacity-20" />
+                            <div className="bg-[#e6e6e6] h-8 w-24 rounded-[6px]" />
+                          </div>
+                        </>
+                      )}
+                      {i === 3 && (
+                        <div className="flex gap-4 w-full justify-center">
+                          {[1,2,3,4,5].map(j => <div key={j} className="bg-[#e6e6e6] h-6 w-16 rounded" />)}
+                        </div>
+                      )}
+                      {i === 4 && (
+                        <>
+                          <div className="bg-[#e6e6e6] h-6 w-48 rounded mt-4" />
+                          <div className="bg-[#e6e6e6] h-3 w-64 rounded" />
+                          <div className="flex gap-4 w-full mt-4">
+                            {[1,2,3].map(j => (
+                              <div key={j} className="flex-1 bg-[#f5f5f5] rounded-[8px] p-4 h-24">
+                                <div className="bg-[#e6e6e6] h-4 w-4 rounded mb-3" />
+                                <div className="bg-[#e6e6e6] h-3 w-20 rounded mb-2" />
+                                <div className="bg-[#e6e6e6] h-2 w-full rounded" />
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-center gap-2 py-4">
+              <svg width="16" height="16" viewBox="0 0 16 16" className="animate-spin">
+                <circle cx="8" cy="8" r="6" fill="none" stroke="#e6e6e6" strokeWidth="2" />
+                <circle cx="8" cy="8" r="6" fill="none" stroke="#1c1c1c" strokeWidth="2"
+                  strokeDasharray="37.7" strokeDashoffset="28" strokeLinecap="round" />
+              </svg>
+              <span className="text-[12px] text-[#808080]">Importing homepage...</span>
+            </div>
+          </div>
+        </main>
+      );
+    }
+
     return (
       <main
         id="canvas"

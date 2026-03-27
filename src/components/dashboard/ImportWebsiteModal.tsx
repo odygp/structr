@@ -4,12 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Globe, X, Loader2 } from 'lucide-react';
 
-interface PendingPage {
-  url: string;
-  name: string;
-  sortOrder: number;
-}
-
 export default function ImportWebsiteModal({ onClose }: { onClose: () => void }) {
   const [url, setUrl] = useState('');
   const [importing, setImporting] = useState(false);
@@ -30,8 +24,6 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
     setStatus('Discovering pages...');
 
     try {
-      // Step 1: Import homepage + discover other pages
-      setStatus('Analyzing homepage...');
       const res = await fetch('/api/import/website', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,17 +38,17 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
 
       if (!res.ok) throw new Error(data.error || 'Import failed');
 
-      const { projectId, pendingPages } = data as {
+      const { projectId, pages } = data as {
         projectId: string;
-        pendingPages: PendingPage[];
+        pages: { url: string; name: string; sortOrder: number }[];
       };
 
-      // Store pending pages in sessionStorage for the builder to pick up
-      if (pendingPages && pendingPages.length > 0) {
-        sessionStorage.setItem(`structr-import-${projectId}`, JSON.stringify(pendingPages));
+      // Store ALL pages for background processing in the builder
+      if (pages && pages.length > 0) {
+        sessionStorage.setItem(`structr-import-${projectId}`, JSON.stringify(pages));
       }
 
-      // Navigate to builder immediately with homepage loaded
+      // Navigate to builder INSTANTLY — pages import in background
       router.push(`/builder?project=${projectId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
@@ -67,7 +59,7 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+      <div className="bg-white rounded-[16px] w-full max-w-md p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Globe size={18} className="text-[#808080]" />
@@ -79,7 +71,7 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
         </div>
 
         <p className="text-[13px] text-[#808080] mb-4">
-          Enter a URL and we&apos;ll analyze the structure to create a wireframe. The homepage loads first, then other pages import in the background.
+          Enter a URL and we&apos;ll analyze the structure to create a wireframe. Pages import in the background — you can start editing immediately.
         </p>
 
         <input
@@ -93,9 +85,7 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
           autoFocus
         />
 
-        {error && (
-          <div className="text-[12px] text-red-500 mb-3">{error}</div>
-        )}
+        {error && <div className="text-[12px] text-red-500 mb-3">{error}</div>}
 
         {status && !error && (
           <div className="flex items-center gap-2 text-[12px] text-[#808080] mb-3">
@@ -120,7 +110,7 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
             {importing ? (
               <>
                 <Loader2 size={14} className="animate-spin" />
-                Importing...
+                Discovering...
               </>
             ) : (
               'Import'
