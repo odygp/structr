@@ -22,7 +22,7 @@ export default function FeaturesGrid({ content, colorMode, sectionId }: { conten
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
-        <div className={`mt-16 grid grid-cols-1 ${gridCols} gap-8`}>
+        <div className={`mt-16 grid ${gridCols} gap-8`}>
           {features.map((feature, i) => (
             <div key={i} className={`${c.bgAlt} rounded-xl p-8`}>
               <div className={`w-10 h-10 ${c.bgPlaceholder} rounded-lg`} />

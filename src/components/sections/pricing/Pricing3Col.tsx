@@ -26,7 +26,7 @@ export default function Pricing3Col({ content, colorMode, sectionId }: { content
           )}
         </div>
 
-        <div className={`grid grid-cols-1 ${gridCols} gap-8`}>
+        <div className={`grid ${gridCols} gap-8`}>
           {(plans as any[]).map((plan: any, index: number) => {
             const isHighlighted = plan.highlighted === true;
             const features = typeof plan.features === 'string'

@@ -21,7 +21,7 @@ export default function TestimonialsCards({ content, colorMode, sectionId }: { c
           </h2>
         </div>
 
-        <div className={`grid grid-cols-1 ${gridCols} gap-8`}>
+        <div className={`grid ${gridCols} gap-8`}>
           {(testimonials as any[]).map((testimonial: any, index: number) => (
             <div
               key={index}

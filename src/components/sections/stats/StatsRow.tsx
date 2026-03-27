@@ -21,7 +21,7 @@ export default function StatsRow({ content, colorMode, sectionId }: { content: R
           </h2>
         </div>
 
-        <div className={`grid grid-cols-2 ${gridCols} gap-8`}>
+        <div className={`grid ${gridCols} gap-8`}>
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
               <p className={`text-4xl font-bold ${c.text} mb-2`}>

@@ -26,7 +26,7 @@ export default function BlogGrid({ content, colorMode, sectionId }: { content: R
           </p>
           )}
         </div>
-        <div className={`grid grid-cols-1 ${gridCols} gap-8`}>
+        <div className={`grid ${gridCols} gap-8`}>
           {posts.map((post, index) => (
             <div key={index} className={`${c.bgCard} border ${c.border} rounded-xl overflow-hidden`}>
               <div className={`w-full h-48 ${c.bgPlaceholder}`} />

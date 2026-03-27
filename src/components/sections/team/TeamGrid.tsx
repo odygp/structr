@@ -26,7 +26,7 @@ export default function TeamGrid({ content, colorMode, sectionId }: { content: R
           </p>
           )}
         </div>
-        <div className={`grid grid-cols-2 ${gridCols} gap-8`}>
+        <div className={`grid ${gridCols} gap-8`}>
           {(members as Array<{ name: string; role: string }>).map((member, index) => (
             <div key={index} className="text-center">
               <div className={`w-24 h-24 rounded-full ${c.bgAvatar} mx-auto mb-4`} />

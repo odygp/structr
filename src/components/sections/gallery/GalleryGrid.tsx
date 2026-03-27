@@ -27,7 +27,7 @@ export default function GalleryGrid({ content, colorMode, sectionId }: { content
           )}
         </div>
 
-        <div className={`grid grid-cols-1 @sm:grid-cols-2 ${gridCols} gap-6`}>
+        <div className={`grid ${gridCols} gap-6`}>
           {images.map((image, index) => (
             <div key={index}>
               <div className={`${c.bgPlaceholder} rounded-xl aspect-video`} />
