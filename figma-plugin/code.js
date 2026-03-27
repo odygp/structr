@@ -80,6 +80,28 @@ function hug(node) {
   try { node.layoutSizingVertical = "HUG"; node.layoutSizingHorizontal = "HUG"; } catch(e) {}
 }
 
+function resizeSection(section, padding) {
+  padding = padding || 60;
+  var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (var i = 0; i < section.children.length; i++) {
+    var c = section.children[i];
+    if (c.x < minX) minX = c.x;
+    if (c.y < minY) minY = c.y;
+    if (c.x + c.width > maxX) maxX = c.x + c.width;
+    if (c.y + c.height > maxY) maxY = c.y + c.height;
+  }
+  if (minX === Infinity) return;
+  // Offset all children to start at padding
+  var dx = padding - minX; var dy = padding - minY;
+  for (var i = 0; i < section.children.length; i++) {
+    section.children[i].x += dx;
+    section.children[i].y += dy;
+  }
+  section.resizeWithoutConstraints(maxX - minX + padding * 2, maxY - minY + padding * 2);
+}
+
+
+
 function linkVis(node, key) {
   try {
     var refs = node.componentPropertyReferences || {};
@@ -1324,6 +1346,7 @@ figma.ui.onmessage = async function(msg) {
     var ionsSection = figma.createSection(); ionsSection.name = "🔬 Ions — Design Tokens";
     createIons(ionsSection);
     componentsPage.appendChild(ionsSection);
+    resizeSection(ionsSection);
     ionsSection.x = 0; ionsSection.y = 0;
 
     // ── Section: Atoms ──
@@ -1331,6 +1354,7 @@ figma.ui.onmessage = async function(msg) {
     var atomsSection = figma.createSection(); atomsSection.name = "⚛️ Atoms — Base Components";
     var atoms = createAtoms(atomsSection);
     componentsPage.appendChild(atomsSection);
+    resizeSection(atomsSection);
     atomsSection.x = 0; atomsSection.y = ionsSection.y + ionsSection.height + 100;
 
     // ── Section: Molecules ──
@@ -1338,6 +1362,7 @@ figma.ui.onmessage = async function(msg) {
     var moleculesSection = figma.createSection(); moleculesSection.name = "🧬 Molecules — Compound Components";
     var molecules = createMolecules(moleculesSection, atoms);
     componentsPage.appendChild(moleculesSection);
+    resizeSection(moleculesSection);
     moleculesSection.x = 0; moleculesSection.y = atomsSection.y + atomsSection.height + 100;
 
     // ── Section: Organisms ──
@@ -1346,10 +1371,17 @@ figma.ui.onmessage = async function(msg) {
     var compSets = {};
     var cy = 60;
 
+    var catIndex = 0;
     for (var cat in used) {
       var comps = [];
       var catComps = {};
       var vids = Object.keys(used[cat]);
+
+      // Add category label
+      var catLabel = txt("label_" + cat, getCategoryLabel(cat), 20, FB, C['text/primary']);
+      organismsSection.appendChild(catLabel);
+      catLabel.x = 60; catLabel.y = cy;
+      cy += 40;
 
       for (var v = 0; v < vids.length; v++) {
         var vid = vids[v];
@@ -1357,25 +1389,29 @@ figma.ui.onmessage = async function(msg) {
         comp.name = "Variant=" + getVariantName(vid);
         buildOrganism(comp, cat, vid, getDefaultContent(cat), atoms, molecules);
         organismsSection.appendChild(comp);
-        comp.x = 0; comp.y = cy;
-        cy += (comp.height > 100 ? comp.height : 200) + 40;
+        comp.x = 60; comp.y = cy;
+        cy += (comp.height > 100 ? comp.height : 200) + 60;
         comps.push(comp);
         catComps[vid] = comp;
       }
 
       if (comps.length > 1) {
-        var set = figma.combineAsVariants(comps, organismsSection);
-        set.name = getCategoryLabel(cat);
-        set.x = 0; set.y = cy - comps.length * 200;
-        cy = set.y + set.height + 80;
+        try {
+          var set = figma.combineAsVariants(comps, organismsSection);
+          set.name = getCategoryLabel(cat);
+          set.x = 60; set.y = catLabel.y + 40;
+          cy = set.y + set.height + 100;
+        } catch(e) { console.error("combineAsVariants error for " + cat, e); }
       } else if (comps.length === 1) {
         comps[0].name = getCategoryLabel(cat);
       }
       compSets[cat] = catComps;
-      cy += 40;
+      cy += 60;
+      catIndex++;
     }
 
     componentsPage.appendChild(organismsSection);
+    resizeSection(organismsSection, 80);
     organismsSection.x = 0; organismsSection.y = moleculesSection.y + moleculesSection.height + 100;
 
     // ════════════════════════════════════════
@@ -1412,6 +1448,7 @@ figma.ui.onmessage = async function(msg) {
       }
 
       pageSection.appendChild(pf);
+      resizeSection(pageSection);
       pagesPage.appendChild(pageSection);
       pageSection.x = 0; pageSection.y = pageSectionY;
       pageSectionY += pf.height + 200;
