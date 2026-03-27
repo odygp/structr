@@ -76,6 +76,10 @@ function linkText(node, key) {
     node.componentPropertyReferences = refs;
   } catch(e) { console.log('linkText failed for ' + node.name + ': ' + e.message); }
 }
+function hug(node) {
+  try { node.layoutSizingVertical = "HUG"; node.layoutSizingHorizontal = "HUG"; } catch(e) {}
+}
+
 function linkVis(node, key) {
   try {
     var refs = node.componentPropertyReferences || {};
@@ -267,8 +271,8 @@ function createMolecules(page, atoms) {
   featureCard.itemSpacing = 12; featureCard.cornerRadius = 12;
   featureCard.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
 
-  var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon"; fcIcon.layoutSizingVertical = "HUG"; fcIcon.layoutSizingHorizontal = "HUG";
-  featureCard.appendChild(fcIcon);
+  var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon";
+  featureCard.appendChild(fcIcon); hug(fcIcon);
   var fcTk = featureCard.addComponentProperty("Title", "TEXT", "Feature Title");
   var fcTitle = txt("title", "Feature Title", 15, FS, C['text/primary']);
   featureCard.appendChild(fcTitle); linkText(fcTitle, fcTk);
@@ -294,8 +298,8 @@ function createMolecules(page, atoms) {
   testCard.appendChild(tcQuote); linkText(tcQuote, tcQk);
 
   var tcAuth = frame("author", { dir: "HORIZONTAL", g: 10, ca: "CENTER" });
-  var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.layoutSizingVertical = "HUG"; tcAvatar.layoutSizingHorizontal = "HUG"; tcAvatar.name = "avatar";
-  tcAuth.appendChild(tcAvatar);
+  var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.name = "avatar";
+  tcAuth.appendChild(tcAvatar); hug(tcAvatar);
   var tcInfo = frame("info", { dir: "VERTICAL", g: 2 });
   var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Doe");
   var tcName = txt("author", "Jane Doe", 13, FM, C['text/primary']);
@@ -379,10 +383,8 @@ var VARIANT_SPECIFIC = {
     textCol.appendChild(sn); linkText(sn, sk);
     var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
     var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn"; btns.appendChild(pb);
-    pb.layoutSizingVertical = "HUG"; pb.layoutSizingHorizontal = "HUG";
-    var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn"; btns.appendChild(sb);
-    sb.layoutSizingVertical = "HUG"; sb.layoutSizingHorizontal = "HUG";
-    textCol.appendChild(btns);
+      var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn"; btns.appendChild(sb);
+      textCol.appendChild(btns);
     comp.appendChild(textCol);
     var img = atoms.ImagePlaceholder.createInstance(); img.name = "image"; img.resize(520, 400);
     comp.appendChild(img);
@@ -397,8 +399,7 @@ var VARIANT_SPECIFIC = {
     var tn = txt("title", content.title || "Build something amazing", 56, FB, C['text/primary'], { w: 800, align: "CENTER" });
     comp.appendChild(tn); linkText(tn, tk);
     var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
-    pb.layoutSizingVertical = "HUG"; pb.layoutSizingHorizontal = "HUG";
-    comp.appendChild(pb);
+      comp.appendChild(pb);
   },
   'hero-with-image': function(comp, content, atoms) {
     comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
@@ -413,8 +414,8 @@ var VARIANT_SPECIFIC = {
     var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
     comp.appendChild(sn); linkText(sn, sk);
     var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
-    var hiBtnP = findVariant(atoms.Button, "Primary").createInstance(); hiBtnP.layoutSizingVertical = "HUG"; hiBtnP.layoutSizingHorizontal = "HUG"; btns.appendChild(hiBtnP);
-    var hiBtnS = findVariant(atoms.Button, "Secondary").createInstance(); hiBtnS.layoutSizingVertical = "HUG"; hiBtnS.layoutSizingHorizontal = "HUG"; btns.appendChild(hiBtnS);
+    var hiBtnP = findVariant(atoms.Button, "Primary").createInstance(); btns.appendChild(hiBtnP); hug(hiBtnP);
+    var hiBtnS = findVariant(atoms.Button, "Secondary").createInstance(); btns.appendChild(hiBtnS); hug(hiBtnS);
     comp.appendChild(btns);
     var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage"; img.resize(1100, 500);
     comp.appendChild(img);
@@ -437,8 +438,7 @@ var VARIANT_SPECIFIC = {
     input.appendChild(txt("placeholder", "Enter your email", 14, FR, C['text/muted']));
     formRow.appendChild(input);
     var btn = findVariant(atoms.Button, "Primary").createInstance(); btn.name = "submitBtn";
-    btn.layoutSizingVertical = "HUG"; btn.layoutSizingHorizontal = "HUG";
-    formRow.appendChild(btn);
+      formRow.appendChild(btn); hug(btn);
     comp.appendChild(formRow);
   },
   'features-alternating': function(comp, content, atoms) {
@@ -564,10 +564,10 @@ function buildHeaderOrganism(comp, content, atoms, molecules) {
   }
   nav.layoutGrow = 1; comp.appendChild(nav);
 
-  var ctaBtn = atoms.Button.defaultVariant.createInstance(); ctaBtn.layoutSizingVertical = "HUG"; ctaBtn.layoutSizingHorizontal = "HUG";
+  var ctaBtn = atoms.Button.defaultVariant.createInstance();
   ctaBtn.name = "cta";
   try { var props = ctaBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) ctaBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch(e) {}
-  comp.appendChild(ctaBtn);
+  comp.appendChild(ctaBtn); hug(ctaBtn);
 }
 
 // ── Hero ──
@@ -590,19 +590,18 @@ function buildHeroOrganism(comp, content, atoms, molecules) {
   var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
   var showPk = comp.addComponentProperty("Show Primary", "BOOLEAN", true);
   var primaryBtn = findVariant(atoms.Button, "Primary").createInstance();
-  primaryBtn.layoutSizingVertical = "HUG"; primaryBtn.layoutSizingHorizontal = "HUG";
   primaryBtn.name = "primaryBtn";
   try { var props = primaryBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) primaryBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch(e) {}
-  btns.appendChild(primaryBtn);
+  btns.appendChild(primaryBtn); hug(primaryBtn);
 
   var showSk = comp.addComponentProperty("Show Secondary", "BOOLEAN", true);
   var secondaryBtn = findVariant(atoms.Button, "Secondary").createInstance();
-  secondaryBtn.layoutSizingVertical = "HUG"; secondaryBtn.layoutSizingHorizontal = "HUG";
   secondaryBtn.name = "secondaryBtn";
   try { var props = secondaryBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) secondaryBtn.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch(e) {}
-  btns.appendChild(secondaryBtn);
+  btns.appendChild(secondaryBtn); hug(secondaryBtn);
 
   comp.appendChild(btns);
+  hug(primaryBtn); hug(secondaryBtn);
   linkVis(primaryBtn, showPk);
   linkVis(secondaryBtn, showSk);
 }
@@ -862,8 +861,8 @@ function buildTeamOrganism(comp, content, atoms) {
   var members = Array.isArray(content.members) ? content.members : [{ name: 'Jane', role: 'CEO' }, { name: 'John', role: 'CTO' }];
   for (var i = 0; i < members.length; i++) {
     var member = frame("member_" + i, { dir: "VERTICAL", g: 8, ca: "CENTER" });
-    var av = atoms.Avatar.createInstance(); av.layoutSizingVertical = "HUG"; av.layoutSizingHorizontal = "HUG"; av.name = "avatar_" + i;
-    av.resize(80, 80); member.appendChild(av);
+    var av = atoms.Avatar.createInstance(); av.name = "avatar_" + i;
+    av.resize(80, 80); member.appendChild(av); hug(av);
     member.appendChild(txt("memberName_" + i, members[i].name || '', 14, FM, C['text/primary'], { align: "CENTER" }));
     member.appendChild(txt("memberRole_" + i, members[i].role || '', 12, FR, C['text/secondary'], { align: "CENTER" }));
     grid.appendChild(member);
@@ -1051,9 +1050,8 @@ function buildPricingOrganism(comp, content, atoms) {
       card.appendChild(txt("planFeat_" + i + "_" + j, "✓  " + feats[j].trim(), 13, FR, hl ? C['text/on-dark'] : C['text/secondary']));
     }
     var btn = findVariant(atoms.Button, hl ? "Secondary" : "Primary").createInstance();
-    btn.layoutSizingVertical = "HUG"; btn.layoutSizingHorizontal = "HUG";
-    btn.name = "planCta_" + i;
-    card.appendChild(btn);
+      btn.name = "planCta_" + i;
+    card.appendChild(btn); hug(btn);
     grid.appendChild(card);
     card.layoutGrow = 1;
 
@@ -1133,8 +1131,7 @@ function buildShowcaseOrganism(comp, content, atoms) {
   tn.layoutGrow = 1;
   headerRow.appendChild(tn); linkText(tn, tk);
   var viewBtn = findVariant(atoms.Button, "Secondary").createInstance();
-  viewBtn.layoutSizingVertical = "HUG"; viewBtn.layoutSizingHorizontal = "HUG";
-  headerRow.appendChild(viewBtn);
+  headerRow.appendChild(viewBtn); hug(viewBtn);
   comp.appendChild(headerRow);
   // Categories
   var cats = frame("categories", { dir: "HORIZONTAL", g: 8 });
@@ -1187,8 +1184,7 @@ function buildDownloadsOrganism(comp, content, atoms) {
     card.appendChild(txt("dlTitle_" + i, items[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
     card.appendChild(txt("dlDesc_" + i, items[i].description || '', 13, FR, C['text/secondary'], { align: "CENTER" }));
     var btn = findVariant(atoms.Button, "Primary").createInstance();
-    btn.layoutSizingVertical = "HUG"; btn.layoutSizingHorizontal = "HUG";
-    card.appendChild(btn);
+      card.appendChild(btn); hug(btn);
     grid.appendChild(card);
     card.layoutGrow = 1;
 
