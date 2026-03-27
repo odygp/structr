@@ -1,0 +1,126 @@
+// Uses Claude to analyze page content and map to wireframe sections
+import Anthropic from '@anthropic-ai/sdk';
+
+const IMPORT_SYSTEM_PROMPT = `You analyze website page content and convert it into wireframe section definitions.
+
+Given the markdown/text content of a webpage, identify each distinct content section and map it to the closest wireframe variant.
+
+## Available Section Categories and Variants
+
+### Header: header-simple, header-centered, header-with-cta, header-mega
+### Hero: hero-centered, hero-split, hero-with-image, hero-minimal, hero-with-form
+### Logo Cloud: logos-simple, logos-with-title, logos-grid
+### Features: features-grid, features-alternating, features-2column, features-with-image, features-bento, features-icon-list, features-accordion
+### Stats: stats-row, stats-with-description, stats-cards
+### Pricing: pricing-3col, pricing-2col, pricing-simple, pricing-toggle, pricing-comparison
+### Testimonials: testimonials-cards, testimonials-single, testimonials-minimal, testimonials-grid, testimonials-carousel
+### FAQ: faq-accordion, faq-two-column, faq-centered, faq-side-title
+### CTA: cta-centered, cta-banner, cta-with-image, cta-simple, cta-newsletter
+### Blog: blog-grid, blog-list, blog-featured, blog-minimal, blog-with-categories
+### About: about-split, about-centered, about-with-stats, about-timeline
+### Contact: contact-centered, contact-split, contact-with-map, contact-cards, contact-minimal
+### Team: team-grid, team-list, team-compact, team-cards, team-with-bio
+### Footer: footer-4col, footer-simple, footer-centered, footer-minimal, footer-with-newsletter
+### Gallery: gallery-grid, gallery-masonry, gallery-lightbox, gallery-carousel
+### Store: store-grid, store-list, store-with-filters, store-side-filters
+### Showcase: showcase-cards, showcase-with-links
+### Process: process-steps, process-timeline
+### Downloads: downloads-cards, downloads-simple
+### Comparison: comparison-table, comparison-side-by-side
+### Error: error-404, error-simple
+### Banner: banner-top, banner-floating, banner-cookie, banner-minimal
+
+## Content Fields Per Category
+
+- **Header**: logo (string), links (array of {label}), ctaText (string)
+- **Hero**: title, subtitle, ctaText, ctaSecondaryText, showPrimaryButton (bool), showSecondaryButton (bool), showTertiaryButton (false), ctaTertiaryText ("")
+- **Features**: title, subtitle, features (array of {title, description})
+- **Pricing**: title, subtitle, plans (array of {name, price, period, description, features (comma-separated string), ctaText, highlighted (bool)})
+- **Testimonials**: title, testimonials (array of {quote, author, role})
+- **FAQ**: title, subtitle, questions (array of {question, answer})
+- **CTA**: title, subtitle, ctaText, ctaSecondaryText, showPrimaryButton (true), showSecondaryButton (bool), showTertiaryButton (false), ctaTertiaryText ("")
+- **Blog**: title, subtitle, posts (array of {title, excerpt, category, date})
+- **Stats**: title, stats (array of {value, label})
+- **Team**: title, members (array of {name, role})
+- **Contact**: title, subtitle, email, phone, address
+- **About**: title, description, mission
+- **Footer**: logo, description, copyright, columns (array of {title, links (comma-separated)})
+- **Store**: title, products (array of {title, description, price})
+- **Gallery**: title, images (array of {caption})
+- **Process**: title, subtitle, steps (array of {title, description})
+- **Showcase**: title, items (array of {title, description, price})
+- **Downloads**: title, subtitle, items (array of {title, description, ctaText})
+- **Banner**: text, ctaText, dismissible (bool)
+- **Logos**: title, logos (array of {name})
+- **Comparison**: title, items (array of {feature, option1, option2, option3})
+
+## Rules
+1. Extract REAL content from the page — actual titles, descriptions, prices, names, quotes etc. NO placeholder or generic text.
+2. Every page MUST start with a header and end with a footer.
+3. Choose the variant that best matches the visual layout described by the content structure.
+4. If content doesn't clearly map to a category, choose the closest match.
+5. Maximum 15 sections per page.
+6. Keep text concise — truncate descriptions to ~200 chars.
+7. For stats, extract actual numbers if present.
+8. For pricing, extract actual prices, plan names, and features.
+9. For testimonials, extract actual quotes and attribution.
+
+## Response Format
+Return ONLY valid JSON array (no markdown, no explanation):
+[
+  {
+    "category": "header",
+    "variantId": "header-simple",
+    "content": { ... },
+    "colorMode": "light"
+  }
+]`;
+
+interface AnalyzedSection {
+  category: string;
+  variantId: string;
+  content: Record<string, unknown>;
+  colorMode?: string;
+}
+
+export async function analyzePageWithAI(pageContent: string, pageName: string): Promise<AnalyzedSection[]> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
+
+  const client = new Anthropic({ apiKey });
+
+  // Truncate content to avoid token limits (~30k chars ≈ ~8k tokens)
+  const truncated = pageContent.slice(0, 30000);
+
+  const message = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 4096,
+    system: IMPORT_SYSTEM_PROMPT,
+    messages: [{
+      role: 'user',
+      content: `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`,
+    }],
+  });
+
+  // Extract JSON from response
+  const text = message.content[0].type === 'text' ? message.content[0].text : '';
+
+  // Try to parse JSON directly or extract from code block
+  let json = text.trim();
+  const codeBlockMatch = json.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (codeBlockMatch) json = codeBlockMatch[1].trim();
+
+  try {
+    const sections = JSON.parse(json) as AnalyzedSection[];
+    if (!Array.isArray(sections)) throw new Error('Not an array');
+    return sections.map(s => ({
+      category: s.category || 'hero',
+      variantId: s.variantId || 'hero-centered',
+      content: s.content || {},
+      colorMode: s.colorMode || 'light',
+    }));
+  } catch (e) {
+    console.error('Failed to parse AI response:', text.slice(0, 500));
+    throw new Error('AI returned invalid JSON');
+  }
+}

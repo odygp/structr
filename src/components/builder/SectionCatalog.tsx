@@ -106,7 +106,7 @@ export default function SectionCatalog() {
                           e.dataTransfer.setDragImage(ghost, ghost.offsetWidth / 2, ghost.offsetHeight / 2);
                           // Remove after a short delay so browser has time to capture
                           setTimeout(() => ghost.remove(), 100);
-                        }
+                        }}
                         onDragEnd={() => {
                           document.getElementById('structr-drag-ghost')?.remove();
                         }}
