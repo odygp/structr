@@ -12,9 +12,9 @@ import {
   SortableContext, useSortable, verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Clipboard } from 'lucide-react';
+import { GripVertical, Copy, Trash2, ChevronUp, ChevronDown, Clipboard, MessageCircle } from 'lucide-react';
 
-function SortableSection({ section, index, total }: { section: PlacedSection; index: number; total: number }) {
+function SortableSection({ section, index, total, commentCount }: { section: PlacedSection; index: number; total: number; commentCount?: number }) {
   const { selectSection, selectedSectionId, removeSection, duplicateSection, moveSection, copySection } = useBuilderStore();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
 
@@ -69,6 +69,12 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
           <GripVertical className="w-3 h-3 text-gray-500" aria-hidden="true" />
         </button>
         <span className="text-gray-600 font-medium">{def?.categoryLabel} — {section.variantId.split('-').slice(1).join(' ')}</span>
+        {(commentCount || 0) > 0 && (
+          <span className="flex items-center gap-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            <MessageCircle size={9} />
+            {commentCount}
+          </span>
+        )}
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); if (index > 0) moveSection(index, index - 1); }}
@@ -114,12 +120,21 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
   );
 }
 
+interface CommentData {
+  section_index: number;
+  page_index: number;
+  parent_id: string | null;
+  resolved: boolean;
+}
+
 interface CanvasProps {
   liveMessage?: string;
   setLiveMessage?: (msg: string) => void;
+  comments?: CommentData[];
+  activePageIndex?: number;
 }
 
-export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
+export default function Canvas({ liveMessage, setLiveMessage, comments, activePageIndex }: CanvasProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sections = useBuilderStore(s => {
     const proj = s.projects.find(p => p.id === s.activeProjectId);
@@ -196,9 +211,12 @@ export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
           <div className={`${viewportClass} mx-auto bg-white shadow-sm my-4 transition-all @container`}>
-            {sections.map((section, i) => (
-              <SortableSection key={section.id} section={section} index={i} total={sections.length} />
-            ))}
+            {sections.map((section, i) => {
+              const cc = (comments || []).filter(c =>
+                c.section_index === i && c.page_index === (activePageIndex ?? 0) && !c.parent_id && !c.resolved
+              ).length;
+              return <SortableSection key={section.id} section={section} index={i} total={sections.length} commentCount={cc} />;
+            })}
           </div>
         </SortableContext>
       </DndContext>

@@ -55,3 +55,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
+
+// PATCH /api/comments?id=ID&action=resolve
+export async function PATCH(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const action = searchParams.get('action');
+
+    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
+
+    const supabase = await createClient();
+
+    // Auth check — only project owner can resolve
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    if (action === 'resolve') {
+      const { error } = await supabase
+        .from('structr_comments')
+        .update({ resolved: true })
+        .eq('id', id);
+
+      if (error) throw error;
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+  } catch (e) {
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
+}
