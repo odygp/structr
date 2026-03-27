@@ -26,7 +26,7 @@ export default function AboutSplit({ content, colorMode, sectionId }: { content:
             </div>
           )}
         </div>
-        <div className={`${c.bgPlaceholder} rounded-lg w-full h-72`} />
+        <div className={`${c.bgPlaceholder} rounded-lg w-full h-48 @md:h-72`} />
       </div>
     </section>
   );

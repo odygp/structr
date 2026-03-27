@@ -28,7 +28,7 @@ export default function TestimonialsCarousel({ content, colorMode, sectionId }: 
           </button>
 
           {/* Cards */}
-          <div className="flex-1 grid grid-cols-1 ${gridCols} gap-6">
+          <div className={`flex-1 grid grid-cols-1 ${gridCols} gap-6`}>
             {testimonials.slice(0, 3).map((testimonial: any, index: number) => (
               <div
                 key={index}

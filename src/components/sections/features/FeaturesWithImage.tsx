@@ -23,7 +23,7 @@ export default function FeaturesWithImage({ content, colorMode, sectionId }: { c
           </p>
         </div>
         <div className="grid grid-cols-1 @md:grid-cols-2 gap-12 items-center">
-          <div className={`${c.bgPlaceholder} rounded-xl w-full h-80`} />
+          <div className={`${c.bgPlaceholder} rounded-xl w-full h-48 @md:h-80`} />
           <div className="space-y-8">
             {features.map((feature, i) => (
               <div key={i} className="flex gap-4">

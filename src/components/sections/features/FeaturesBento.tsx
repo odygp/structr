@@ -23,7 +23,7 @@ export default function FeaturesBento({ content, colorMode, sectionId }: { conte
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
-        <div className="mt-16 grid grid-cols-1 ${gridCols} gap-6">
+        <div className={`mt-16 grid grid-cols-1 ${gridCols} gap-6`}>
           {features.map((feature, i) => (
             <div
               key={i}

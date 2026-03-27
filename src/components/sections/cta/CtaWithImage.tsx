@@ -36,7 +36,7 @@ export default function CtaWithImage({ content, colorMode, sectionId }: { conten
             </div>
           )}
         </div>
-        <div className={`${c.bgPlaceholder} rounded-xl w-full h-72`} />
+        <div className={`${c.bgPlaceholder} rounded-xl w-full h-48 @md:h-72`} />
       </div>
     </section>
   );

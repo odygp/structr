@@ -11,7 +11,7 @@ export default function HeroMinimal({ content, colorMode, sectionId }: { content
   return (
     <section className={`${c.bgAlt} ${spacing}`}>
       <div className="max-w-3xl mx-auto text-center">
-        <h1 className={`text-6xl font-bold ${c.text} leading-tight`}>
+        <h1 className={`text-3xl @md:text-6xl font-bold ${c.text} leading-tight`}>
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h1>
         {content.showPrimaryButton !== false && content.ctaText && (

@@ -31,7 +31,7 @@ export default function HeroWithImage({ content, colorMode, sectionId }: { conte
             )}
           </div>
         )}
-        <div className={`mt-16 ${c.bgPlaceholder} rounded-xl w-full h-80`} />
+        <div className={`mt-16 ${c.bgPlaceholder} rounded-xl w-full h-48 @md:h-80`} />
       </div>
     </section>
   );

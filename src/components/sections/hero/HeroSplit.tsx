@@ -10,7 +10,7 @@ export default function HeroSplit({ content, colorMode, sectionId }: { content: 
   const id = sectionId || '';
   return (
     <section className={`${c.bg} px-8 py-24`}>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 @lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 @lg:grid-cols-2 gap-8 @lg:gap-16 items-center">
         <div>
           <h1 className={`text-3xl @md:text-5xl font-bold ${c.text} leading-tight`}>
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />

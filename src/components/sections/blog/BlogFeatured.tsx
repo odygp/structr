@@ -31,7 +31,7 @@ export default function BlogFeatured({ content, colorMode, sectionId }: { conten
 
         {featured && (
           <div className={`mb-10 border ${c.border} rounded-xl overflow-hidden`}>
-            <div className={`w-full h-72 ${c.bgPlaceholder}`} />
+            <div className={`w-full h-48 @md:h-72 ${c.bgPlaceholder}`} />
             <div className="p-8">
               <h3 className={`text-2xl font-bold ${c.text} mb-3`}>{featured.title}</h3>
               <p className={`${c.textSecondary} mb-4 line-clamp-3`}>{featured.excerpt}</p>

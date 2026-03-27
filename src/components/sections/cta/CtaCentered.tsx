@@ -12,23 +12,23 @@ export default function CtaCentered({ content, colorMode, sectionId }: { content
   return (
     <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-2xl @md:text-3xl font-bold ${c.text} mb-4">
+        <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
           <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Ready to get started?" />
         </h2>
         {content.subtitle && (
-          <p className="text-lg ${c.textSecondary} mb-8">
+          <p className={`text-lg ${c.textSecondary} mb-8`}>
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         )}
         {(content.showPrimaryButton || content.showSecondaryButton) && (
           <div className="flex flex-col @sm:flex-row items-center justify-center gap-4">
             {content.showPrimaryButton !== false && content.ctaText && (
-              <button className="${c.btnPrimary} font-semibold rounded-lg px-6 py-3">
+              <button className={`${c.btnPrimary} font-semibold rounded-lg px-6 py-3`}>
                 <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" />
               </button>
             )}
             {content.showSecondaryButton && content.ctaSecondaryText && (
-              <button className="${c.btnSecondary} font-semibold rounded-lg px-6 py-3">
+              <button className={`${c.btnSecondary} font-semibold rounded-lg px-6 py-3`}>
                 <EditableText sectionId={id} fieldKey="ctaSecondaryText" value={content.ctaSecondaryText as string} placeholder="Secondary" />
               </button>
             )}

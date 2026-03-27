@@ -9,7 +9,7 @@ export default function HeroWithForm({ content, colorMode, sectionId }: { conten
   const spacing = getSpacingClasses(content._spacing as string, 'hero');
   const id = sectionId || '';
   return (
-    <section className={`${c.bgAlt} px-8 py-24`}>
+    <section className={`${c.bgAlt} ${spacing}`}>
       <div className="max-w-3xl mx-auto text-center">
         <h1 className={`text-3xl @md:text-5xl font-bold ${c.text} leading-tight`}>
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
@@ -17,7 +17,7 @@ export default function HeroWithForm({ content, colorMode, sectionId }: { conten
         <p className={`mt-4 @md:mt-6 text-lg @md:text-xl ${c.textSecondary} leading-relaxed`}>
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
-        <div className="mt-10 flex items-center justify-center gap-3 max-w-md mx-auto">
+        <div className="mt-10 flex flex-col @sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
           <input
             type="email"
             placeholder="Enter your email"
