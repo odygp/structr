@@ -18,7 +18,7 @@ export default function TeamCompact({ content, colorMode, sectionId }: { content
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'Our Team'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Our Team" />
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary}`}>

@@ -15,7 +15,7 @@ export default function ContactSplit({ content, colorMode, sectionId }: { conten
       <div className="max-w-5xl mx-auto grid grid-cols-1 @md:grid-cols-2 gap-12">
         <div>
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {content.title || 'Contact Us'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Contact Us" />
           </h2>
           {content.subtitle && (
             <p className={`${c.textSecondary} mb-8`}>

@@ -12,7 +12,7 @@ export default function HeaderWithCTA({ content, colorMode, sectionId }: { conte
   return (
     <header className={`${c.bg} border-b ${c.border} ${spacing}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className={`text-xl font-bold ${c.text}`}>{content.logo as string}</div>
+        <div className={`text-xl font-bold ${c.text}`}><EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Logo" /></div>
         <nav className="hidden @md:flex items-center gap-8">
           {links.map((link, i) => (
             <span key={i} className={`text-sm ${c.textSecondary} cursor-default`}>{link.label}</span>

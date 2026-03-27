@@ -20,7 +20,7 @@ export default function ShowcaseWithLinks({ content, colorMode, sectionId }: { c
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           <button className={`${c.btnPrimary} px-5 py-2.5 rounded-lg text-sm font-medium`}>
-            {content.ctaText as string || 'View All'}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="View All" />
           </button>
         </div>
 
@@ -55,7 +55,7 @@ export default function ShowcaseWithLinks({ content, colorMode, sectionId }: { c
                 </p>
               </div>
               <button className={`mt-6 ${c.btnPrimary} px-5 py-2.5 rounded-lg text-sm font-medium w-fit`}>
-                {content.ctaText as string || 'Explore'}
+                <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Explore" />
               </button>
             </div>
 

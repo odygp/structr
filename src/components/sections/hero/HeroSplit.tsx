@@ -22,12 +22,12 @@ export default function HeroSplit({ content, colorMode, sectionId }: { content: 
             <div className="mt-10 flex flex-col @sm:flex-row items-center gap-3 @sm:gap-4">
               {content.showPrimaryButton !== false && content.ctaText && (
                 <button className={`${c.btnPrimary} rounded-lg px-6 py-3 text-sm font-medium`}>
-                  {content.ctaText as string}
+                  <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" />
                 </button>
               )}
               {content.showSecondaryButton && content.ctaSecondaryText && (
                 <button className={`${c.btnSecondary} rounded-lg px-6 py-3 text-sm font-medium`}>
-                  {content.ctaSecondaryText as string}
+                  <EditableText sectionId={id} fieldKey="ctaSecondaryText" value={content.ctaSecondaryText as string} placeholder="Secondary" />
                 </button>
               )}
             </div>

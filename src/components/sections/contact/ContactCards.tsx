@@ -15,7 +15,7 @@ export default function ContactCards({ content, colorMode, sectionId }: { conten
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'Contact Us'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Contact Us" />
           </h2>
           {content.subtitle && (
             <p className={c.textSecondary}>

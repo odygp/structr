@@ -15,7 +15,7 @@ export default function FaqTwoColumn({ content, colorMode, sectionId }: { conten
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {content.title || 'Frequently Asked Questions'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Frequently Asked Questions" />
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary}`}>

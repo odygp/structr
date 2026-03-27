@@ -20,7 +20,7 @@ export default function Footer4Col({ content, colorMode, sectionId }: { content:
             <EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Add logo..." />
             </div>
             {content.description && (
-              <p className="text-gray-400 text-sm">{content.description}</p>
+              <p className="text-gray-400 text-sm"><EditableText sectionId={id} fieldKey="description" value={content.description as string} placeholder="Add description..." /></p>
             )}
           </div>
           {(columns as Array<{ title: string; links: string }>).map((col, index) => (

@@ -18,11 +18,11 @@ export default function AboutSplit({ content, colorMode, sectionId }: { content:
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           {content.description && (
-            <p className={`${c.textSecondary} mb-6`}>{content.description}</p>
+            <p className={`${c.textSecondary} mb-6`}><EditableText sectionId={id} fieldKey="description" value={content.description as string} placeholder="Add description..." /></p>
           )}
           {content.mission && (
             <div className={`border-l-4 ${c.border} pl-4`}>
-              <p className={`${c.textSecondary} italic`}>{content.mission}</p>
+              <p className={`${c.textSecondary} italic`}><EditableText sectionId={id} fieldKey="mission" value={content.mission as string} placeholder="Add mission..." /></p>
             </div>
           )}
         </div>

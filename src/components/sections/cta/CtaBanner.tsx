@@ -14,7 +14,7 @@ export default function CtaBanner({ content, colorMode, sectionId }: { content: 
       <div className="max-w-5xl mx-auto flex flex-col @md:flex-row items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">
-            {content.title || 'Ready to get started?'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Ready to get started?" />
           </h2>
           {content.subtitle && (
             <p className="text-gray-300">
@@ -24,7 +24,7 @@ export default function CtaBanner({ content, colorMode, sectionId }: { content: 
         </div>
         {content.showPrimaryButton !== false && content.ctaText && (
           <button className="bg-white text-gray-900 font-semibold rounded-lg px-6 py-3 whitespace-nowrap">
-            {content.ctaText}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" />
           </button>
         )}
       </div>

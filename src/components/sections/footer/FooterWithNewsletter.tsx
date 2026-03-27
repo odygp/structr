@@ -21,7 +21,7 @@ export default function FooterWithNewsletter({ content, colorMode, sectionId }: 
             <EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Add logo..." />
             </div>
             {content.description && (
-              <p className="text-gray-400 text-sm mb-5 leading-relaxed">{content.description}</p>
+              <p className="text-gray-400 text-sm mb-5 leading-relaxed"><EditableText sectionId={id} fieldKey="description" value={content.description as string} placeholder="Add description..." /></p>
             )}
             <div className="flex gap-2">
               <input

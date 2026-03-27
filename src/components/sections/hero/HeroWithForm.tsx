@@ -24,7 +24,7 @@ export default function HeroWithForm({ content, colorMode, sectionId }: { conten
             className={`flex-1 rounded-lg border px-4 py-3 text-sm ${c.input}`}
           />
           <button className={`${c.btnPrimary} rounded-lg px-6 py-3 text-sm font-medium whitespace-nowrap`}>
-            {content.ctaText as string}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" />
           </button>
         </div>
       </div>

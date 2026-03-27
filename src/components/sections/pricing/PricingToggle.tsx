@@ -17,7 +17,7 @@ export default function PricingToggle({ content, colorMode, sectionId }: { conte
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'Pricing Plans'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Pricing Plans" />
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary} max-w-2xl mx-auto mb-8`}>

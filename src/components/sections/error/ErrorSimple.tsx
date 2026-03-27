@@ -19,7 +19,7 @@ export default function ErrorSimple({ content, colorMode, sectionId }: { content
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         <button className={`mt-6 ${c.btnPrimary} px-6 py-3 rounded-lg text-sm font-medium`}>
-          {content.ctaText as string || 'Go Back'}
+          <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Go Back" />
         </button>
       </div>
     </section>

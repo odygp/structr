@@ -26,7 +26,7 @@ export default function PricingComparison({ content, colorMode, sectionId }: { c
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {content.title || 'Compare Plans'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Compare Plans" />
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary} max-w-2xl mx-auto`}>

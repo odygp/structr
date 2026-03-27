@@ -18,10 +18,10 @@ export default function AboutWithStats({ content, colorMode, sectionId }: { cont
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           {content.description && (
-            <p className={`${c.textSecondary} mb-6`}>{content.description as string}</p>
+            <p className={`${c.textSecondary} mb-6`}><EditableText sectionId={id} fieldKey="description" value={content.description as string} placeholder="Add description..." /></p>
           )}
           {content.mission && (
-            <p className={`${c.textSecondary} italic`}>{content.mission as string}</p>
+            <p className={`${c.textSecondary} italic`}><EditableText sectionId={id} fieldKey="mission" value={content.mission as string} placeholder="Add mission..." /></p>
           )}
         </div>
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-8">

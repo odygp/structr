@@ -12,7 +12,7 @@ export default function HeaderCentered({ content, colorMode, sectionId }: { cont
   return (
     <header className={`${c.bg} border-b ${c.border} px-8 py-5`}>
       <div className="max-w-7xl mx-auto flex flex-col items-center gap-4">
-        <div className={`text-xl font-bold ${c.text}`}>{content.logo as string}</div>
+        <div className={`text-xl font-bold ${c.text}`}><EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Logo" /></div>
         <nav className="flex items-center gap-8">
           {links.map((link, i) => (
             <span key={i} className={`text-sm ${c.textSecondary} cursor-default`}>{link.label}</span>

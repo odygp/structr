@@ -17,7 +17,7 @@ export default function GalleryLightbox({ content, colorMode, sectionId }: { con
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h2 className={`text-2xl font-bold ${c.text}`}>
-            {(content.title as string) || 'Gallery'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Gallery" />
           </h2>
           {content.subtitle && (
             <p className={`mt-2 ${c.textSecondary}`}>

@@ -25,7 +25,7 @@ export default function StoreSideFilters({ content, colorMode, sectionId }: { co
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>{content.title || 'Products'}</h2>
+          <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}><EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Products" /></h2>
           {content.subtitle && <p className={`mt-2 ${c.textSecondary}`}>
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>}

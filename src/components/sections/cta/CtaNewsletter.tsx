@@ -13,7 +13,7 @@ export default function CtaNewsletter({ content, colorMode, sectionId }: { conte
     <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-2xl mx-auto text-center">
         <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-          {content.title || 'Subscribe to our newsletter'}
+          <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Subscribe to our newsletter" />
         </h2>
         {content.subtitle && (
           <p className={`text-lg ${c.textSecondary} mb-8`}>
@@ -27,7 +27,7 @@ export default function CtaNewsletter({ content, colorMode, sectionId }: { conte
             className={`flex-1 rounded-lg border px-4 py-3 text-sm ${c.input}`}
           />
           <button className={`${c.btnPrimary} rounded-lg px-6 py-3 text-sm font-medium whitespace-nowrap`}>
-            {content.ctaText || 'Subscribe'}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Subscribe" />
           </button>
         </div>
       </div>

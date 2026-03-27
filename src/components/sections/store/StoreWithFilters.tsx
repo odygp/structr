@@ -20,14 +20,14 @@ export default function StoreWithFilters({ content, colorMode, sectionId }: { co
         {/* Header */}
         <div className="flex flex-col @md:flex-row @md:items-end @md:justify-between gap-4 mb-8">
           <div>
-            <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>{content.title || 'Products'}</h2>
+            <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}><EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Products" /></h2>
             {content.subtitle && <p className={`mt-2 ${c.textSecondary}`}>
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>}
           </div>
           {content.ctaText && (
             <button className={`${c.btnPrimary} rounded-lg px-5 py-2.5 text-sm font-medium self-start @md:self-auto`}>
-              {content.ctaText}
+              <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="View All" />
             </button>
           )}
         </div>

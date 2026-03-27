@@ -15,7 +15,7 @@ export default function FaqSideTitle({ content, colorMode, sectionId }: { conten
       <div className="max-w-6xl mx-auto grid grid-cols-1 @md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'Frequently Asked Questions'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="FAQ" />
           </h2>
           {content.subtitle && (
             <p className={c.textSecondary}>

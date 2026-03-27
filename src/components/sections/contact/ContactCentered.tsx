@@ -14,7 +14,7 @@ export default function ContactCentered({ content, colorMode, sectionId }: { con
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-2xl mx-auto text-center">
         <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-          {content.title || 'Contact Us'}
+          <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Contact Us" />
         </h2>
         {content.subtitle && (
           <p className={`${c.textSecondary} mb-8`}>

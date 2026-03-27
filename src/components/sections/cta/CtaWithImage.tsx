@@ -14,7 +14,7 @@ export default function CtaWithImage({ content, colorMode, sectionId }: { conten
       <div className="max-w-6xl mx-auto grid grid-cols-1 @md:grid-cols-2 gap-12 items-center">
         <div>
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'Ready to get started?'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Ready to get started?" />
           </h2>
           {content.subtitle && (
             <p className={`text-lg ${c.textSecondary} mb-8`}>
@@ -25,12 +25,12 @@ export default function CtaWithImage({ content, colorMode, sectionId }: { conten
             <div className="flex flex-col @sm:flex-row items-center gap-3 @sm:gap-4">
               {content.showPrimaryButton !== false && content.ctaText && (
                 <button className={`${c.btnPrimary} font-medium rounded-lg px-6 py-3`}>
-                  {content.ctaText as string}
+                  <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" />
                 </button>
               )}
               {content.showSecondaryButton && content.ctaSecondaryText && (
                 <button className={`border ${c.border} ${c.textSecondary} font-medium rounded-lg px-6 py-3`}>
-                  {content.ctaSecondaryText as string}
+                  <EditableText sectionId={id} fieldKey="ctaSecondaryText" value={content.ctaSecondaryText as string} placeholder="Secondary" />
                 </button>
               )}
             </div>

@@ -14,7 +14,7 @@ export default function ContactMinimal({ content, colorMode, sectionId }: { cont
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-4xl mx-auto text-center">
         <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-          {(content.title as string) || 'Contact Us'}
+          <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Contact Us" />
         </h2>
         {content.subtitle && (
           <p className={`${c.textSecondary} mb-12`}>

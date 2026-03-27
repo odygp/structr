@@ -17,7 +17,7 @@ export default function HeroMinimal({ content, colorMode, sectionId }: { content
         {content.showPrimaryButton !== false && content.ctaText && (
           <div className="mt-12">
             <button className={`${c.btnPrimary} rounded-lg px-8 py-4 text-base font-medium`}>
-              {content.ctaText as string}
+              <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" />
             </button>
           </div>
         )}
