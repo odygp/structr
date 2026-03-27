@@ -146,6 +146,7 @@ function createAtoms(page) {
   var btnPrimary = figma.createComponent();
   btnPrimary.name = "Style=Primary";
   btnPrimary.layoutMode = "HORIZONTAL";
+  btnPrimary.primaryAxisSizingMode = "AUTO"; btnPrimary.counterAxisSizingMode = "AUTO";
   btnPrimary.paddingLeft = 24; btnPrimary.paddingRight = 24;
   btnPrimary.paddingTop = 12; btnPrimary.paddingBottom = 12;
   btnPrimary.cornerRadius = 8;
@@ -161,6 +162,7 @@ function createAtoms(page) {
   var btnSecondary = figma.createComponent();
   btnSecondary.name = "Style=Secondary";
   btnSecondary.layoutMode = "HORIZONTAL";
+  btnSecondary.primaryAxisSizingMode = "AUTO"; btnSecondary.counterAxisSizingMode = "AUTO";
   btnSecondary.paddingLeft = 24; btnSecondary.paddingRight = 24;
   btnSecondary.paddingTop = 12; btnSecondary.paddingBottom = 12;
   btnSecondary.cornerRadius = 8;
@@ -178,6 +180,7 @@ function createAtoms(page) {
   var btnTertiary = figma.createComponent();
   btnTertiary.name = "Style=Tertiary";
   btnTertiary.layoutMode = "HORIZONTAL";
+  btnTertiary.primaryAxisSizingMode = "AUTO"; btnTertiary.counterAxisSizingMode = "AUTO";
   btnTertiary.paddingLeft = 4; btnTertiary.paddingRight = 4;
   btnTertiary.paddingTop = 12; btnTertiary.paddingBottom = 12;
   btnTertiary.counterAxisAlignItems = "CENTER";
@@ -197,6 +200,7 @@ function createAtoms(page) {
   var avatar = figma.createComponent();
   avatar.name = "Avatar";
   avatar.layoutMode = "HORIZONTAL";
+  avatar.primaryAxisSizingMode = "AUTO"; avatar.counterAxisSizingMode = "AUTO";
   avatar.counterAxisAlignItems = "CENTER";
   avatar.primaryAxisAlignItems = "CENTER";
   
@@ -229,6 +233,7 @@ function createAtoms(page) {
   var badge = figma.createComponent();
   badge.name = "Badge";
   badge.layoutMode = "HORIZONTAL";
+  badge.primaryAxisSizingMode = "AUTO"; badge.counterAxisSizingMode = "AUTO";
   badge.paddingLeft = 8; badge.paddingRight = 8;
   badge.paddingTop = 4; badge.paddingBottom = 4;
   badge.cornerRadius = 4;
@@ -289,7 +294,7 @@ function createMolecules(page, atoms) {
   testCard.appendChild(tcQuote); linkText(tcQuote, tcQk);
 
   var tcAuth = frame("author", { dir: "HORIZONTAL", g: 10, ca: "CENTER" });
-  var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.name = "avatar";
+  var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.layoutSizingVertical = "HUG"; tcAvatar.layoutSizingHorizontal = "HUG"; tcAvatar.name = "avatar";
   tcAuth.appendChild(tcAvatar);
   var tcInfo = frame("info", { dir: "VERTICAL", g: 2 });
   var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Doe");
@@ -309,7 +314,7 @@ function createMolecules(page, atoms) {
   statItem.name = "Stat Item";
   statItem.layoutMode = "VERTICAL";
   statItem.itemSpacing = 4; statItem.counterAxisAlignItems = "CENTER";
-  statItem.primaryAxisSizingMode = "AUTO";
+  statItem.primaryAxisSizingMode = "AUTO"; statItem.counterAxisSizingMode = "AUTO";
 
   var siVk = statItem.addComponentProperty("Value", "TEXT", "10K+");
   var siValue = txt("value", "10K+", 36, FB, C['text/primary'], { align: "CENTER" });
@@ -324,6 +329,7 @@ function createMolecules(page, atoms) {
   var navLink = figma.createComponent();
   navLink.name = "Nav Link";
   navLink.layoutMode = "HORIZONTAL";
+  navLink.primaryAxisSizingMode = "AUTO"; navLink.counterAxisSizingMode = "AUTO";
   navLink.counterAxisAlignItems = "CENTER";
   var nlk = navLink.addComponentProperty("Label", "TEXT", "Link");
   var nlLabel = txt("label", "Link", 13, FR, C['text/secondary']);
@@ -373,7 +379,9 @@ var VARIANT_SPECIFIC = {
     textCol.appendChild(sn); linkText(sn, sk);
     var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
     var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn"; btns.appendChild(pb);
+    pb.layoutSizingVertical = "HUG"; pb.layoutSizingHorizontal = "HUG";
     var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn"; btns.appendChild(sb);
+    sb.layoutSizingVertical = "HUG"; sb.layoutSizingHorizontal = "HUG";
     textCol.appendChild(btns);
     comp.appendChild(textCol);
     var img = atoms.ImagePlaceholder.createInstance(); img.name = "image"; img.resize(520, 400);
@@ -389,6 +397,7 @@ var VARIANT_SPECIFIC = {
     var tn = txt("title", content.title || "Build something amazing", 56, FB, C['text/primary'], { w: 800, align: "CENTER" });
     comp.appendChild(tn); linkText(tn, tk);
     var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
+    pb.layoutSizingVertical = "HUG"; pb.layoutSizingHorizontal = "HUG";
     comp.appendChild(pb);
   },
   'hero-with-image': function(comp, content, atoms) {
@@ -404,8 +413,8 @@ var VARIANT_SPECIFIC = {
     var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
     comp.appendChild(sn); linkText(sn, sk);
     var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
-    btns.appendChild(findVariant(atoms.Button, "Primary").createInstance());
-    btns.appendChild(findVariant(atoms.Button, "Secondary").createInstance());
+    var hiBtnP = findVariant(atoms.Button, "Primary").createInstance(); hiBtnP.layoutSizingVertical = "HUG"; hiBtnP.layoutSizingHorizontal = "HUG"; btns.appendChild(hiBtnP);
+    var hiBtnS = findVariant(atoms.Button, "Secondary").createInstance(); hiBtnS.layoutSizingVertical = "HUG"; hiBtnS.layoutSizingHorizontal = "HUG"; btns.appendChild(hiBtnS);
     comp.appendChild(btns);
     var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage"; img.resize(1100, 500);
     comp.appendChild(img);
@@ -428,6 +437,7 @@ var VARIANT_SPECIFIC = {
     input.appendChild(txt("placeholder", "Enter your email", 14, FR, C['text/muted']));
     formRow.appendChild(input);
     var btn = findVariant(atoms.Button, "Primary").createInstance(); btn.name = "submitBtn";
+    btn.layoutSizingVertical = "HUG"; btn.layoutSizingHorizontal = "HUG";
     formRow.appendChild(btn);
     comp.appendChild(formRow);
   },
@@ -450,6 +460,8 @@ var VARIANT_SPECIFIC = {
       textBlock.appendChild(txt("featDesc_" + i, features[i].description || '', 15, FR, C['text/secondary'], { w: 480 }));
       var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 350);
       if (i % 2 === 0) { row.appendChild(textBlock); row.appendChild(img); }
+      textBlock.layoutGrow = 1;
+
       else { row.appendChild(img); row.appendChild(textBlock); }
       comp.appendChild(row);
     }
@@ -499,6 +511,8 @@ var VARIANT_SPECIFIC = {
       card.appendChild(txt("bentoTitle_" + i, features[i].title || '', 16, FS, C['text/primary']));
       card.appendChild(txt("bentoDesc_" + i, features[i].description || '', 14, FR, C['text/secondary'], { w: w - 64 }));
       grid.appendChild(card);
+      card.layoutGrow = 1;
+
     }
     comp.appendChild(grid);
   },
@@ -551,7 +565,7 @@ function buildHeaderOrganism(comp, content, atoms, molecules) {
   }
   nav.layoutGrow = 1; comp.appendChild(nav);
 
-  var ctaBtn = atoms.Button.defaultVariant.createInstance();
+  var ctaBtn = atoms.Button.defaultVariant.createInstance(); ctaBtn.layoutSizingVertical = "HUG"; ctaBtn.layoutSizingHorizontal = "HUG";
   ctaBtn.name = "cta";
   try { var props = ctaBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) ctaBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch(e) {}
   comp.appendChild(ctaBtn);
@@ -577,12 +591,14 @@ function buildHeroOrganism(comp, content, atoms, molecules) {
   var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
   var showPk = comp.addComponentProperty("Show Primary", "BOOLEAN", true);
   var primaryBtn = findVariant(atoms.Button, "Primary").createInstance();
+  primaryBtn.layoutSizingVertical = "HUG"; primaryBtn.layoutSizingHorizontal = "HUG";
   primaryBtn.name = "primaryBtn";
   try { var props = primaryBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) primaryBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch(e) {}
   btns.appendChild(primaryBtn);
 
   var showSk = comp.addComponentProperty("Show Secondary", "BOOLEAN", true);
   var secondaryBtn = findVariant(atoms.Button, "Secondary").createInstance();
+  secondaryBtn.layoutSizingVertical = "HUG"; secondaryBtn.layoutSizingHorizontal = "HUG";
   secondaryBtn.name = "secondaryBtn";
   try { var props = secondaryBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) secondaryBtn.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch(e) {}
   btns.appendChild(secondaryBtn);
@@ -623,6 +639,8 @@ function buildFeaturesOrganism(comp, content, atoms, molecules) {
       }
     } catch(e) {}
     grid.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -652,6 +670,8 @@ function buildStatsOrganism(comp, content, atoms, molecules) {
       }
     } catch(e) {}
     row.appendChild(item);
+    item.layoutGrow = 1;
+
   }
   comp.appendChild(row);
 }
@@ -682,6 +702,8 @@ function buildTestimonialsOrganism(comp, content, atoms, molecules) {
       }
     } catch(e) {}
     cards.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(cards);
 }
@@ -791,6 +813,8 @@ function buildLogosOrganism(comp, content, atoms) {
   var row = frame("logos", { dir: "HORIZONTAL", g: 40, ca: "CENTER" });
   var logos = Array.isArray(content.logos) ? content.logos : [{},{},{},{},{}];
   for (var i = 0; i < logos.length; i++) { var r = rect(80, 32, C['placeholder/default'], 6); r.name = "logo_" + i; row.appendChild(r); }
+  r.layoutGrow = 1;
+
   comp.appendChild(row);
 }
 
@@ -813,6 +837,8 @@ function buildBlogOrganism(comp, content, atoms, molecules) {
     card.appendChild(txt("postTitle_" + i, posts[i].title || '', 15, FS, C['text/primary']));
     card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 260 }));
     grid.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -831,11 +857,13 @@ function buildTeamOrganism(comp, content, atoms) {
   var members = Array.isArray(content.members) ? content.members : [{ name: 'Jane', role: 'CEO' }, { name: 'John', role: 'CTO' }];
   for (var i = 0; i < members.length; i++) {
     var member = frame("member_" + i, { dir: "VERTICAL", g: 8, ca: "CENTER" });
-    var av = atoms.Avatar.createInstance(); av.name = "avatar_" + i;
+    var av = atoms.Avatar.createInstance(); av.layoutSizingVertical = "HUG"; av.layoutSizingHorizontal = "HUG"; av.name = "avatar_" + i;
     av.resize(80, 80); member.appendChild(av);
     member.appendChild(txt("memberName_" + i, members[i].name || '', 14, FM, C['text/primary'], { align: "CENTER" }));
     member.appendChild(txt("memberRole_" + i, members[i].role || '', 12, FR, C['text/secondary'], { align: "CENTER" }));
     grid.appendChild(member);
+    member.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -929,6 +957,8 @@ function buildProcessOrganism(comp, content) {
     step.appendChild(txt("stepTitle_" + i, steps[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
     step.appendChild(txt("stepDesc_" + i, steps[i].description || '', 13, FR, C['text/secondary'], { w: 200, align: "CENTER" }));
     grid.appendChild(step);
+    step.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -975,6 +1005,8 @@ function buildStoreOrganism(comp, content, atoms) {
     info.appendChild(txt("productPrice_" + i, products[i].price || '', 16, FB, C['text/primary']));
     card.appendChild(info);
     grid.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -1011,9 +1043,12 @@ function buildPricingOrganism(comp, content, atoms) {
       card.appendChild(txt("planFeat_" + i + "_" + j, "✓  " + feats[j].trim(), 13, FR, hl ? C['text/on-dark'] : C['text/secondary']));
     }
     var btn = findVariant(atoms.Button, hl ? "Secondary" : "Primary").createInstance();
+    btn.layoutSizingVertical = "HUG"; btn.layoutSizingHorizontal = "HUG";
     btn.name = "planCta_" + i;
     card.appendChild(btn);
     grid.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -1036,6 +1071,8 @@ function buildGalleryOrganism(comp, content, atoms) {
     item.appendChild(rect(400, 260, C['placeholder/default'], 12));
     item.appendChild(txt("caption_" + i, images[i].caption || '', 13, FR, C['text/muted']));
     grid.appendChild(item);
+    item.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -1087,6 +1124,7 @@ function buildShowcaseOrganism(comp, content, atoms) {
   tn.layoutGrow = 1;
   headerRow.appendChild(tn); linkText(tn, tk);
   var viewBtn = findVariant(atoms.Button, "Secondary").createInstance();
+  viewBtn.layoutSizingVertical = "HUG"; viewBtn.layoutSizingHorizontal = "HUG";
   headerRow.appendChild(viewBtn);
   comp.appendChild(headerRow);
   // Categories
@@ -1110,6 +1148,8 @@ function buildShowcaseOrganism(comp, content, atoms) {
     info.appendChild(txt("itemDesc_" + i, items[i].description || '', 13, FR, C['text/secondary']));
     card.appendChild(info);
     grid.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
@@ -1136,8 +1176,11 @@ function buildDownloadsOrganism(comp, content, atoms) {
     card.appendChild(txt("dlTitle_" + i, items[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
     card.appendChild(txt("dlDesc_" + i, items[i].description || '', 13, FR, C['text/secondary'], { align: "CENTER" }));
     var btn = findVariant(atoms.Button, "Primary").createInstance();
+    btn.layoutSizingVertical = "HUG"; btn.layoutSizingHorizontal = "HUG";
     card.appendChild(btn);
     grid.appendChild(card);
+    card.layoutGrow = 1;
+
   }
   comp.appendChild(grid);
 }
