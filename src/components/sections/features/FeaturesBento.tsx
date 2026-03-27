@@ -13,7 +13,7 @@ export default function FeaturesBento({ content, colorMode, sectionId }: { conte
   const features = (content.features as Array<{ title: string; description: string }>) || [];
 
   return (
-    <section className={`${c.bg} px-8 py-24`}>
+    <section className={`${c.bg} ${spacing}`}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
@@ -23,7 +23,7 @@ export default function FeaturesBento({ content, colorMode, sectionId }: { conte
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
-        <div className="mt-16 grid grid-cols-1 @md:grid-cols-3 gap-6">
+        <div className="mt-16 grid grid-cols-1 ${gridCols} gap-6">
           {features.map((feature, i) => (
             <div
               key={i}

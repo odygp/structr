@@ -18,14 +18,18 @@ export default function BuilderLayout() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isEditing = target instanceof HTMLInputElement
+        || target instanceof HTMLTextAreaElement
+        || target?.isContentEditable;
       const meta = e.metaKey || e.ctrlKey;
-      if (meta && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
-      if (meta && e.key === 'z' && e.shiftKey) { e.preventDefault(); redo(); }
-      if (meta && e.key === 'd') { e.preventDefault(); if (selectedSectionId) duplicateSection(selectedSectionId); }
-      if (meta && e.key === 'c') { if (selectedSectionId) copySection(selectedSectionId); }
-      if (meta && e.key === 'v') { pasteSection(); }
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectedSectionId && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+      if (meta && e.key === 'z' && !e.shiftKey && !isEditing) { e.preventDefault(); undo(); }
+      if (meta && e.key === 'z' && e.shiftKey && !isEditing) { e.preventDefault(); redo(); }
+      if (meta && e.key === 'd' && !isEditing) { e.preventDefault(); if (selectedSectionId) duplicateSection(selectedSectionId); }
+      if (meta && e.key === 'c' && !isEditing) { if (selectedSectionId) copySection(selectedSectionId); }
+      if (meta && e.key === 'v' && !isEditing) { pasteSection(); }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && !isEditing) {
+        if (selectedSectionId) {
           e.preventDefault(); removeSection(selectedSectionId);
         }
       }

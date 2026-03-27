@@ -10,7 +10,7 @@ export default function CtaNewsletter({ content, colorMode, sectionId }: { conte
   const id = sectionId || '';
 
   return (
-    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
+    <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-2xl mx-auto text-center">
         <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
           {content.title || 'Subscribe to our newsletter'}

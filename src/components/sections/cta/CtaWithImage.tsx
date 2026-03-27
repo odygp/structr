@@ -10,7 +10,7 @@ export default function CtaWithImage({ content, colorMode, sectionId }: { conten
   const id = sectionId || '';
 
   return (
-    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bgAlt}`}>
+    <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-6xl mx-auto grid grid-cols-1 @md:grid-cols-2 gap-12 items-center">
         <div>
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>

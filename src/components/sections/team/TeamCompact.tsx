@@ -14,7 +14,7 @@ export default function TeamCompact({ content, colorMode, sectionId }: { content
   const members = (content.members as Array<{ name: string; role: string }>) || [];
 
   return (
-    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
+    <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>

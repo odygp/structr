@@ -10,7 +10,7 @@ export default function CtaBanner({ content, colorMode, sectionId }: { content: 
   const id = sectionId || '';
 
   return (
-    <section className={`py-8 @md:py-12 px-4 @md:px-6 ${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'}`}>
+    <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-5xl mx-auto flex flex-col @md:flex-row items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">

@@ -10,7 +10,7 @@ export default function HeaderWithCTA({ content, colorMode, sectionId }: { conte
   const id = sectionId || '';
   const links = (content.links as Array<{ label: string }>) || [];
   return (
-    <header className={`${c.bg} border-b ${c.border} px-8 py-4`}>
+    <header className={`${c.bg} border-b ${c.border} ${spacing}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className={`text-xl font-bold ${c.text}`}>{content.logo as string}</div>
         <nav className="hidden @md:flex items-center gap-8">

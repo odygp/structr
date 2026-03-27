@@ -23,7 +23,7 @@ export default function StoreGrid({ content, colorMode, sectionId }: { content: 
             <EditableText sectionId={id} fieldKey="subtitle" value={content.subtitle as string} placeholder="Add subtitle..." />
           </p>
         </div>
-        <div className="mt-12 grid grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 gap-6">
+        <div className="mt-12 grid grid-cols-1 ${gridCols} gap-6">
           {products.map((product, i) => (
             <div key={i} className={`${c.bgAlt} rounded-xl overflow-hidden`}>
               {/* Image placeholder */}

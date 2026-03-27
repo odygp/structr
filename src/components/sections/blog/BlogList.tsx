@@ -12,7 +12,7 @@ export default function BlogList({ content, colorMode, sectionId }: { content: R
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
 
   return (
-    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
+    <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <div className="mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>

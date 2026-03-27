@@ -11,7 +11,7 @@ export default function ContactWithMap({ content, colorMode, sectionId }: { cont
   const id = sectionId || '';
 
   return (
-    <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
+    <section className={`${spacing} ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-3`}>
@@ -32,19 +32,19 @@ export default function ContactWithMap({ content, colorMode, sectionId }: { cont
                 type="text"
                 placeholder="Your Name"
                 className={`w-full border rounded-lg px-4 py-3 ${c.input}`}
-                readOnly
+                disabled
               />
               <input
                 type="email"
                 placeholder="Your Email"
                 className={`w-full border rounded-lg px-4 py-3 ${c.input}`}
-                readOnly
+                disabled
               />
               <textarea
                 placeholder="Your Message"
                 rows={5}
                 className={`w-full border rounded-lg px-4 py-3 ${c.input} resize-none`}
-                readOnly
+                disabled
               />
               <button className={`${c.btnPrimary} font-semibold rounded-lg px-6 py-3 w-full`}>
                 Send Message

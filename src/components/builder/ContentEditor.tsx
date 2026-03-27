@@ -142,7 +142,7 @@ function FieldEditor({
   return null;
 }
 
-const gridCategories = ['features', 'pricing', 'team', 'stats', 'gallery', 'blog'];
+const gridCategories = ['features', 'pricing', 'team', 'stats', 'gallery', 'blog', 'store', 'showcase', 'testimonials'];
 
 export default function ContentEditor() {
   const variantSelectId = useId();

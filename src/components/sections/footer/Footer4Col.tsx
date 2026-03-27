@@ -12,7 +12,7 @@ export default function Footer4Col({ content, colorMode, sectionId }: { content:
   const columns = content.columns || [];
 
   return (
-    <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} ${spacing}`}>
+    <footer className={`${c.bg} ${spacing}`}>
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 @md:col-span-1">

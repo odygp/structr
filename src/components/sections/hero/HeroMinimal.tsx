@@ -9,7 +9,7 @@ export default function HeroMinimal({ content, colorMode, sectionId }: { content
   const spacing = getSpacingClasses(content._spacing as string, 'hero');
   const id = sectionId || '';
   return (
-    <section className={`${c.bgAlt} px-8 py-32`}>
+    <section className={`${c.bgAlt} ${spacing}`}>
       <div className="max-w-3xl mx-auto text-center">
         <h1 className={`text-6xl font-bold ${c.text} leading-tight`}>
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />

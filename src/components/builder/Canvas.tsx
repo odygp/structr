@@ -40,6 +40,8 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
       aria-label={`${def?.categoryLabel || 'Section'} — ${section.variantId.split('-').slice(1).join(' ')}, position ${index + 1} of ${total}`}
       onClick={() => selectSection(section.id)}
       onKeyDown={(e) => {
+        if ((e.target as HTMLElement)?.isContentEditable) return;
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           selectSection(section.id);
