@@ -97,6 +97,13 @@ export default function SectionCatalog() {
                             variantId: variant.variantId,
                           }));
                           e.dataTransfer.effectAllowed = 'copy';
+                          // Create a clean small drag ghost
+                          const ghost = document.createElement('div');
+                          ghost.textContent = variant.variantName;
+                          ghost.style.cssText = 'position:fixed;top:-1000px;left:-1000px;padding:8px 16px;background:#1c1c1c;color:white;border-radius:8px;font-size:12px;font-family:Inter,sans-serif;font-weight:500;white-space:nowrap;z-index:99999;pointer-events:none;';
+                          document.body.appendChild(ghost);
+                          e.dataTransfer.setDragImage(ghost, ghost.offsetWidth / 2, ghost.offsetHeight / 2);
+                          requestAnimationFrame(() => document.body.removeChild(ghost));
                         }}
                         aria-label={`Add ${variant.variantName} section`}
                         className="flex flex-col items-center p-2 rounded-[8px] border border-[#e6e6e6] hover:border-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-[#1c1c1c] cursor-grab active:cursor-grabbing"

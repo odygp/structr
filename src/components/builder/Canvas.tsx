@@ -181,7 +181,13 @@ export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
       aria-label="Canvas"
       ref={scrollRef}
       className="flex-1 overflow-y-auto bg-[#f2f2f2]"
-      onClick={(e) => { if (e.target === e.currentTarget) selectSection(null); }}
+      onClick={(e) => {
+        // Deselect when clicking canvas background (not on a section)
+        const target = e.target as HTMLElement;
+        if (target === e.currentTarget || !target.closest('[data-section-id]')) {
+          selectSection(null);
+        }
+      }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
