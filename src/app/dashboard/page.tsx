@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { createClient } from '@/lib/supabase/client';
 import DashboardNav from '@/components/dashboard/DashboardNav';
 import AiPromptCard from '@/components/dashboard/AiPromptCard';
 import ActionCards from '@/components/dashboard/ActionCards';
@@ -16,47 +15,42 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      window.location.href = '/login';
-      return;
-    }
+    if (!user) { window.location.href = '/login'; return; }
 
     async function loadProjects() {
       try {
         const res = await fetch('/api/projects');
-        if (res.ok) {
-          const data = await res.json();
-          setProjects(data);
-        }
-      } catch (e) {
-        console.error('Failed to load projects:', e);
-      } finally {
-        setLoading(false);
-      }
+        if (res.ok) setProjects(await res.json());
+      } catch {} finally { setLoading(false); }
     }
     loadProjects();
   }, [user, authLoading]);
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center">
-        <div className="animate-pulse text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-[#f8f8f8] flex items-center justify-center">
+        <div className="animate-pulse text-[#34322d] opacity-50">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#f8f8f8]">
       <DashboardNav user={user} />
 
-      <main className="max-w-3xl mx-auto px-4 pt-12 pb-20">
-        {/* AI Prompt */}
-        <AiPromptCard />
+      <main className="w-[780px] mx-auto pt-[64px] flex flex-col gap-[77px]">
+        {/* Top section: prompt + actions */}
+        <div className="flex flex-col gap-[20px]">
+          <h1 className="text-[20px] font-medium leading-[16px] tracking-[-0.4px] text-[#34322d]">
+            What are we building today?
+          </h1>
+          <div className="flex flex-col gap-[16px]">
+            <AiPromptCard />
+            <ActionCards />
+          </div>
+        </div>
 
-        {/* Action Cards */}
-        <ActionCards />
-
-        {/* Recent Projects */}
+        {/* Recent projects */}
         <RecentProjects projects={projects} loading={loading} />
       </main>
     </div>
