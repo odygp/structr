@@ -120,7 +120,8 @@ export async function POST(request: Request) {
       pages: pageResults,
     });
   } catch (e) {
-    console.error('Import error:', e);
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('Import error:', msg);
+    return NextResponse.json({ error: `Import failed: ${msg}` }, { status: 500 });
   }
 }

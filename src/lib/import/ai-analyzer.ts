@@ -85,22 +85,48 @@ interface AnalyzedSection {
 
 export async function analyzePageWithAI(pageContent: string, pageName: string): Promise<AnalyzedSection[]> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured — add it to .env.local and Vercel env vars');
 
   const client = new Anthropic({ apiKey });
 
-  // Truncate content to avoid token limits (~30k chars ≈ ~8k tokens)
-  const truncated = pageContent.slice(0, 30000);
+  // Truncate content to avoid token limits (~20k chars ≈ ~5k tokens)
+  const truncated = pageContent.slice(0, 20000);
 
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 4096,
-    system: IMPORT_SYSTEM_PROMPT,
-    messages: [{
-      role: 'user',
-      content: `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`,
-    }],
-  });
+  let message;
+  try {
+    message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      system: IMPORT_SYSTEM_PROMPT,
+      messages: [{
+        role: 'user',
+        content: `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`,
+      }],
+    });
+  } catch (apiError: unknown) {
+    const errMsg = apiError instanceof Error ? apiError.message : String(apiError);
+    console.error('Anthropic API error:', errMsg);
+
+    // If model not found, try fallback
+    if (errMsg.includes('model') || errMsg.includes('not_found')) {
+      try {
+        message = await client.messages.create({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 4096,
+          system: IMPORT_SYSTEM_PROMPT,
+          messages: [{
+            role: 'user',
+            content: `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`,
+          }],
+        });
+      } catch (fallbackError) {
+        console.error('Fallback model also failed:', fallbackError);
+        throw new Error(`AI analysis failed: ${errMsg}`);
+      }
+    } else {
+      throw new Error(`AI analysis failed: ${errMsg}`);
+    }
+  }
 
   // Extract JSON from response
   const text = message.content[0].type === 'text' ? message.content[0].text : '';
@@ -109,6 +135,12 @@ export async function analyzePageWithAI(pageContent: string, pageName: string): 
   let json = text.trim();
   const codeBlockMatch = json.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (codeBlockMatch) json = codeBlockMatch[1].trim();
+
+  // Also try to find JSON array in the response
+  if (!json.startsWith('[')) {
+    const arrayMatch = json.match(/\[[\s\S]*\]/);
+    if (arrayMatch) json = arrayMatch[0];
+  }
 
   try {
     const sections = JSON.parse(json) as AnalyzedSection[];
@@ -120,7 +152,7 @@ export async function analyzePageWithAI(pageContent: string, pageName: string): 
       colorMode: s.colorMode || 'light',
     }));
   } catch (e) {
-    console.error('Failed to parse AI response:', text.slice(0, 500));
-    throw new Error('AI returned invalid JSON');
+    console.error('Failed to parse AI response (first 500 chars):', text.slice(0, 500));
+    throw new Error(`AI returned invalid response. First 100 chars: ${text.slice(0, 100)}`);
   }
 }
