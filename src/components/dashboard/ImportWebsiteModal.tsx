@@ -28,12 +28,19 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
         body: JSON.stringify({ url: normalizedUrl }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Import failed');
+      // Read response as text first, then try to parse as JSON
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(res.ok ? 'Server returned invalid response' : `Server error (${res.status}): ${text.slice(0, 200)}`);
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || `Import failed (${res.status})`);
+      }
+
       router.push(`/builder?project=${data.projectId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
