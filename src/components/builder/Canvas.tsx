@@ -88,7 +88,7 @@ export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
     }
   }, [selectedSectionId]);
 
-  const viewportClass = viewport === 'tablet' ? 'max-w-[768px]' : viewport === 'mobile' ? 'max-w-[375px]' : 'w-[820px]';
+  const viewportClass = viewport === 'tablet' ? 'max-w-[768px] mx-auto' : viewport === 'mobile' ? 'max-w-[375px] mx-auto' : 'w-full px-[64px]';
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -128,7 +128,7 @@ export default function Canvas({ liveMessage, setLiveMessage }: CanvasProps) {
     >
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
-          <div className={`${viewportClass} mx-auto flex flex-col mt-[48px] mb-[48px] transition-all @container`}>
+          <div className={`${viewportClass} flex flex-col mt-[48px] mb-[48px] transition-all @container`}>
             {sections.map((section, i) => (
               <SortableSection key={section.id} section={section} index={i} total={sections.length} />
             ))}
