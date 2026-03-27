@@ -12,7 +12,7 @@ export default function HeaderMega({ content, colorMode, sectionId }: { content:
   const links = (content.links as Array<{ label: string }>) || [];
 
   return (
-    <header className={`${c.bg} border-b ${c.border}`}>
+    <header className={`${c.bg}`}>
       <div className={`max-w-7xl mx-auto ${spacing} flex items-center justify-between`}>
         <div className={`text-xl font-bold ${c.text}`}>
             <EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Add logo..." />

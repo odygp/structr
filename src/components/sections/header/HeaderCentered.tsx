@@ -10,7 +10,7 @@ export default function HeaderCentered({ content, colorMode, sectionId }: { cont
   const id = sectionId || '';
   const links = (content.links as Array<{label: string}>) || [];
   return (
-    <header className={`${c.bg} border-b ${c.border} px-8 py-5`}>
+    <header className={`${c.bg} px-8 py-5`}>
       <div className="max-w-7xl mx-auto flex flex-col items-center gap-4">
         <div className={`text-xl font-bold ${c.text}`}><EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Logo" /></div>
         <nav className="hidden @md:flex items-center gap-8">
