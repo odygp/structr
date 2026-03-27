@@ -460,9 +460,8 @@ var VARIANT_SPECIFIC = {
       textBlock.appendChild(txt("featDesc_" + i, features[i].description || '', 15, FR, C['text/secondary'], { w: 480 }));
       var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 350);
       if (i % 2 === 0) { row.appendChild(textBlock); row.appendChild(img); }
-      textBlock.layoutGrow = 1;
-
       else { row.appendChild(img); row.appendChild(textBlock); }
+      textBlock.layoutGrow = 1;
       comp.appendChild(row);
     }
   },
