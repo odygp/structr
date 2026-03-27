@@ -431,6 +431,77 @@ var VARIANT_SPECIFIC = {
     formRow.appendChild(btn);
     comp.appendChild(formRow);
   },
+  'features-alternating': function(comp, content, atoms) {
+    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+    comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
+    var tn = txt("title", content.title || "Features", 28, FB, C['text/primary'], { align: "CENTER" });
+    comp.appendChild(tn); linkText(tn, tk);
+    var features = Array.isArray(content.features) ? content.features : [];
+    for (var i = 0; i < features.length; i++) {
+      var row = frame("feature_" + i, { dir: "HORIZONTAL", g: 48, ca: "CENTER" });
+      row.resize(1280, 100); row.counterAxisSizingMode = "FIXED";
+      var textBlock = frame("text_" + i, { dir: "VERTICAL", g: 12 });
+      textBlock.resize(500, 100); textBlock.counterAxisSizingMode = "FIXED";
+      textBlock.appendChild(txt("featTitle_" + i, features[i].title || '', 22, FS, C['text/primary']));
+      textBlock.appendChild(txt("featDesc_" + i, features[i].description || '', 15, FR, C['text/secondary'], { w: 480 }));
+      var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 350);
+      if (i % 2 === 0) { row.appendChild(textBlock); row.appendChild(img); }
+      else { row.appendChild(img); row.appendChild(textBlock); }
+      comp.appendChild(row);
+    }
+  },
+  'features-with-image': function(comp, content, atoms, molecules) {
+    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+    comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+    var header = frame("header", { dir: "HORIZONTAL", g: 48, ca: "CENTER" });
+    header.resize(1280, 100); header.counterAxisSizingMode = "FIXED";
+    var textCol = frame("text", { dir: "VERTICAL", g: 16 });
+    textCol.resize(500, 100); textCol.counterAxisSizingMode = "FIXED";
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
+    var tn = txt("title", content.title || "Features", 28, FB, C['text/primary']);
+    textCol.appendChild(tn); linkText(tn, tk);
+    var features = Array.isArray(content.features) ? content.features : [];
+    for (var i = 0; i < features.length; i++) {
+      var feat = frame("feat_" + i, { dir: "VERTICAL", g: 4 });
+      feat.appendChild(txt("featTitle_" + i, features[i].title || '', 16, FS, C['text/primary']));
+      feat.appendChild(txt("featDesc_" + i, features[i].description || '', 14, FR, C['text/secondary'], { w: 480 }));
+      textCol.appendChild(feat);
+    }
+    header.appendChild(textCol);
+    var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 400);
+    header.appendChild(img);
+    comp.appendChild(header);
+  },
+  'features-bento': function(comp, content, atoms) {
+    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+    comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
+    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
+    var tn = txt("title", content.title || "Features", 28, FB, C['text/primary'], { align: "CENTER" });
+    comp.appendChild(tn); linkText(tn, tk);
+    var grid = frame("grid", { dir: "HORIZONTAL", g: 16 });
+    grid.layoutWrap = "WRAP"; grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED";
+    var features = Array.isArray(content.features) ? content.features : [];
+    for (var i = 0; i < features.length; i++) {
+      var w = i === 0 ? 820 : 444;
+      var card = frame("bento_" + i, { dir: "VERTICAL", g: 12, px: 32, py: 32, r: 16, bg: C['surface/subtle'] });
+      card.resize(w, 100); card.counterAxisSizingMode = "FIXED";
+      card.appendChild(rect(40, 40, C['placeholder/default'], 8));
+      card.appendChild(txt("bentoTitle_" + i, features[i].title || '', 16, FS, C['text/primary']));
+      card.appendChild(txt("bentoDesc_" + i, features[i].description || '', 14, FR, C['text/secondary'], { w: w - 64 }));
+      grid.appendChild(card);
+    }
+    comp.appendChild(grid);
+  },
 };
 
 function buildOrganism(comp, category, variantId, content, atoms, molecules) {
@@ -908,6 +979,169 @@ function buildStoreOrganism(comp, content, atoms) {
   comp.appendChild(grid);
 }
 
+// ── Pricing ──
+function buildPricingOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Simple, transparent pricing");
+  var tn = txt("title", content.title || "Simple, transparent pricing", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Choose the plan that works best for you.");
+  var sn = txt("subtitle", content.subtitle || "Choose the plan that works best for you.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
+  comp.appendChild(sn); linkText(sn, sk);
+  var grid = frame("plans", { dir: "HORIZONTAL", g: 24 });
+  var plans = Array.isArray(content.plans) ? content.plans : [{ name: 'Starter', price: '$9', description: 'For individuals', ctaText: 'Get Started' }, { name: 'Pro', price: '$29', description: 'For teams', ctaText: 'Get Started', highlighted: true }, { name: 'Enterprise', price: '$99', description: 'For orgs', ctaText: 'Contact Sales' }];
+  for (var i = 0; i < plans.length; i++) {
+    var p = plans[i];
+    var hl = p.highlighted;
+    var card = frame("plan_" + i, { dir: "VERTICAL", g: 16, px: 32, py: 32, r: 16, bg: hl ? C['surface/inverse'] : C['surface/default'], stroke: hl ? null : C['border/default'] });
+    card.resize(320, 100); card.counterAxisSizingMode = "FIXED";
+    card.appendChild(txt("planName_" + i, p.name || '', 20, FS, hl ? C['text/inverse'] : C['text/primary']));
+    var priceRow = frame("priceRow", { dir: "HORIZONTAL", g: 4, ca: "MAX" });
+    priceRow.appendChild(txt("planPrice_" + i, p.price || '', 36, FB, hl ? C['text/inverse'] : C['text/primary']));
+    priceRow.appendChild(txt("planPeriod_" + i, p.period || '/mo', 14, FR, hl ? C['text/on-dark'] : C['text/muted']));
+    card.appendChild(priceRow);
+    card.appendChild(txt("planDesc_" + i, p.description || '', 14, FR, hl ? C['text/on-dark'] : C['text/secondary']));
+    // Features list
+    var feats = String(p.features || '').split(',');
+    for (var j = 0; j < feats.length && j < 4; j++) {
+      card.appendChild(txt("planFeat_" + i + "_" + j, "✓  " + feats[j].trim(), 13, FR, hl ? C['text/on-dark'] : C['text/secondary']));
+    }
+    var btn = findVariant(atoms.Button, hl ? "Secondary" : "Primary").createInstance();
+    btn.name = "planCta_" + i;
+    card.appendChild(btn);
+    grid.appendChild(card);
+  }
+  comp.appendChild(grid);
+}
+
+// ── Gallery ──
+function buildGalleryOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 64; comp.paddingBottom = 64;
+  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Our Work");
+  var tn = txt("title", content.title || "Our Work", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var grid = frame("images", { dir: "HORIZONTAL", g: 16 });
+  grid.layoutWrap = "WRAP";
+  var images = Array.isArray(content.images) ? content.images : [{ caption: 'Project 1' }, { caption: 'Project 2' }, { caption: 'Project 3' }];
+  for (var i = 0; i < images.length; i++) {
+    var item = frame("image_" + i, { dir: "VERTICAL", g: 8 });
+    item.appendChild(rect(400, 260, C['placeholder/default'], 12));
+    item.appendChild(txt("caption_" + i, images[i].caption || '', 13, FR, C['text/muted']));
+    grid.appendChild(item);
+  }
+  comp.appendChild(grid);
+}
+
+// ── Comparison ──
+function buildComparisonOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Compare plans");
+  var tn = txt("title", content.title || "Compare plans", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  // Table header
+  var headerRow = frame("tableHeader", { dir: "HORIZONTAL", g: 0 });
+  headerRow.resize(1280, 100); headerRow.counterAxisSizingMode = "FIXED";
+  headerRow.appendChild(txt("colFeature", "Feature", 14, FS, C['text/primary'], { w: 320 }));
+  headerRow.appendChild(txt("colBasic", "Basic", 14, FS, C['text/primary'], { w: 320, align: "CENTER" }));
+  headerRow.appendChild(txt("colPro", "Pro", 14, FS, C['text/primary'], { w: 320, align: "CENTER" }));
+  headerRow.appendChild(txt("colEnterprise", "Enterprise", 14, FS, C['text/primary'], { w: 320, align: "CENTER" }));
+  comp.appendChild(headerRow);
+  // Table rows
+  var items = Array.isArray(content.items) ? content.items : [{ feature: 'Feature 1' }, { feature: 'Feature 2' }, { feature: 'Feature 3' }];
+  for (var i = 0; i < items.length; i++) {
+    var row = frame("row_" + i, { dir: "HORIZONTAL", g: 0, stroke: C['border/default'] });
+    row.resize(1280, 100); row.counterAxisSizingMode = "FIXED";
+    row.paddingTop = 12; row.paddingBottom = 12;
+    row.strokesIncludedInLayout = false;
+    row.appendChild(txt("feat_" + i, items[i].feature || 'Feature ' + (i+1), 14, FR, C['text/primary'], { w: 320 }));
+    row.appendChild(txt("basic_" + i, "✓", 14, FR, C['text/secondary'], { w: 320, align: "CENTER" }));
+    row.appendChild(txt("pro_" + i, "✓", 14, FR, C['text/secondary'], { w: 320, align: "CENTER" }));
+    row.appendChild(txt("ent_" + i, "✓", 14, FR, C['text/secondary'], { w: 320, align: "CENTER" }));
+    comp.appendChild(row);
+  }
+}
+
+// ── Showcase ──
+function buildShowcaseOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 32;
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var headerRow = frame("header", { dir: "HORIZONTAL", g: 16 });
+  headerRow.resize(1280, 100); headerRow.counterAxisSizingMode = "FIXED"; headerRow.counterAxisAlignItems = "CENTER";
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Our Collection");
+  var tn = txt("title", content.title || "Our Collection", 28, FB, C['text/primary']);
+  tn.layoutGrow = 1;
+  headerRow.appendChild(tn); linkText(tn, tk);
+  var viewBtn = findVariant(atoms.Button, "Secondary").createInstance();
+  headerRow.appendChild(viewBtn);
+  comp.appendChild(headerRow);
+  // Categories
+  var cats = frame("categories", { dir: "HORIZONTAL", g: 8 });
+  var categories = Array.isArray(content.categories) ? content.categories : [{ label: 'All' }, { label: 'Design' }, { label: 'Development' }];
+  for (var i = 0; i < categories.length; i++) {
+    var pill = frame("cat_" + i, { dir: "HORIZONTAL", px: 16, py: 6, r: 9999, bg: i === 0 ? C['surface/inverse'] : C['surface/muted'] });
+    pill.appendChild(txt("catLabel_" + i, categories[i].label || '', 13, FM, i === 0 ? C['text/inverse'] : C['text/secondary']));
+    cats.appendChild(pill);
+  }
+  comp.appendChild(cats);
+  // Items grid
+  var grid = frame("items", { dir: "HORIZONTAL", g: 24 });
+  var items = Array.isArray(content.items) ? content.items : [{ title: 'Item One', description: 'Description' }, { title: 'Item Two', description: 'Description' }, { title: 'Item Three', description: 'Description' }];
+  for (var i = 0; i < items.length; i++) {
+    var card = frame("item_" + i, { dir: "VERTICAL", g: 0, stroke: C['border/default'], r: 12 });
+    card.resize(380, 100); card.counterAxisSizingMode = "FIXED"; card.clipsContent = true;
+    card.appendChild(rect(380, 220, C['placeholder/default'], 0));
+    var info = frame("info", { dir: "VERTICAL", g: 4, px: 16, py: 16 });
+    info.appendChild(txt("itemTitle_" + i, items[i].title || '', 15, FS, C['text/primary']));
+    info.appendChild(txt("itemDesc_" + i, items[i].description || '', 13, FR, C['text/secondary']));
+    card.appendChild(info);
+    grid.appendChild(card);
+  }
+  comp.appendChild(grid);
+}
+
+// ── Downloads ──
+function buildDownloadsOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Download our app");
+  var tn = txt("title", content.title || "Download our app", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Available on all platforms.");
+  var sn = txt("subtitle", content.subtitle || "Available on all platforms.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
+  comp.appendChild(sn); linkText(sn, sk);
+  var grid = frame("downloads", { dir: "HORIZONTAL", g: 24 });
+  var items = Array.isArray(content.items) ? content.items : [{ title: 'Desktop App', description: 'For Mac and Windows' }, { title: 'Mobile App', description: 'iOS and Android' }, { title: 'Browser Extension', description: 'Chrome and Firefox' }];
+  for (var i = 0; i < items.length; i++) {
+    var card = frame("download_" + i, { dir: "VERTICAL", g: 12, px: 32, py: 32, stroke: C['border/default'], r: 16, ca: "CENTER" });
+    card.resize(320, 100); card.counterAxisSizingMode = "FIXED";
+    card.appendChild(rect(64, 64, C['placeholder/default'], 16));
+    card.appendChild(txt("dlTitle_" + i, items[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
+    card.appendChild(txt("dlDesc_" + i, items[i].description || '', 13, FR, C['text/secondary'], { align: "CENTER" }));
+    var btn = findVariant(atoms.Button, "Primary").createInstance();
+    card.appendChild(btn);
+    grid.appendChild(card);
+  }
+  comp.appendChild(grid);
+}
+
 // Builder map
 var BUILDERS = {
   header: buildHeaderOrganism,
@@ -927,6 +1161,11 @@ var BUILDERS = {
   process: buildProcessOrganism,
   error: buildErrorOrganism,
   store: buildStoreOrganism,
+  pricing: buildPricingOrganism,
+  gallery: buildGalleryOrganism,
+  comparison: buildComparisonOrganism,
+  showcase: buildShowcaseOrganism,
+  downloads: buildDownloadsOrganism,
 };
 
 // Helper to make a single-key object
