@@ -260,7 +260,7 @@ function createMolecules(page, atoms) {
   var featureCard = figma.createComponent();
   featureCard.name = "Feature Card";
   featureCard.layoutMode = "VERTICAL";
-  featureCard.resize(280, 100); featureCard.counterAxisSizingMode = "FIXED";
+  featureCard.resize(380, 100); featureCard.counterAxisSizingMode = "FIXED";
   featureCard.primaryAxisSizingMode = "AUTO";
   featureCard.paddingLeft = 24; featureCard.paddingRight = 24;
   featureCard.paddingTop = 24; featureCard.paddingBottom = 24;
@@ -273,7 +273,7 @@ function createMolecules(page, atoms) {
   var fcTitle = txt("title", "Feature Title", 15, FS, C['text/primary']);
   featureCard.appendChild(fcTitle); linkText(fcTitle, fcTk);
   var fcDk = featureCard.addComponentProperty("Description", "TEXT", "A brief description of this feature.");
-  var fcDesc = txt("description", "A brief description of this feature.", 13, FR, C['text/secondary'], { w: 232 });
+  var fcDesc = txt("description", "A brief description of this feature.", 13, FR, C['text/secondary'], { w: 332 });
   featureCard.appendChild(fcDesc); linkText(fcDesc, fcDk);
   page.appendChild(featureCard); featureCard.x = 0; featureCard.y = 60;
   molecules.FeatureCard = featureCard;
@@ -282,7 +282,7 @@ function createMolecules(page, atoms) {
   var testCard = figma.createComponent();
   testCard.name = "Testimonial Card";
   testCard.layoutMode = "VERTICAL";
-  testCard.resize(280, 100); testCard.counterAxisSizingMode = "FIXED";
+  testCard.resize(360, 100); testCard.counterAxisSizingMode = "FIXED";
   testCard.primaryAxisSizingMode = "AUTO";
   testCard.paddingLeft = 24; testCard.paddingRight = 24;
   testCard.paddingTop = 24; testCard.paddingBottom = 24;
@@ -290,7 +290,7 @@ function createMolecules(page, atoms) {
   testCard.fills = [{ type: 'SOLID', color: C['surface/default'] }];
 
   var tcQk = testCard.addComponentProperty("Quote", "TEXT", '"Great product!"');
-  var tcQuote = txt("quote", '"Great product!"', 13, FR, C['text/secondary'], { w: 232 });
+  var tcQuote = txt("quote", '"Great product!"', 13, FR, C['text/secondary'], { w: 312 });
   testCard.appendChild(tcQuote); linkText(tcQuote, tcQk);
 
   var tcAuth = frame("author", { dir: "HORIZONTAL", g: 10, ca: "CENTER" });
@@ -370,7 +370,7 @@ var VARIANT_SPECIFIC = {
     comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
     comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
     var textCol = frame("textContent", { dir: "VERTICAL", g: 20 });
-    textCol.resize(550, 100); textCol.counterAxisSizingMode = "FIXED";
+    textCol.resize(620, 100); textCol.counterAxisSizingMode = "FIXED";
     var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
     var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary']);
     textCol.appendChild(tn); linkText(tn, tk);
@@ -626,6 +626,7 @@ function buildFeaturesOrganism(comp, content, atoms, molecules) {
   linkText(tn, tk); linkText(sn, sk);
 
   var grid = frame("grid", { dir: "HORIZONTAL", g: 24 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var features = Array.isArray(content.features) ? content.features : [];
   for (var i = 0; i < features.length; i++) {
     var card = molecules.FeatureCard.createInstance();
@@ -657,6 +658,7 @@ function buildStatsOrganism(comp, content, atoms, molecules) {
   comp.appendChild(tn); linkText(tn, tk);
 
   var row = frame("stats", { dir: "HORIZONTAL", g: 48 });
+  row.resize(1280, 100); row.counterAxisSizingMode = "FIXED"; row.primaryAxisSizingMode = "AUTO";
   var stats = Array.isArray(content.stats) ? content.stats : [];
   for (var i = 0; i < stats.length; i++) {
     var item = molecules.StatItem.createInstance();
@@ -688,6 +690,7 @@ function buildTestimonialsOrganism(comp, content, atoms, molecules) {
   comp.appendChild(tn); linkText(tn, tk);
 
   var cards = frame("testimonials", { dir: "HORIZONTAL", g: 24 });
+  cards.resize(1280, 100); cards.counterAxisSizingMode = "FIXED"; cards.primaryAxisSizingMode = "AUTO";
   var items = Array.isArray(content.testimonials) ? content.testimonials : [];
   for (var i = 0; i < items.length; i++) {
     var card = molecules.TestimonialCard.createInstance();
@@ -828,10 +831,11 @@ function buildBlogOrganism(comp, content, atoms, molecules) {
   var tn = txt("title", content.title || "Blog", 28, FB, C['text/primary'], { align: "CENTER" });
   comp.appendChild(tn); linkText(tn, tk);
   var grid = frame("posts", { dir: "HORIZONTAL", g: 24 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var posts = Array.isArray(content.posts) ? content.posts : [{ title: 'Post 1', excerpt: 'Excerpt.' }, { title: 'Post 2', excerpt: 'Excerpt.' }, { title: 'Post 3', excerpt: 'Excerpt.' }];
   for (var i = 0; i < posts.length; i++) {
     var card = frame("post_" + i, { dir: "VERTICAL", g: 12 });
-    card.resize(280, 100); card.counterAxisSizingMode = "FIXED";
+    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
     card.appendChild(rect(280, 160, C['placeholder/default'], 12));
     card.appendChild(txt("postTitle_" + i, posts[i].title || '', 15, FS, C['text/primary']));
     card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 260 }));
@@ -875,7 +879,7 @@ function buildAboutOrganism(comp, content, atoms) {
   comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
   var textCol = frame("text", { dir: "VERTICAL", g: 16 });
-  textCol.resize(550, 100); textCol.counterAxisSizingMode = "FIXED";
+  textCol.resize(620, 100); textCol.counterAxisSizingMode = "FIXED";
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "About");
   var tn = txt("title", content.title || "About", 28, FB, C['text/primary']);
   textCol.appendChild(tn); linkText(tn, tk);
@@ -994,10 +998,11 @@ function buildStoreOrganism(comp, content, atoms) {
   var tn = txt("title", content.title || "Products", 28, FB, C['text/primary'], { align: "CENTER" });
   comp.appendChild(tn); linkText(tn, tk);
   var grid = frame("products", { dir: "HORIZONTAL", g: 24 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var products = Array.isArray(content.products) ? content.products : [{ title: 'Product 1', price: '$29' }, { title: 'Product 2', price: '$49' }, { title: 'Product 3', price: '$39' }];
   for (var i = 0; i < products.length; i++) {
     var card = frame("product_" + i, { dir: "VERTICAL", g: 12, stroke: C['border/default'], r: 12 });
-    card.resize(280, 100); card.counterAxisSizingMode = "FIXED";
+    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
     card.appendChild(rect(280, 180, C['placeholder/default'], 0));
     var info = frame("info", { dir: "VERTICAL", g: 8, px: 16, py: 16 });
     info.appendChild(txt("productTitle_" + i, products[i].title || '', 15, FS, C['text/primary']));
@@ -1024,12 +1029,13 @@ function buildPricingOrganism(comp, content, atoms) {
   var sn = txt("subtitle", content.subtitle || "Choose the plan that works best for you.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
   comp.appendChild(sn); linkText(sn, sk);
   var grid = frame("plans", { dir: "HORIZONTAL", g: 24 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var plans = Array.isArray(content.plans) ? content.plans : [{ name: 'Starter', price: '$9', description: 'For individuals', ctaText: 'Get Started' }, { name: 'Pro', price: '$29', description: 'For teams', ctaText: 'Get Started', highlighted: true }, { name: 'Enterprise', price: '$99', description: 'For orgs', ctaText: 'Contact Sales' }];
   for (var i = 0; i < plans.length; i++) {
     var p = plans[i];
     var hl = p.highlighted;
     var card = frame("plan_" + i, { dir: "VERTICAL", g: 16, px: 32, py: 32, r: 16, bg: hl ? C['surface/inverse'] : C['surface/default'], stroke: hl ? null : C['border/default'] });
-    card.resize(320, 100); card.counterAxisSizingMode = "FIXED";
+    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
     card.appendChild(txt("planName_" + i, p.name || '', 20, FS, hl ? C['text/inverse'] : C['text/primary']));
     var priceRow = frame("priceRow", { dir: "HORIZONTAL", g: 4, ca: "MAX" });
     priceRow.appendChild(txt("planPrice_" + i, p.price || '', 36, FB, hl ? C['text/inverse'] : C['text/primary']));
@@ -1137,6 +1143,7 @@ function buildShowcaseOrganism(comp, content, atoms) {
   comp.appendChild(cats);
   // Items grid
   var grid = frame("items", { dir: "HORIZONTAL", g: 24 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var items = Array.isArray(content.items) ? content.items : [{ title: 'Item One', description: 'Description' }, { title: 'Item Two', description: 'Description' }, { title: 'Item Three', description: 'Description' }];
   for (var i = 0; i < items.length; i++) {
     var card = frame("item_" + i, { dir: "VERTICAL", g: 0, stroke: C['border/default'], r: 12 });
@@ -1167,10 +1174,11 @@ function buildDownloadsOrganism(comp, content, atoms) {
   var sn = txt("subtitle", content.subtitle || "Available on all platforms.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
   comp.appendChild(sn); linkText(sn, sk);
   var grid = frame("downloads", { dir: "HORIZONTAL", g: 24 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var items = Array.isArray(content.items) ? content.items : [{ title: 'Desktop App', description: 'For Mac and Windows' }, { title: 'Mobile App', description: 'iOS and Android' }, { title: 'Browser Extension', description: 'Chrome and Firefox' }];
   for (var i = 0; i < items.length; i++) {
     var card = frame("download_" + i, { dir: "VERTICAL", g: 12, px: 32, py: 32, stroke: C['border/default'], r: 16, ca: "CENTER" });
-    card.resize(320, 100); card.counterAxisSizingMode = "FIXED";
+    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
     card.appendChild(rect(64, 64, C['placeholder/default'], 16));
     card.appendChild(txt("dlTitle_" + i, items[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
     card.appendChild(txt("dlDesc_" + i, items[i].description || '', 13, FR, C['text/secondary'], { align: "CENTER" }));
