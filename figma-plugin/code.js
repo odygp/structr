@@ -612,6 +612,207 @@ function buildFaqOrganism(comp, content, atoms, molecules) {
   comp.appendChild(list);
 }
 
+// ── Logos ──
+function buildLogosOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 40; comp.paddingBottom = 40;
+  comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Trusted by leading companies");
+  var tn = txt("title", content.title || "Trusted by leading companies", 13, FR, C['text/muted'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var row = frame("logos", { dir: "HORIZONTAL", g: 40, ca: "CENTER" });
+  var logos = Array.isArray(content.logos) ? content.logos : [{},{},{},{},{}];
+  for (var i = 0; i < logos.length; i++) { var r = rect(80, 32, C['placeholder/default'], 6); r.name = "logo_" + i; row.appendChild(r); }
+  comp.appendChild(row);
+}
+
+// ── Blog ──
+function buildBlogOrganism(comp, content, atoms, molecules) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Blog");
+  var tn = txt("title", content.title || "Blog", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var grid = frame("posts", { dir: "HORIZONTAL", g: 24 });
+  var posts = Array.isArray(content.posts) ? content.posts : [{ title: 'Post 1', excerpt: 'Excerpt.' }, { title: 'Post 2', excerpt: 'Excerpt.' }, { title: 'Post 3', excerpt: 'Excerpt.' }];
+  for (var i = 0; i < posts.length; i++) {
+    var card = frame("post_" + i, { dir: "VERTICAL", g: 12 });
+    card.resize(280, 100); card.counterAxisSizingMode = "FIXED";
+    card.appendChild(rect(280, 160, C['placeholder/default'], 12));
+    card.appendChild(txt("postTitle_" + i, posts[i].title || '', 15, FS, C['text/primary']));
+    card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 260 }));
+    grid.appendChild(card);
+  }
+  comp.appendChild(grid);
+}
+
+// ── Team ──
+function buildTeamOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Team");
+  var tn = txt("title", content.title || "Team", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var grid = frame("members", { dir: "HORIZONTAL", g: 32, ca: "CENTER" });
+  var members = Array.isArray(content.members) ? content.members : [{ name: 'Jane', role: 'CEO' }, { name: 'John', role: 'CTO' }];
+  for (var i = 0; i < members.length; i++) {
+    var member = frame("member_" + i, { dir: "VERTICAL", g: 8, ca: "CENTER" });
+    var av = atoms.Avatar.createInstance(); av.name = "avatar_" + i;
+    av.resize(80, 80); member.appendChild(av);
+    member.appendChild(txt("memberName_" + i, members[i].name || '', 14, FM, C['text/primary'], { align: "CENTER" }));
+    member.appendChild(txt("memberRole_" + i, members[i].role || '', 12, FR, C['text/secondary'], { align: "CENTER" }));
+    grid.appendChild(member);
+  }
+  comp.appendChild(grid);
+}
+
+// ── About ──
+function buildAboutOrganism(comp, content, atoms) {
+  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var textCol = frame("text", { dir: "VERTICAL", g: 16 });
+  textCol.resize(550, 100); textCol.counterAxisSizingMode = "FIXED";
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "About");
+  var tn = txt("title", content.title || "About", 28, FB, C['text/primary']);
+  textCol.appendChild(tn); linkText(tn, tk);
+  var dk = comp.addComponentProperty("Description", "TEXT", content.description || "Description.");
+  var dn = txt("description", content.description || "Description.", 16, FR, C['text/secondary'], { w: 500 });
+  textCol.appendChild(dn); linkText(dn, dk);
+  comp.appendChild(textCol);
+  var img = atoms.ImagePlaceholder.createInstance(); img.name = "image";
+  img.resize(480, 320); comp.appendChild(img);
+}
+
+// ── Contact ──
+function buildContactOrganism(comp, content) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Contact");
+  var tn = txt("title", content.title || "Contact", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  if (content.subtitle) {
+    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
+    comp.appendChild(sn); linkText(sn, sk);
+  }
+  var info = frame("info", { dir: "HORIZONTAL", g: 32 });
+  if (content.email) info.appendChild(txt("email", content.email, 13, FR, C['text/secondary']));
+  if (content.phone) info.appendChild(txt("phone", content.phone, 13, FR, C['text/secondary']));
+  comp.appendChild(info);
+  // Form placeholder
+  var formFrame = frame("form", { dir: "VERTICAL", g: 12, w: 500 });
+  formFrame.appendChild(rect(500, 44, C['surface/subtle'], 8));
+  formFrame.appendChild(rect(500, 44, C['surface/subtle'], 8));
+  formFrame.appendChild(rect(500, 100, C['surface/subtle'], 8));
+  var btn = frame("submitBtn", { dir: "HORIZONTAL", bg: C['surface/inverse'], px: 24, py: 12, r: 8, ca: "CENTER", ma: "CENTER" });
+  btn.resize(500, 44); btn.counterAxisSizingMode = "FIXED";
+  btn.appendChild(txt("submitText", "Send Message", 14, FM, C['text/inverse'], { align: "CENTER" }));
+  formFrame.appendChild(btn);
+  comp.appendChild(formFrame);
+}
+
+// ── Banner ──
+function buildBannerOrganism(comp, content) {
+  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "FIXED"; comp.counterAxisSizingMode = "AUTO";
+  comp.paddingLeft = 32; comp.paddingRight = 32; comp.paddingTop = 12; comp.paddingBottom = 12;
+  comp.itemSpacing = 16; comp.counterAxisAlignItems = "CENTER"; comp.primaryAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/inverse'] }];
+  var tk = comp.addComponentProperty("Text", "TEXT", content.text || "Announcement");
+  var tn = txt("text", content.text || "Announcement", 13, FR, C['text/inverse']);
+  comp.appendChild(tn); linkText(tn, tk);
+  if (content.ctaText) {
+    var ck = comp.addComponentProperty("CTA", "TEXT", content.ctaText);
+    var cn = txt("ctaText", content.ctaText, 13, FM, C['text/on-dark']);
+    comp.appendChild(cn); linkText(cn, ck);
+  }
+}
+
+// ── Process / How It Works ──
+function buildProcessOrganism(comp, content) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "How it works");
+  var tn = txt("title", content.title || "How it works", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var grid = frame("steps", { dir: "HORIZONTAL", g: 32 });
+  var steps = Array.isArray(content.steps) ? content.steps : [{ title: 'Step 1', description: 'Desc' }, { title: 'Step 2', description: 'Desc' }, { title: 'Step 3', description: 'Desc' }];
+  for (var i = 0; i < steps.length; i++) {
+    var step = frame("step_" + i, { dir: "VERTICAL", g: 12, ca: "CENTER" });
+    var circle = frame("number", { dir: "HORIZONTAL", bg: C['surface/inverse'], r: 9999, ca: "CENTER", ma: "CENTER" });
+    circle.resize(48, 48); circle.counterAxisSizingMode = "FIXED"; circle.primaryAxisSizingMode = "FIXED";
+    circle.appendChild(txt("num", String(i + 1), 18, FB, C['text/inverse'], { align: "CENTER" }));
+    step.appendChild(circle);
+    step.appendChild(txt("stepTitle_" + i, steps[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
+    step.appendChild(txt("stepDesc_" + i, steps[i].description || '', 13, FR, C['text/secondary'], { w: 200, align: "CENTER" }));
+    grid.appendChild(step);
+  }
+  comp.appendChild(grid);
+}
+
+// ── Error ──
+function buildErrorOrganism(comp, content) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 100; comp.paddingBottom = 100;
+  comp.itemSpacing = 16; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  comp.appendChild(txt("errorCode", "404", 96, FB, C['placeholder/default'], { align: "CENTER" }));
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Page not found");
+  var tn = txt("title", content.title || "Page not found", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  if (content.subtitle) {
+    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
+    comp.appendChild(sn); linkText(sn, sk);
+  }
+  var btn = frame("ctaBtn", { dir: "HORIZONTAL", bg: C['surface/inverse'], px: 24, py: 12, r: 8, ca: "CENTER" });
+  btn.appendChild(txt("ctaText", content.ctaText || "Go Home", 14, FM, C['text/inverse']));
+  comp.appendChild(btn);
+}
+
+// ── Store ──
+function buildStoreOrganism(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Products");
+  var tn = txt("title", content.title || "Products", 28, FB, C['text/primary'], { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+  var grid = frame("products", { dir: "HORIZONTAL", g: 24 });
+  var products = Array.isArray(content.products) ? content.products : [{ title: 'Product 1', price: '$29' }, { title: 'Product 2', price: '$49' }, { title: 'Product 3', price: '$39' }];
+  for (var i = 0; i < products.length; i++) {
+    var card = frame("product_" + i, { dir: "VERTICAL", g: 12, stroke: C['border/default'], r: 12 });
+    card.resize(280, 100); card.counterAxisSizingMode = "FIXED";
+    card.appendChild(rect(280, 180, C['placeholder/default'], 0));
+    var info = frame("info", { dir: "VERTICAL", g: 8, px: 16, py: 16 });
+    info.appendChild(txt("productTitle_" + i, products[i].title || '', 15, FS, C['text/primary']));
+    info.appendChild(txt("productPrice_" + i, products[i].price || '', 16, FB, C['text/primary']));
+    card.appendChild(info);
+    grid.appendChild(card);
+  }
+  comp.appendChild(grid);
+}
+
 // Builder map
 var BUILDERS = {
   header: buildHeaderOrganism,
@@ -622,6 +823,15 @@ var BUILDERS = {
   cta: buildCtaOrganism,
   footer: buildFooterOrganism,
   faq: buildFaqOrganism,
+  logos: buildLogosOrganism,
+  blog: buildBlogOrganism,
+  team: buildTeamOrganism,
+  about: buildAboutOrganism,
+  contact: buildContactOrganism,
+  banner: buildBannerOrganism,
+  process: buildProcessOrganism,
+  error: buildErrorOrganism,
+  store: buildStoreOrganism,
 };
 
 // Helper to make a single-key object
