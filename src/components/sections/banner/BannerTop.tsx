@@ -14,12 +14,12 @@ export default function BannerTop({ content, colorMode, sectionId }: { content: 
     <div className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} text-white px-4 py-2`}>
       <div className="max-w-6xl mx-auto flex items-center justify-center gap-4">
         <p className="text-sm flex-1 text-center">
-          {(content.text as string) || 'Announcement text goes here'}
+            <EditableText sectionId={id} fieldKey="text" value={content.text as string} placeholder="Add text..." />
         </p>
 
         {content.ctaText && (
           <button className="text-sm font-medium underline underline-offset-2 whitespace-nowrap hover:opacity-80">
-            {content.ctaText as string}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Add ctatext..." />
           </button>
         )}
 

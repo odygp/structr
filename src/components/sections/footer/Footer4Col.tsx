@@ -17,7 +17,7 @@ export default function Footer4Col({ content, colorMode, sectionId }: { content:
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 @md:col-span-1">
             <div className="text-white font-bold text-xl mb-4">
-              {content.logo || 'Logo'}
+            <EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Add logo..." />
             </div>
             {content.description && (
               <p className="text-gray-400 text-sm">{content.description}</p>
@@ -40,7 +40,7 @@ export default function Footer4Col({ content, colorMode, sectionId }: { content:
         </div>
         <div className="border-t border-gray-700 pt-8">
           <p className="text-gray-400 text-sm text-center">
-            {content.copyright || '\u00A9 2026 Company. All rights reserved.'}
+            <EditableText sectionId={id} fieldKey="copyright" value={content.copyright as string} placeholder="Add copyright..." />
           </p>
         </div>
       </div>

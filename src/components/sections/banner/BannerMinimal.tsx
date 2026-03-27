@@ -13,7 +13,7 @@ export default function BannerMinimal({ content, colorMode, sectionId }: { conte
   return (
     <div className={`${c.bgAlt} border-t border-b ${c.border} px-4 py-3`}>
       <p className={`text-sm ${c.textSecondary} text-center`}>
-        {(content.text as string) || 'Minimal banner text'}
+            <EditableText sectionId={id} fieldKey="text" value={content.text as string} placeholder="Add text..." />
       </p>
     </div>
   );

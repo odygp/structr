@@ -18,7 +18,7 @@ export default function FooterWithNewsletter({ content, colorMode, sectionId }: 
           {/* Logo + description + newsletter */}
           <div className="col-span-2 @md:col-span-1">
             <div className="text-white font-bold text-xl mb-3">
-              {content.logo || 'Logo'}
+            <EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Add logo..." />
             </div>
             {content.description && (
               <p className="text-gray-400 text-sm mb-5 leading-relaxed">{content.description}</p>
@@ -55,7 +55,7 @@ export default function FooterWithNewsletter({ content, colorMode, sectionId }: 
 
         <div className="border-t border-gray-700 pt-8">
           <p className="text-gray-400 text-sm text-center">
-            {content.copyright || '\u00A9 2026 Company. All rights reserved.'}
+            <EditableText sectionId={id} fieldKey="copyright" value={content.copyright as string} placeholder="Add copyright..." />
           </p>
         </div>
       </div>

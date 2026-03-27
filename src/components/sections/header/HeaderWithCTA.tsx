@@ -23,7 +23,7 @@ export default function HeaderWithCTA({ content, colorMode, sectionId }: { conte
             Log in
           </button>
           <button className={`${c.btnPrimary} text-sm px-4 py-2 rounded-lg`}>
-            {content.ctaText as string}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Add ctatext..." />
           </button>
         </div>
       </div>

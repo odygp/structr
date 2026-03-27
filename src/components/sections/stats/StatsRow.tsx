@@ -17,7 +17,7 @@ export default function StatsRow({ content, colorMode, sectionId }: { content: R
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
-            {(content.title as string) || 'By the Numbers'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
         </div>
 

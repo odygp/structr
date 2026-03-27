@@ -15,7 +15,7 @@ export default function LogoSimple({ content, colorMode, sectionId }: { content:
     <section className={`py-10 @md:py-16 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-5xl mx-auto">
         <h2 className={`text-center text-lg font-medium ${c.textSecondary} mb-10`}>
-          {(content.title as string) || 'Trusted by leading companies'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-8">
           {logos.map((logo, index) => (

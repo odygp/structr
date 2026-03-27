@@ -16,7 +16,7 @@ export default function StatsCards({ content, colorMode, sectionId }: { content:
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
-            {(content.title as string) || 'By the Numbers'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
         </div>
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-6">

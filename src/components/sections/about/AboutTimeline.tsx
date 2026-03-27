@@ -20,11 +20,11 @@ export default function AboutTimeline({ content, colorMode, sectionId }: { conte
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'About Us'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           {content.description && (
             <p className={`text-lg ${c.textSecondary} max-w-2xl mx-auto`}>
-              {content.description as string}
+            <EditableText sectionId={id} fieldKey="description" value={content.description as string} placeholder="Add description..." />
             </p>
           )}
         </div>

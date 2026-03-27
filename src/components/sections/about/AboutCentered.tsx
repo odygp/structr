@@ -14,7 +14,7 @@ export default function AboutCentered({ content, colorMode, sectionId }: { conte
     <section className={`py-12 @md:py-20 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-3xl mx-auto text-center">
         <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-6`}>
-          {content.title || 'About Us'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
         </h2>
         {content.description && (
           <p className={`text-lg ${c.textSecondary} mb-8`}>{content.description}</p>

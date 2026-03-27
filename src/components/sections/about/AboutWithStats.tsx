@@ -15,7 +15,7 @@ export default function AboutWithStats({ content, colorMode, sectionId }: { cont
       <div className="max-w-5xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text} mb-4`}>
-            {(content.title as string) || 'About Us'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
           {content.description && (
             <p className={`${c.textSecondary} mb-6`}>{content.description as string}</p>

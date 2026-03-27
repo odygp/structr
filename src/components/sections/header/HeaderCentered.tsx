@@ -18,7 +18,7 @@ export default function HeaderCentered({ content, colorMode, sectionId }: { cont
             <span key={i} className={`text-sm ${c.textSecondary} cursor-default`}>{link.label}</span>
           ))}
           <button className={`${c.btnPrimary} text-sm px-4 py-2 rounded-lg ml-2`}>
-            {content.ctaText as string}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Add ctatext..." />
           </button>
         </nav>
       </div>

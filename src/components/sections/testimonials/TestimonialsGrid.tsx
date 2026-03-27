@@ -17,7 +17,7 @@ export default function TestimonialsGrid({ content, colorMode, sectionId }: { co
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <h2 className={`text-2xl @md:text-3xl font-bold ${c.text}`}>
-            {(content.title as string) || 'What Our Customers Say'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
         </div>
         <div className="grid grid-cols-1 @md:grid-cols-2 gap-8">

@@ -18,7 +18,7 @@ export default function FooterSimple({ content, colorMode, sectionId }: { conten
     <footer className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} py-8 @md:py-12 px-4 @md:px-6`}>
       <div className="max-w-5xl mx-auto text-center">
         <div className="text-white font-bold text-xl mb-6">
-          {content.logo || 'Logo'}
+            <EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Add logo..." />
         </div>
         {allLinks.length > 0 && (
           <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
@@ -30,7 +30,7 @@ export default function FooterSimple({ content, colorMode, sectionId }: { conten
           </div>
         )}
         <p className="text-gray-400 text-sm">
-          {content.copyright || '\u00A9 2026 Company. All rights reserved.'}
+            <EditableText sectionId={id} fieldKey="copyright" value={content.copyright as string} placeholder="Add copyright..." />
         </p>
       </div>
     </footer>

@@ -16,7 +16,7 @@ export default function LogoWithTitle({ content, colorMode, sectionId }: { conte
       <div className="max-w-5xl mx-auto flex flex-col @md:flex-row items-center gap-12">
         <div className="md:w-1/3 shrink-0">
           <h2 className={`text-2xl font-bold ${c.text}`}>
-            {(content.title as string) || 'Trusted by leading companies'}
+            <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
           </h2>
         </div>
         <div className="md:w-2/3 grid grid-cols-2 @sm:grid-cols-3 gap-8">

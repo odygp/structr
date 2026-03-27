@@ -12,13 +12,13 @@ export default function HeaderSimple({ content, colorMode, sectionId }: { conten
   return (
     <header className={`${c.bg} border-b ${c.border} ${spacing}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className={`text-xl font-bold ${c.text}`}>{content.logo as string}</div>
+        <div className={`text-xl font-bold ${c.text}`}><EditableText sectionId={id} fieldKey="logo" value={content.logo as string} placeholder="Logo" /></div>
         <nav className="hidden @md:flex items-center gap-8">
           {links.map((link, i) => (
             <span key={i} className={`text-sm ${c.textSecondary} cursor-default`}>{link.label}</span>
           ))}
         </nav>
-        <button className={`${c.btnPrimary} text-sm px-4 py-2 rounded-lg`}>{content.ctaText as string}</button>
+        <button className={`${c.btnPrimary} text-sm px-4 py-2 rounded-lg`}><EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="CTA" /></button>
       </div>
     </header>
   );

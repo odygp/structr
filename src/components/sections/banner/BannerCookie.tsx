@@ -15,7 +15,7 @@ export default function BannerCookie({ content, colorMode, sectionId }: { conten
       <div className={`max-w-3xl mx-auto ${c.bgCard} border ${c.border} rounded-2xl shadow-lg px-6 py-5 flex flex-col @sm:flex-row items-start sm:items-center gap-4`}>
         <div className="flex-1">
           <p className={`text-sm ${c.textSecondary} leading-relaxed`}>
-            {(content.text as string) || 'We use cookies to improve your experience. By continuing to browse, you agree to our use of cookies.'}
+            <EditableText sectionId={id} fieldKey="text" value={content.text as string} placeholder="Add text..." />
           </p>
         </div>
 
@@ -24,7 +24,7 @@ export default function BannerCookie({ content, colorMode, sectionId }: { conten
             Decline
           </button>
           <button className={`${c.btnPrimary} text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap`}>
-            {(content.ctaText as string) || 'Accept'}
+            <EditableText sectionId={id} fieldKey="ctaText" value={content.ctaText as string} placeholder="Add ctatext..." />
           </button>
         </div>
 
