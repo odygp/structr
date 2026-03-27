@@ -601,6 +601,86 @@ const categoryFallbacks: Record<string, Thumb> = {
     </>
   ),
   footer: thumbs['footer-4col']!,
+  showcase: () => (
+    <>
+      <rect x="4" y="4" width="40" height="5" rx="1" fill={C.title} />
+      <rect x="90" y="4" width="26" height="6" rx="3" fill={C.dark} />
+      {[20, 32, 44, 56].map((x, i) => (
+        <rect key={i} x={x} y="14" width="10" height="3" rx="1" fill={i === 0 ? C.accent : C.text} />
+      ))}
+      <rect x="4" y="22" width="36" height="36" rx="4" fill={C.dark} />
+      {[44, 70, 96].map((x, i) => (
+        <React.Fragment key={i}>
+          <rect x={x} y="22" width="22" height="16" rx="2" fill={C.img} />
+          <rect x={x} y="40" width="18" height="3" rx="1" fill={C.title} />
+          <rect x={x} y="45" width="16" height="2" rx="1" fill={C.text} />
+          <rect x={x} y="52" width="12" height="3" rx="1" fill={C.accent} />
+        </React.Fragment>
+      ))}
+    </>
+  ),
+  error: () => (
+    <>
+      <rect x="35" y="8" width="50" height="14" rx="1" fill={C.img} />
+      <rect x="30" y="28" width="60" height="5" rx="1" fill={C.title} />
+      <rect x="25" y="36" width="70" height="3" rx="1" fill={C.text} />
+      <rect x="44" y="46" width="32" height="8" rx="3" fill={C.dark} />
+    </>
+  ),
+  process: () => (
+    <>
+      <rect x="30" y="4" width="60" height="5" rx="1" fill={C.title} />
+      {[16, 42, 68, 94].map((x, i) => (
+        <React.Fragment key={i}>
+          <circle cx={x+6} cy="28" r="8" fill={C.dark} />
+          <rect x={x-2} y="40" width="16" height="3" rx="1" fill={C.title} />
+          <rect x={x} y="46" width="12" height="2" rx="1" fill={C.text} />
+        </React.Fragment>
+      ))}
+    </>
+  ),
+  downloads: () => (
+    <>
+      <rect x="30" y="8" width="60" height="5" rx="1" fill={C.title} />
+      <rect x="35" y="16" width="50" height="3" rx="1" fill={C.text} />
+      {[16, 48, 80].map((x, i) => (
+        <React.Fragment key={i}>
+          <rect x={x} y="26" width="32" height="30" rx="4" fill={C.bg} stroke={C.img} strokeWidth="0.5" />
+          <rect x={x+8} y="30" width="16" height="10" rx="2" fill={C.img} />
+          <rect x={x+4} y="44" width="24" height="3" rx="1" fill={C.title} />
+          <rect x={x+6} y="50" width="20" height="4" rx="2" fill={C.dark} />
+        </React.Fragment>
+      ))}
+    </>
+  ),
+  comparison: () => (
+    <>
+      <rect x="30" y="4" width="60" height="5" rx="1" fill={C.title} />
+      <rect x="8" y="14" width="104" height="1" fill={C.img} />
+      {[20, 32, 44].map((y, i) => (
+        <React.Fragment key={i}>
+          <rect x="8" y={y} width="104" height="1" fill={C.img} />
+          <rect x="12" y={y+3} width="30" height="3" rx="1" fill={C.text} />
+          <rect x="54" y={y+3} width="6" height="3" rx="1" fill={C.accent} />
+          <rect x="74" y={y+3} width="6" height="3" rx="1" fill={C.accent} />
+          <rect x="94" y={y+3} width="6" height="3" rx="1" fill={C.accent} />
+        </React.Fragment>
+      ))}
+    </>
+  ),
+  store: () => (
+    <>
+      <rect x="30" y="4" width="60" height="5" rx="1" fill={C.title} />
+      {[8, 44, 80].map((x, i) => (
+        <React.Fragment key={i}>
+          <rect x={x} y="14" width="32" height="20" rx="3" fill={C.img} />
+          <rect x={x+2} y="37" width="24" height="3" rx="1" fill={C.title} />
+          <rect x={x+2} y="43" width="16" height="3" rx="1" fill={C.accent} />
+          <rect x={x+2} y="50" width="28" height="6" rx="2" fill={C.dark} />
+        </React.Fragment>
+      ))}
+    </>
+  ),
 };
 
 export default function VariantThumbnail({ variantId, variantName }: { variantId: string; variantName?: string }) {
