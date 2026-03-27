@@ -96,6 +96,9 @@ interface BuilderState {
   exportProjectJSON: () => string;
   importProjectJSON: (json: string) => void;
 
+  // Remote project loading (Supabase)
+  loadRemoteProject: (dbProject: unknown) => void;
+
   // Template
   applyTemplate: (templateId: string) => void;
 
@@ -421,6 +424,50 @@ export const useBuilderStore = create<BuilderState>()(
           s.historyIndex = -1;
         } catch {
           // Invalid JSON, ignore
+        }
+      }),
+
+      // ── Remote Project Loading ──
+      loadRemoteProject: (dbProject: unknown) => set((s) => {
+        try {
+          const dp = dbProject as { id: string; name: string; structr_pages?: { id: string; name: string; sort_order: number; structr_sections?: { id: string; category: string; variant_id: string; content: Record<string, unknown>; color_mode: string; sort_order: number; }[] }[] };
+          const pages: Page[] = (dp.structr_pages || [])
+            .sort((a, b) => a.sort_order - b.sort_order)
+            .map(p => ({
+              id: p.id,
+              name: p.name,
+              sections: (p.structr_sections || [])
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map(sec => ({
+                  id: sec.id,
+                  category: sec.category as SectionCategory,
+                  variantId: sec.variant_id,
+                  content: sec.content as Record<string, ContentValue>,
+                  colorMode: (sec.color_mode || 'light') as ColorMode,
+                })),
+            }));
+
+          const project: Project = {
+            id: dp.id,
+            name: dp.name,
+            pages: pages.length > 0 ? pages : [{ id: generateId(), name: 'Home', sections: [] }],
+            activePageId: pages[0]?.id || '',
+          };
+          if (!project.activePageId) project.activePageId = project.pages[0].id;
+
+          // Replace if exists, otherwise add
+          const idx = s.projects.findIndex(p => p.id === project.id);
+          if (idx >= 0) {
+            s.projects[idx] = project;
+          } else {
+            s.projects.push(project);
+          }
+          s.activeProjectId = project.id;
+          s.selectedSectionId = null;
+          s.history = [];
+          s.historyIndex = -1;
+        } catch (e) {
+          console.error('Failed to load remote project:', e);
         }
       }),
 
