@@ -84,14 +84,33 @@ function useShare() {
   return { copied, handleShare };
 }
 
+/* ── Circular progress indicator ── */
+function CircularProgress({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" className="animate-spin flex-shrink-0">
+      <circle cx="8" cy="8" r="6" fill="none" stroke="#e6e6e6" strokeWidth="2" />
+      <circle cx="8" cy="8" r="6" fill="none" stroke="#1c1c1c" strokeWidth="2"
+        strokeDasharray="37.7" strokeDashoffset="28" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /* ── Toolbar props ── */
+interface PendingPageInfo {
+  name: string;
+  loading: boolean;
+  done: boolean;
+  error?: boolean;
+}
+
 interface ToolbarProps {
   commentsOpen?: boolean;
   onToggleComments?: () => void;
   commentCount?: number;
+  pendingPages?: PendingPageInfo[];
 }
 
-export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0 }: ToolbarProps) {
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [] }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -309,6 +328,32 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
                       )}
                     </div>
                   ))}
+                  {/* Pending pages (importing in background) */}
+                  {pendingPages.length > 0 && (
+                    <div className="border-t border-[#e6e6e6] mt-1 pt-1">
+                      <div className="px-3 py-1.5 text-[11px] font-medium text-[#808080] uppercase tracking-wider">Importing...</div>
+                      {pendingPages.map((pp, i) => (
+                        <div
+                          key={i}
+                          className={`flex items-center justify-between px-3 py-2 text-[13px] ${
+                            pp.done ? 'text-[#1c1c1c] cursor-pointer hover:bg-[#f5f5f5]' : 'text-[#808080] cursor-not-allowed opacity-60'
+                          }`}
+                          role="menuitem"
+                          tabIndex={pp.done ? 0 : -1}
+                          aria-disabled={!pp.done}
+                        >
+                          <span>{pp.name}</span>
+                          {pp.loading && <CircularProgress />}
+                          {pp.done && !pp.error && (
+                            <span className="text-[10px] text-green-600">✓</span>
+                          )}
+                          {pp.error && (
+                            <span className="text-[10px] text-red-500">✗</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="border-t border-[#e6e6e6] mt-1 pt-1">
                     <button role="menuitem" onClick={() => { addPage('New Page'); setShowPageMenu(false); }}
                       className="w-full text-left px-3 py-2 text-[13px] text-[#808080] hover:bg-[#f5f5f5] hover:text-[#1c1c1c]">

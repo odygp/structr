@@ -41,6 +41,7 @@ function BuilderLayoutInner() {
   const [liveMessage, setLiveMessage] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [pendingPages, setPendingPages] = useState<{ name: string; url: string; sortOrder: number; loading: boolean; done: boolean; error?: boolean }[]>([]);
 
   const searchParams = useSearchParams();
   const projectId = searchParams.get('project');
@@ -55,6 +56,55 @@ function BuilderLayoutInner() {
     load();
     const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
+  }, [projectId]);
+
+  // Background import: process pending pages one by one
+  useEffect(() => {
+    if (!projectId) return;
+    const stored = sessionStorage.getItem(`structr-import-${projectId}`);
+    if (!stored) return;
+    sessionStorage.removeItem(`structr-import-${projectId}`);
+
+    let pages: { url: string; name: string; sortOrder: number }[];
+    try { pages = JSON.parse(stored); } catch { return; }
+    if (!pages.length) return;
+
+    // Initialize pending pages state
+    const initial = pages.map(p => ({ ...p, loading: false, done: false, error: false }));
+    setPendingPages(initial);
+
+    // Process pages sequentially
+    (async () => {
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        // Mark as loading
+        setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
+
+        try {
+          const res = await fetch('/api/import/website/page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              projectId,
+              url: page.url,
+              name: page.name,
+              sortOrder: page.sortOrder,
+            }),
+          });
+          const data = await res.json();
+          setPendingPages(prev => prev.map((p, j) =>
+            j === i ? { ...p, loading: false, done: true, error: !!data.skipped } : p
+          ));
+        } catch {
+          setPendingPages(prev => prev.map((p, j) =>
+            j === i ? { ...p, loading: false, done: true, error: true } : p
+          ));
+        }
+      }
+
+      // Clear pending pages after all done (with a delay so user sees the checkmarks)
+      setTimeout(() => setPendingPages([]), 3000);
+    })();
   }, [projectId]);
 
   const resolveComment = async (commentId: string) => {
@@ -114,6 +164,7 @@ function BuilderLayoutInner() {
         commentsOpen={commentsOpen}
         onToggleComments={handleToggleComments}
         commentCount={unresolvedCount}
+        pendingPages={pendingPages}
       />
 
       <div className="flex flex-1 overflow-hidden">
