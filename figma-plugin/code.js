@@ -374,12 +374,12 @@ var VARIANT_SPECIFIC = {
     comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
     comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
     var textCol = frame("textContent", { dir: "VERTICAL", g: 20 });
-    textCol.resize(620, 100); textCol.counterAxisSizingMode = "FIXED";
+    textCol.layoutSizingHorizontal = "FILL";
     var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
     var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary']);
     textCol.appendChild(tn); linkText(tn, tk);
     var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
-    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 500 });
+    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 550 });
     textCol.appendChild(sn); linkText(sn, sk);
     var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
     var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn"; btns.appendChild(pb);
@@ -461,7 +461,7 @@ var VARIANT_SPECIFIC = {
       var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 350);
       if (i % 2 === 0) { row.appendChild(textBlock); row.appendChild(img); }
       else { row.appendChild(img); row.appendChild(textBlock); }
-      textBlock.layoutGrow = 1;
+      try { textBlock.layoutSizingHorizontal = "FILL"; } catch(e) { textBlock.layoutGrow = 1; }
       comp.appendChild(row);
     }
   },
@@ -510,7 +510,7 @@ var VARIANT_SPECIFIC = {
       card.appendChild(txt("bentoTitle_" + i, features[i].title || '', 16, FS, C['text/primary']));
       card.appendChild(txt("bentoDesc_" + i, features[i].description || '', 14, FR, C['text/secondary'], { w: w - 64 }));
       grid.appendChild(card);
-      card.layoutGrow = 1;
+      try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
     }
     comp.appendChild(grid);
@@ -562,7 +562,7 @@ function buildHeaderOrganism(comp, content, atoms, molecules) {
     try { var props = link.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) link.setProperties(makeObj(k, links[i].label || '')); } } catch(e) {}
     nav.appendChild(link);
   }
-  nav.layoutGrow = 1; comp.appendChild(nav);
+  try { nav.layoutSizingHorizontal = "FILL"; } catch(e) { nav.layoutGrow = 1; } comp.appendChild(nav);
 
   var ctaBtn = atoms.Button.defaultVariant.createInstance();
   ctaBtn.name = "cta";
@@ -638,7 +638,7 @@ function buildFeaturesOrganism(comp, content, atoms, molecules) {
       }
     } catch(e) {}
     grid.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -670,7 +670,7 @@ function buildStatsOrganism(comp, content, atoms, molecules) {
       }
     } catch(e) {}
     row.appendChild(item);
-    item.layoutGrow = 1;
+    try { item.layoutSizingHorizontal = "FILL"; } catch(e) { item.layoutGrow = 1; }
 
   }
   comp.appendChild(row);
@@ -703,7 +703,7 @@ function buildTestimonialsOrganism(comp, content, atoms, molecules) {
       }
     } catch(e) {}
     cards.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(cards);
@@ -815,7 +815,7 @@ function buildLogosOrganism(comp, content, atoms) {
   row.resize(1280, 100); row.counterAxisSizingMode = "FIXED"; row.primaryAxisSizingMode = "AUTO";
   var logos = Array.isArray(content.logos) ? content.logos : [{},{},{},{},{}];
   for (var i = 0; i < logos.length; i++) { var r = rect(80, 32, C['placeholder/default'], 6); r.name = "logo_" + i; row.appendChild(r); }
-  r.layoutGrow = 1;
+  try { r.layoutSizingHorizontal = "FILL"; } catch(e) { r.layoutGrow = 1; }
 
   comp.appendChild(row);
 }
@@ -840,7 +840,7 @@ function buildBlogOrganism(comp, content, atoms, molecules) {
     card.appendChild(txt("postTitle_" + i, posts[i].title || '', 15, FS, C['text/primary']));
     card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 340 }));
     grid.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -866,7 +866,7 @@ function buildTeamOrganism(comp, content, atoms) {
     member.appendChild(txt("memberName_" + i, members[i].name || '', 14, FM, C['text/primary'], { align: "CENTER" }));
     member.appendChild(txt("memberRole_" + i, members[i].role || '', 12, FR, C['text/secondary'], { align: "CENTER" }));
     grid.appendChild(member);
-    member.layoutGrow = 1;
+    try { member.layoutSizingHorizontal = "FILL"; } catch(e) { member.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -880,7 +880,7 @@ function buildAboutOrganism(comp, content, atoms) {
   comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
   var textCol = frame("text", { dir: "VERTICAL", g: 16 });
-  textCol.resize(620, 100); textCol.counterAxisSizingMode = "FIXED";
+  textCol.layoutSizingHorizontal = "FILL";
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "About");
   var tn = txt("title", content.title || "About", 28, FB, C['text/primary']);
   textCol.appendChild(tn); linkText(tn, tk);
@@ -962,7 +962,7 @@ function buildProcessOrganism(comp, content) {
     step.appendChild(txt("stepTitle_" + i, steps[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
     step.appendChild(txt("stepDesc_" + i, steps[i].description || '', 13, FR, C['text/secondary'], { w: 200, align: "CENTER" }));
     grid.appendChild(step);
-    step.layoutGrow = 1;
+    try { step.layoutSizingHorizontal = "FILL"; } catch(e) { step.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -1011,7 +1011,7 @@ function buildStoreOrganism(comp, content, atoms) {
     info.appendChild(txt("productPrice_" + i, products[i].price || '', 16, FB, C['text/primary']));
     card.appendChild(info);
     grid.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -1053,7 +1053,7 @@ function buildPricingOrganism(comp, content, atoms) {
       btn.name = "planCta_" + i;
     card.appendChild(btn); hug(btn);
     grid.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -1078,7 +1078,7 @@ function buildGalleryOrganism(comp, content, atoms) {
     item.appendChild(rect(400, 260, C['placeholder/default'], 12));
     item.appendChild(txt("caption_" + i, images[i].caption || '', 13, FR, C['text/muted']));
     grid.appendChild(item);
-    item.layoutGrow = 1;
+    try { item.layoutSizingHorizontal = "FILL"; } catch(e) { item.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -1128,7 +1128,7 @@ function buildShowcaseOrganism(comp, content, atoms) {
   headerRow.resize(1280, 100); headerRow.counterAxisSizingMode = "FIXED"; headerRow.counterAxisAlignItems = "CENTER";
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Our Collection");
   var tn = txt("title", content.title || "Our Collection", 28, FB, C['text/primary']);
-  tn.layoutGrow = 1;
+  try { tn.layoutSizingHorizontal = "FILL"; } catch(e) { tn.layoutGrow = 1; }
   headerRow.appendChild(tn); linkText(tn, tk);
   var viewBtn = findVariant(atoms.Button, "Secondary").createInstance();
   headerRow.appendChild(viewBtn); hug(viewBtn);
@@ -1155,7 +1155,7 @@ function buildShowcaseOrganism(comp, content, atoms) {
     info.appendChild(txt("itemDesc_" + i, items[i].description || '', 13, FR, C['text/secondary']));
     card.appendChild(info);
     grid.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
@@ -1186,7 +1186,7 @@ function buildDownloadsOrganism(comp, content, atoms) {
     var btn = findVariant(atoms.Button, "Primary").createInstance();
       card.appendChild(btn); hug(btn);
     grid.appendChild(card);
-    card.layoutGrow = 1;
+    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
 
   }
   comp.appendChild(grid);
