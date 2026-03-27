@@ -1310,33 +1310,39 @@ figma.ui.onmessage = async function(msg) {
       }
     }
 
-    // Phase 1: Ions
+    // ════════════════════════════════════════
+    // PAGE 1: Components (Ions → Atoms → Molecules → Organisms)
+    // ════════════════════════════════════════
+    var componentsPage = figma.createPage(); componentsPage.name = "Components";
+
+    // ── Section: Ions ──
     figma.ui.postMessage({ type: 'progress', message: '🔬 Creating design tokens...' });
-    var ionsPage = figma.createPage(); ionsPage.name = "🔬 Ions";
-    createIons(ionsPage);
+    var ionsSection = figma.createSection(); ionsSection.name = "🔬 Ions — Design Tokens";
+    createIons(ionsSection);
+    componentsPage.appendChild(ionsSection);
+    ionsSection.x = 0; ionsSection.y = 0;
 
-    // Phase 2: Atoms
+    // ── Section: Atoms ──
     figma.ui.postMessage({ type: 'progress', message: '⚛️ Building atoms...' });
-    var atomsPage = figma.createPage(); atomsPage.name = "⚛️ Atoms";
-    var atoms = createAtoms(atomsPage);
+    var atomsSection = figma.createSection(); atomsSection.name = "⚛️ Atoms — Base Components";
+    var atoms = createAtoms(atomsSection);
+    componentsPage.appendChild(atomsSection);
+    atomsSection.x = 0; atomsSection.y = ionsSection.y + ionsSection.height + 100;
 
-    // Phase 3: Molecules
+    // ── Section: Molecules ──
     figma.ui.postMessage({ type: 'progress', message: '🧬 Building molecules...' });
-    var moleculesPage = figma.createPage(); moleculesPage.name = "🧬 Molecules";
-    var molecules = createMolecules(moleculesPage, atoms);
+    var moleculesSection = figma.createSection(); moleculesSection.name = "🧬 Molecules — Compound Components";
+    var molecules = createMolecules(moleculesSection, atoms);
+    componentsPage.appendChild(moleculesSection);
+    moleculesSection.x = 0; moleculesSection.y = atomsSection.y + atomsSection.height + 100;
 
-    // Phase 4: Organisms
+    // ── Section: Organisms ──
     figma.ui.postMessage({ type: 'progress', message: '🏗️ Building organisms...' });
-    var organismsPage = figma.createPage(); organismsPage.name = "🏗️ Organisms";
+    var organismsSection = figma.createSection(); organismsSection.name = "🏗️ Organisms — Section Components";
     var compSets = {};
     var cy = 60;
 
-    organismsPage.appendChild(txt("_label", "🏗️ Organisms — Section Components", 32, FB, C['text/primary']));
-
     for (var cat in used) {
-      var label = txt("_cat_" + cat, getCategoryLabel(cat), 20, FS, C['text/primary']);
-      organismsPage.appendChild(label); label.x = 0; label.y = cy; cy += 36;
-
       var comps = [];
       var catComps = {};
       var vids = Object.keys(used[cat]);
@@ -1346,7 +1352,7 @@ figma.ui.onmessage = async function(msg) {
         var comp = figma.createComponent();
         comp.name = "Variant=" + getVariantName(vid);
         buildOrganism(comp, cat, vid, getDefaultContent(cat), atoms, molecules);
-        organismsPage.appendChild(comp);
+        organismsSection.appendChild(comp);
         comp.x = 0; comp.y = cy;
         cy += (comp.height > 100 ? comp.height : 200) + 40;
         comps.push(comp);
@@ -1354,7 +1360,7 @@ figma.ui.onmessage = async function(msg) {
       }
 
       if (comps.length > 1) {
-        var set = figma.combineAsVariants(comps, organismsPage);
+        var set = figma.combineAsVariants(comps, organismsSection);
         set.name = getCategoryLabel(cat);
         set.x = 0; set.y = cy - comps.length * 200;
         cy = set.y + set.height + 80;
@@ -1365,14 +1371,25 @@ figma.ui.onmessage = async function(msg) {
       cy += 40;
     }
 
-    // Phase 5: Templates (Pages with instances)
+    componentsPage.appendChild(organismsSection);
+    organismsSection.x = 0; organismsSection.y = moleculesSection.y + moleculesSection.height + 100;
+
+    // ════════════════════════════════════════
+    // PAGE 2: Pages (template instances with sections per page)
+    // ════════════════════════════════════════
+    var pagesPage = figma.createPage(); pagesPage.name = "Pages";
     var total = 0;
+    var pageSectionY = 0;
+
     for (var p = 0; p < project.pages.length; p++) {
       var pd = project.pages[p];
       var secs = pd.sections || [];
       figma.ui.postMessage({ type: 'progress', message: '📄 Building "' + pd.name + '" (' + secs.length + ' sections)...' });
 
-      var fp = figma.createPage(); fp.name = "📄 " + (pd.name || "Page " + (p + 1));
+      // Create a Figma section for each page
+      var pageSection = figma.createSection();
+      pageSection.name = "📄 " + (pd.name || "Page " + (p + 1));
+
       var pf = figma.createFrame(); pf.name = pd.name || 'Page';
       pf.resize(W, 100); pf.layoutMode = "VERTICAL";
       pf.primaryAxisSizingMode = "AUTO"; pf.counterAxisSizingMode = "FIXED";
@@ -1390,12 +1407,15 @@ figma.ui.onmessage = async function(msg) {
         } catch(e) { console.error("Error:", secs[s].category, e); }
       }
 
-      fp.appendChild(pf);
-      if (p === project.pages.length - 1) {
-        figma.currentPage = fp;
-        figma.viewport.scrollAndZoomIntoView([pf]);
-      }
+      pageSection.appendChild(pf);
+      pagesPage.appendChild(pageSection);
+      pageSection.x = 0; pageSection.y = pageSectionY;
+      pageSectionY += pf.height + 200;
     }
+
+    figma.currentPage = pagesPage;
+    var firstSection = pagesPage.children[0];
+    if (firstSection) figma.viewport.scrollAndZoomIntoView([firstSection]);
 
     figma.ui.postMessage({ type: 'done', sectionCount: total, pageCount: project.pages.length });
   } catch(e) {
