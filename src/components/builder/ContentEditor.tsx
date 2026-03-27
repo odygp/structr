@@ -13,34 +13,9 @@ function FieldEditor({
   const { updateContent, updateItemField, addItem, removeItem } = useBuilderStore();
   const fieldId = useId();
 
-  if (field.type === 'text') {
-    return (
-      <div className="mb-4">
-        <label htmlFor={fieldId} className="block text-xs font-medium text-gray-700 mb-1">{field.label}</label>
-        <input
-          id={fieldId}
-          type="text"
-          value={(value as string) || ''}
-          onChange={(e) => updateContent(sectionId, field.key, e.target.value)}
-          className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-        />
-      </div>
-    );
-  }
-
-  if (field.type === 'textarea') {
-    return (
-      <div className="mb-4">
-        <label htmlFor={fieldId} className="block text-xs font-medium text-gray-700 mb-1">{field.label}</label>
-        <textarea
-          id={fieldId}
-          value={(value as string) || ''}
-          onChange={(e) => updateContent(sectionId, field.key, e.target.value)}
-          rows={3}
-          className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
-        />
-      </div>
-    );
+  // Text and textarea fields are handled by inline editing on the canvas
+  if (field.type === 'text' || field.type === 'textarea') {
+    return null;
   }
 
   if (field.type === 'boolean') {

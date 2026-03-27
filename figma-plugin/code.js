@@ -68,8 +68,21 @@ function frame(name, opts) {
   return f;
 }
 
-function linkText(node, key) { try { node.componentPropertyReferences = { characters: key }; } catch(e) {} }
-function linkVis(node, key) { try { node.componentPropertyReferences = { visible: key }; } catch(e) {} }
+function linkText(node, key) {
+  try {
+    // Merge with existing references to avoid overwriting
+    var refs = node.componentPropertyReferences || {};
+    refs.characters = key;
+    node.componentPropertyReferences = refs;
+  } catch(e) { console.log('linkText failed for ' + node.name + ': ' + e.message); }
+}
+function linkVis(node, key) {
+  try {
+    var refs = node.componentPropertyReferences || {};
+    refs.visible = key;
+    node.componentPropertyReferences = refs;
+  } catch(e) { console.log('linkVis failed for ' + node.name + ': ' + e.message); }
+}
 
 // ══════════════════════════════════════
 // IONS — Design Token Variables
