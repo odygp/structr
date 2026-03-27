@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useBuilderStore, ViewportSize } from '@/lib/store';
 import { exportPageToHTML } from '@/lib/export-html';
+import { useSearchParams } from 'next/navigation';
 import {
   Undo2,
   Redo2,
@@ -12,7 +13,89 @@ import {
   FileJson,
   FileCode,
   X,
+  Link2,
+  Check,
 } from 'lucide-react';
+
+function ShareButton() {
+  const [copied, setCopied] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const activeProjectId = useBuilderStore((s) => s.activeProjectId);
+  const exportProjectJSON = useBuilderStore((s) => s.exportProjectJSON);
+
+  const handleShare = async () => {
+    if (generating) return;
+    setGenerating(true);
+
+    try {
+      // Check if this is a Supabase project (UUID format)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(activeProjectId);
+
+      let shareUrl: string;
+
+      if (isUUID) {
+        // Supabase project — share directly by ID
+        shareUrl = `${window.location.origin}/preview?project=${activeProjectId}`;
+      } else {
+        // Local project — compress and encode as URL param
+        const json = exportProjectJSON();
+        const pako = await import('pako');
+        const compressed = pako.deflate(json);
+        let binary = '';
+        const bytes = new Uint8Array(compressed);
+        const chunkSize = 8192;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          const chunk = bytes.subarray(i, i + chunkSize);
+          binary += String.fromCharCode.apply(null, Array.from(chunk));
+        }
+        const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        shareUrl = `${window.location.origin}/preview?d=${base64}`;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback: prompt
+      const json = exportProjectJSON();
+      const pako = await import('pako');
+      const compressed = pako.deflate(json);
+      let binary = '';
+      const bytes = new Uint8Array(compressed);
+      for (let i = 0; i < bytes.length; i += 8192) {
+        binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
+      }
+      const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      prompt('Copy this share link:', `${window.location.origin}/preview?d=${base64}`);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      aria-label={copied ? 'Link copied!' : 'Share public preview link'}
+      className={`flex items-center gap-1.5 h-8 px-[10px] text-[13px] rounded-md transition-colors ${
+        copied
+          ? 'text-green-700 bg-green-50'
+          : 'text-gray-700 hover:bg-gray-50'
+      }`}
+    >
+      {copied ? (
+        <>
+          Copied!
+          <Check className="w-4 h-4" aria-hidden="true" />
+        </>
+      ) : (
+        <>
+          Share
+          <Link2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
+        </>
+      )}
+    </button>
+  );
+}
 
 export default function Toolbar() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -371,15 +454,8 @@ export default function Toolbar() {
 
         <div className="h-4 w-px bg-gray-200 mx-3" aria-hidden="true" />
 
-        {/* Share / Import */}
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          aria-label="Import JSON project"
-          className="flex items-center gap-1.5 h-8 px-[10px] text-[13px] text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-        >
-          Share
-          <Share2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
-        </button>
+        {/* Share */}
+        <ShareButton />
 
         {/* Export dropdown */}
         <div className="relative">
