@@ -139,7 +139,7 @@ function PreviewContent() {
       </div>
 
       {/* Sections */}
-      <main>
+      <main className="@container">
         {currentPage?.sections.map((section) => {
           const Component = componentRegistry[section.variantId];
           if (!Component) return null;
