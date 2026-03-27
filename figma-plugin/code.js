@@ -267,7 +267,7 @@ function createMolecules(page, atoms) {
   featureCard.itemSpacing = 12; featureCard.cornerRadius = 12;
   featureCard.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
 
-  var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon";
+  var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon"; fcIcon.layoutSizingVertical = "HUG"; fcIcon.layoutSizingHorizontal = "HUG";
   featureCard.appendChild(fcIcon);
   var fcTk = featureCard.addComponentProperty("Title", "TEXT", "Feature Title");
   var fcTitle = txt("title", "Feature Title", 15, FS, C['text/primary']);
@@ -813,6 +813,7 @@ function buildLogosOrganism(comp, content, atoms) {
   var tn = txt("title", content.title || "Trusted by leading companies", 13, FR, C['text/muted'], { align: "CENTER" });
   comp.appendChild(tn); linkText(tn, tk);
   var row = frame("logos", { dir: "HORIZONTAL", g: 40, ca: "CENTER" });
+  row.resize(1280, 100); row.counterAxisSizingMode = "FIXED"; row.primaryAxisSizingMode = "AUTO";
   var logos = Array.isArray(content.logos) ? content.logos : [{},{},{},{},{}];
   for (var i = 0; i < logos.length; i++) { var r = rect(80, 32, C['placeholder/default'], 6); r.name = "logo_" + i; row.appendChild(r); }
   r.layoutGrow = 1;
@@ -836,9 +837,9 @@ function buildBlogOrganism(comp, content, atoms, molecules) {
   for (var i = 0; i < posts.length; i++) {
     var card = frame("post_" + i, { dir: "VERTICAL", g: 12 });
     card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
-    card.appendChild(rect(280, 160, C['placeholder/default'], 12));
+    card.appendChild(rect(348, 160, C['placeholder/default'], 12));
     card.appendChild(txt("postTitle_" + i, posts[i].title || '', 15, FS, C['text/primary']));
-    card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 260 }));
+    card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 340 }));
     grid.appendChild(card);
     card.layoutGrow = 1;
 
@@ -857,6 +858,7 @@ function buildTeamOrganism(comp, content, atoms) {
   var tn = txt("title", content.title || "Team", 28, FB, C['text/primary'], { align: "CENTER" });
   comp.appendChild(tn); linkText(tn, tk);
   var grid = frame("members", { dir: "HORIZONTAL", g: 32, ca: "CENTER" });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var members = Array.isArray(content.members) ? content.members : [{ name: 'Jane', role: 'CEO' }, { name: 'John', role: 'CTO' }];
   for (var i = 0; i < members.length; i++) {
     var member = frame("member_" + i, { dir: "VERTICAL", g: 8, ca: "CENTER" });
@@ -950,6 +952,7 @@ function buildProcessOrganism(comp, content) {
   var tn = txt("title", content.title || "How it works", 28, FB, C['text/primary'], { align: "CENTER" });
   comp.appendChild(tn); linkText(tn, tk);
   var grid = frame("steps", { dir: "HORIZONTAL", g: 32 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   var steps = Array.isArray(content.steps) ? content.steps : [{ title: 'Step 1', description: 'Desc' }, { title: 'Step 2', description: 'Desc' }, { title: 'Step 3', description: 'Desc' }];
   for (var i = 0; i < steps.length; i++) {
     var step = frame("step_" + i, { dir: "VERTICAL", g: 12, ca: "CENTER" });
@@ -1003,7 +1006,7 @@ function buildStoreOrganism(comp, content, atoms) {
   for (var i = 0; i < products.length; i++) {
     var card = frame("product_" + i, { dir: "VERTICAL", g: 12, stroke: C['border/default'], r: 12 });
     card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
-    card.appendChild(rect(280, 180, C['placeholder/default'], 0));
+    card.appendChild(rect(348, 180, C['placeholder/default'], 0));
     var info = frame("info", { dir: "VERTICAL", g: 8, px: 16, py: 16 });
     info.appendChild(txt("productTitle_" + i, products[i].title || '', 15, FS, C['text/primary']));
     info.appendChild(txt("productPrice_" + i, products[i].price || '', 16, FB, C['text/primary']));
@@ -1069,6 +1072,7 @@ function buildGalleryOrganism(comp, content, atoms) {
   var tn = txt("title", content.title || "Our Work", 28, FB, C['text/primary'], { align: "CENTER" });
   comp.appendChild(tn); linkText(tn, tk);
   var grid = frame("images", { dir: "HORIZONTAL", g: 16 });
+  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
   grid.layoutWrap = "WRAP";
   var images = Array.isArray(content.images) ? content.images : [{ caption: 'Project 1' }, { caption: 'Project 2' }, { caption: 'Project 3' }];
   for (var i = 0; i < images.length; i++) {
