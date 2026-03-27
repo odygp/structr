@@ -58,6 +58,19 @@ function BuilderLayoutInner() {
     return () => clearInterval(interval);
   }, [projectId]);
 
+  // Reload project data from Supabase
+  const loadRemoteProject = useBuilderStore((s) => s.loadRemoteProject);
+  const reloadProject = async () => {
+    if (!projectId) return;
+    try {
+      const res = await fetch(`/api/projects/${projectId}`);
+      if (res.ok) {
+        const data = await res.json();
+        loadRemoteProject(data);
+      }
+    } catch {}
+  };
+
   // Background import: process pending pages one by one
   useEffect(() => {
     if (!projectId) return;
@@ -69,15 +82,12 @@ function BuilderLayoutInner() {
     try { pages = JSON.parse(stored); } catch { return; }
     if (!pages.length) return;
 
-    // Initialize pending pages state
     const initial = pages.map(p => ({ ...p, loading: false, done: false, error: false }));
     setPendingPages(initial);
 
-    // Process pages sequentially
     (async () => {
       for (let i = 0; i < pages.length; i++) {
         const page = pages[i];
-        // Mark as loading
         setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
 
         try {
@@ -92,9 +102,14 @@ function BuilderLayoutInner() {
             }),
           });
           const data = await res.json();
+          const success = !data.skipped && data.done;
+
           setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: !!data.skipped } : p
+            j === i ? { ...p, loading: false, done: true, error: !success } : p
           ));
+
+          // Reload project from Supabase after each successful page import
+          if (success) await reloadProject();
         } catch {
           setPendingPages(prev => prev.map((p, j) =>
             j === i ? { ...p, loading: false, done: true, error: true } : p
@@ -102,9 +117,10 @@ function BuilderLayoutInner() {
         }
       }
 
-      // Clear pending pages after all done (with a delay so user sees the checkmarks)
+      // Clear pending indicators after all done
       setTimeout(() => setPendingPages([]), 3000);
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   const resolveComment = async (commentId: string) => {
