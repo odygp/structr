@@ -13,18 +13,67 @@ export default function AiPromptCard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  // Extract text content from files
+  const extractFileContents = async (): Promise<string> => {
+    if (files.length === 0) return '';
+    const contents: string[] = [];
+
+    for (const file of files) {
+      try {
+        if (file.name.endsWith('.csv') || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+          // Plain text files
+          const text = await file.text();
+          contents.push(`--- File: ${file.name} ---\n${text.slice(0, 10000)}`);
+        } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+          // Excel files — read as base64, send to a parser endpoint
+          const buffer = await file.arrayBuffer();
+          const bytes = new Uint8Array(buffer);
+          // Convert to CSV-like text by reading raw content
+          // For xlsx we'll send it as base64 to the API
+          let binary = '';
+          for (let i = 0; i < bytes.length; i += 8192) {
+            binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
+          }
+          const base64 = btoa(binary);
+          contents.push(`--- File: ${file.name} (Excel, base64) ---\n${base64.slice(0, 20000)}`);
+        } else if (file.type === 'application/pdf') {
+          contents.push(`--- File: ${file.name} (PDF attached, ${(file.size / 1024).toFixed(0)}KB) ---`);
+        } else if (file.type.startsWith('image/')) {
+          contents.push(`--- File: ${file.name} (Image attached, ${(file.size / 1024).toFixed(0)}KB) ---`);
+        } else {
+          const text = await file.text();
+          contents.push(`--- File: ${file.name} ---\n${text.slice(0, 10000)}`);
+        }
+      } catch {
+        contents.push(`--- File: ${file.name} (could not read) ---`);
+      }
+    }
+    return contents.join('\n\n');
+  };
+
   const handleSubmit = async () => {
-    if (!prompt.trim() || generating) return;
+    if ((!prompt.trim() && files.length === 0) || generating) return;
     setGenerating(true);
     setError('');
     try {
+      const fileContents = await extractFileContents();
+      const fullPrompt = fileContents
+        ? `${prompt.trim()}\n\nAttached files:\n${fileContents}`
+        : prompt.trim();
+
       const res = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: prompt.trim() }),
+        body: JSON.stringify({ prompt: fullPrompt }),
       });
-      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Generation failed'); }
-      const data = await res.json();
+
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch {
+        throw new Error(res.ok ? 'Invalid server response' : `Server error (${res.status}): ${text.slice(0, 200)}`);
+      }
+
+      if (!res.ok) throw new Error(data.error || 'Generation failed');
       router.push(`/builder?project=${data.projectId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
@@ -72,9 +121,9 @@ export default function AiPromptCard() {
         {/* Send button */}
         <button
           onClick={handleSubmit}
-          disabled={!prompt.trim() || generating}
+          disabled={(!prompt.trim() && files.length === 0) || generating}
           className={`flex items-center p-[8px] rounded-full transition-colors ${
-            prompt.trim() && !generating
+            (prompt.trim() || files.length > 0) && !generating
               ? 'bg-[#34322d] text-white'
               : 'bg-[#34322d] text-white opacity-40'
           }`}

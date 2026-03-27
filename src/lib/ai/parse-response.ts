@@ -49,13 +49,25 @@ interface AiResponse {
 }
 
 export function parseAiResponse(text: string): AiResponse {
-  // Extract JSON from the response (handle markdown code blocks)
+  // Extract JSON from the response (handle markdown code blocks, prefixed text, etc.)
   let jsonStr = text.trim();
-  if (jsonStr.startsWith('```')) {
-    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+
+  // Try code block extraction first
+  const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (codeBlockMatch) jsonStr = codeBlockMatch[1].trim();
+
+  // Try to find JSON object in the response
+  if (!jsonStr.startsWith('{')) {
+    const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (objMatch) jsonStr = objMatch[0];
   }
 
-  const parsed = JSON.parse(jsonStr);
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonStr);
+  } catch {
+    throw new Error(`AI returned invalid JSON. Response starts with: ${text.slice(0, 100)}`);
+  }
 
   if (!parsed.projectName || !Array.isArray(parsed.pages) || parsed.pages.length === 0) {
     throw new Error('Invalid response structure');
