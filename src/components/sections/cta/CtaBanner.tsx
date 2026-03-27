@@ -13,7 +13,7 @@ export default function CtaBanner({ content, colorMode, sectionId }: { content: 
     <section className={`${spacing} ${c.bgAlt}`}>
       <div className="max-w-5xl mx-auto flex flex-col @md:flex-row items-center justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2">
+          <h2 className="text-2xl font-bold ${c.text} mb-2">
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Ready to get started?" />
           </h2>
           {content.subtitle && (

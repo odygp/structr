@@ -11,7 +11,7 @@ export default function BannerTop({ content, colorMode, sectionId }: { content: 
   const id = sectionId || '';
 
   return (
-    <div className={`${colorMode === 'dark' ? 'bg-gray-800' : 'bg-gray-900'} text-white px-4 py-2`}>
+    <div className={`${c.bgAlt} ${c.text} px-4 py-2`}>
       <div className="max-w-6xl mx-auto flex items-center justify-center gap-4">
         <p className="text-sm flex-1 text-center">
             <EditableText sectionId={id} fieldKey="text" value={content.text as string} placeholder="Add text..." />

@@ -11,7 +11,7 @@ export default function BannerMinimal({ content, colorMode, sectionId }: { conte
   const id = sectionId || '';
 
   return (
-    <div className={`${c.bgAlt} border-t border-b ${c.border} px-4 py-3`}>
+    <div className={`${c.bgAlt} border-t border-b ${c.border} px-3 @md:px-4 py-2 @md:py-3`}>
       <p className={`text-sm ${c.textSecondary} text-center`}>
             <EditableText sectionId={id} fieldKey="text" value={content.text as string} placeholder="Add text..." />
       </p>

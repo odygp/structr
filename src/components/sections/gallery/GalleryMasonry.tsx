@@ -15,7 +15,7 @@ export default function GalleryMasonry({ content, colorMode, sectionId }: { cont
     <section className={`py-10 @md:py-16 px-4 @md:px-6 ${c.bg}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className={`text-2xl font-bold ${c.text}`}>
+          <h2 className={`text-xl @md:text-2xl font-bold ${c.text}`}>
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Gallery" />
           </h2>
           {content.subtitle && (

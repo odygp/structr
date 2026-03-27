@@ -12,7 +12,7 @@ export default function CtaSimple({ content, colorMode, sectionId }: { content: 
   return (
     <section className={`py-10 @md:py-16 px-4 @md:px-6 ${c.bg} border-t border-b ${c.border}`}>
       <div className="max-w-3xl mx-auto text-center">
-        <h2 className={`text-2xl font-bold ${c.text} mb-6`}>
+        <h2 className={`text-xl @md:text-2xl font-bold ${c.text} mb-6`}>
             <EditableText sectionId={id} fieldKey="title" value={content.title as string} placeholder="Add title..." />
         </h2>
         {content.showPrimaryButton !== false && content.ctaText && (
