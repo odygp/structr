@@ -65,6 +65,7 @@ interface BuilderState {
 
   // Section actions
   addSection: (category: SectionCategory, variantId: string) => void;
+  insertSectionAt: (category: SectionCategory, variantId: string, index: number) => void;
   removeSection: (id: string) => void;
   moveSection: (fromIndex: number, toIndex: number) => void;
   selectSection: (id: string | null) => void;
@@ -236,6 +237,24 @@ export const useBuilderStore = create<BuilderState>()(
           colorMode: 'light',
         };
         page.sections.push(newSection);
+        s.selectedSectionId = newSection.id;
+      }),
+
+      insertSectionAt: (category, variantId, index) => set((s) => {
+        const page = activePage(s);
+        if (!page) return;
+        const variant = getVariant(category, variantId);
+        if (!variant) return;
+        pushHistory(s);
+        const newSection: PlacedSection = {
+          id: generateId(),
+          category,
+          variantId,
+          content: deepClone(variant.defaultContent),
+          colorMode: 'light',
+        };
+        const idx = Math.max(0, Math.min(index, page.sections.length));
+        page.sections.splice(idx, 0, newSection);
         s.selectedSectionId = newSection.id;
       }),
 

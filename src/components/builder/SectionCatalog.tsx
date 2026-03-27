@@ -90,8 +90,16 @@ export default function SectionCatalog() {
                       <button
                         key={variant.variantId}
                         onClick={() => addSection(def.category as SectionCategory, variant.variantId)}
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData('application/structr-section', JSON.stringify({
+                            category: def.category,
+                            variantId: variant.variantId,
+                          }));
+                          e.dataTransfer.effectAllowed = 'copy';
+                        }}
                         aria-label={`Add ${variant.variantName} section`}
-                        className="flex flex-col items-center p-2 rounded-[8px] border border-[#e6e6e6] hover:border-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-[#1c1c1c]"
+                        className="flex flex-col items-center p-2 rounded-[8px] border border-[#e6e6e6] hover:border-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-[#1c1c1c] cursor-grab active:cursor-grabbing"
                       >
                         <VariantThumbnail variantId={variant.variantId} variantName={variant.variantName} />
                         <span className="text-[11px] text-[#808080] group-hover:text-[#1c1c1c] mt-1.5 text-center leading-tight">
