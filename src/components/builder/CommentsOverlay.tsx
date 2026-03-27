@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useBuilderStore } from '@/lib/store';
-import { MessageCircle, X, Check, ChevronDown, ChevronUp } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { Check, MoreHorizontal, CheckSquare } from 'lucide-react';
 
 interface Comment {
   id: string;
@@ -17,85 +15,13 @@ interface Comment {
   created_at: string;
 }
 
-export function useComments() {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const projectId = searchParams.get('project');
-
-  useEffect(() => {
-    if (!projectId) { setLoading(false); return; }
-    fetch(`/api/comments?project=${projectId}`)
-      .then(r => r.ok ? r.json() : [])
-      .then(data => { setComments(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [projectId]);
-
-  const resolveComment = async (commentId: string) => {
-    try {
-      // Use PATCH-like approach via a dedicated endpoint
-      const res = await fetch(`/api/comments?id=${commentId}&action=resolve`, { method: 'PATCH' });
-      if (res.ok) {
-        setComments(prev => prev.map(c => c.id === commentId ? { ...c, resolved: true } : c));
-      }
-    } catch {}
-  };
-
-  return { comments, loading, resolveComment, projectId };
-}
-
-// Badge that shows on each section in the canvas
-export function SectionCommentBadge({ sectionIndex, pageIndex, comments }: {
-  sectionIndex: number;
-  pageIndex: number;
-  comments: Comment[];
-}) {
-  const sectionComments = comments.filter(c =>
-    c.section_index === sectionIndex &&
-    c.page_index === pageIndex &&
-    !c.parent_id &&
-    !c.resolved
-  );
-
-  if (sectionComments.length === 0) return null;
-
-  return (
-    <div className="absolute top-2 right-2 z-20 flex items-center gap-1 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md">
-      <MessageCircle size={10} />
-      {sectionComments.length}
-    </div>
-  );
-}
-
-// Comments panel (right side drawer)
-export function CommentsPanel({ comments, onResolve }: {
-  comments: Comment[];
+/* ── Comment Item (3 states: default, hover, new) ── */
+function CommentItem({ comment, onResolve, isNew }: {
+  comment: Comment;
   onResolve: (id: string) => void;
+  isNew?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<'open' | 'resolved' | 'all'>('open');
-
-  const activeProject = useBuilderStore(s => s.projects.find(p => p.id === s.activeProjectId));
-  const pages = activeProject?.pages || [];
-  const activePageId = activeProject?.activePageId;
-  const activePageIndex = pages.findIndex(p => p.id === activePageId);
-
-  const rootComments = comments.filter(c => !c.parent_id);
-  const filtered = rootComments.filter(c => {
-    if (filter === 'open') return !c.resolved;
-    if (filter === 'resolved') return c.resolved;
-    return true;
-  });
-
-  // Group by page
-  const pageGroups = filtered.reduce((acc, c) => {
-    const key = c.page_index;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(c);
-    return acc;
-  }, {} as Record<number, Comment[]>);
-
-  const unresolvedCount = rootComments.filter(c => !c.resolved).length;
+  const [hovered, setHovered] = useState(false);
 
   const timeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -107,147 +33,132 @@ export function CommentsPanel({ comments, onResolve }: {
     return `${Math.floor(hrs / 24)}d`;
   };
 
-  if (rootComments.length === 0) return null;
-
   return (
-    <>
-      {/* Toggle button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className={`fixed top-[70px] right-4 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm transition-all ${
-          open ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-        }`}
-      >
-        <MessageCircle size={13} />
-        {unresolvedCount > 0 ? `${unresolvedCount} comment${unresolvedCount !== 1 ? 's' : ''}` : 'Comments'}
-      </button>
-
-      {/* Panel */}
-      {open && (
-        <div className="fixed top-[100px] right-4 w-80 max-h-[calc(100vh-120px)] bg-white border border-gray-200 rounded-xl shadow-xl z-30 flex flex-col overflow-hidden">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
-            <h3 className="text-sm font-semibold text-gray-900">Comments</h3>
-            <div className="flex items-center gap-1">
-              {(['open', 'resolved', 'all'] as const).map(f => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-2 py-0.5 text-[10px] font-medium rounded-md transition-colors ${
-                    filter === f ? 'bg-gray-900 text-white' : 'text-gray-500 hover:bg-gray-100'
-                  }`}
-                >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Comments list */}
-          <div className="flex-1 overflow-y-auto">
-            {filtered.length === 0 ? (
-              <div className="py-8 text-center text-xs text-gray-400">
-                {filter === 'open' ? 'No open comments' : filter === 'resolved' ? 'No resolved comments' : 'No comments'}
-              </div>
-            ) : (
-              Object.entries(pageGroups).map(([pageIdx, pageComments]) => (
-                <div key={pageIdx}>
-                  {/* Page header */}
-                  {Object.keys(pageGroups).length > 1 && (
-                    <div className="px-4 py-1.5 bg-gray-50 text-[10px] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100">
-                      {pages[Number(pageIdx)]?.name || `Page ${Number(pageIdx) + 1}`}
-                    </div>
-                  )}
-
-                  {pageComments.map(comment => {
-                    const replies = comments.filter(c => c.parent_id === comment.id);
-
-                    return (
-                      <CommentItem
-                        key={comment.id}
-                        comment={comment}
-                        replies={replies}
-                        onResolve={onResolve}
-                        timeAgo={timeAgo}
-                        isCurrentPage={Number(pageIdx) === activePageIndex}
-                      />
-                    );
-                  })}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-function CommentItem({ comment, replies, onResolve, timeAgo, isCurrentPage }: {
-  comment: Comment;
-  replies: Comment[];
-  onResolve: (id: string) => void;
-  timeAgo: (d: string) => string;
-  isCurrentPage: boolean;
-}) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div className={`border-b border-gray-100 ${!isCurrentPage ? 'opacity-60' : ''}`}>
-      <div className="px-4 py-3 flex items-start gap-2.5">
-        <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">
-          {comment.author_name.charAt(0).toUpperCase()}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-900">{comment.author_name}</span>
-            <span className="text-[10px] text-gray-400">{timeAgo(comment.created_at)}</span>
-            <span className="text-[10px] text-gray-300">· S{comment.section_index + 1}</span>
-          </div>
-          <p className="text-xs text-gray-700 mt-0.5 leading-relaxed">{comment.message}</p>
-
-          {/* Replies toggle */}
-          {replies.length > 0 && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="flex items-center gap-1 mt-1.5 text-[10px] text-blue-600 hover:text-blue-700 font-medium"
-            >
-              {expanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-              {replies.length} repl{replies.length === 1 ? 'y' : 'ies'}
-            </button>
-          )}
+    <div
+      className="border-b border-[#e6e6e6] flex flex-col gap-[12px] pb-[16px] px-[4px]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Top row: avatar + resolve */}
+      <div className="flex items-start justify-between">
+        {/* Avatar */}
+        <div className="bg-[#f5f5f5] rounded-[4px] w-[24px] h-[24px] flex items-center justify-center flex-shrink-0">
+          <span className="text-[10px] font-medium text-[#8e8e8e]">
+            {comment.author_name.charAt(0).toUpperCase()}
+          </span>
         </div>
 
-        {/* Resolve button */}
+        {/* Resolve action */}
         {!comment.resolved && (
-          <button
-            onClick={() => onResolve(comment.id)}
-            title="Resolve"
-            className="p-1 hover:bg-green-50 rounded text-gray-400 hover:text-green-600 flex-shrink-0"
-          >
-            <Check size={14} />
-          </button>
+          <div className={`flex items-center gap-[8px] ${hovered ? '' : 'opacity-0'} transition-opacity`}>
+            {hovered && (
+              <span className="text-[12px] font-normal text-black opacity-40">Resolve</span>
+            )}
+            <button
+              onClick={() => onResolve(comment.id)}
+              className="bg-[#f5f5f5] flex items-center p-[4px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors"
+            >
+              <Check className="w-[16px] h-[16px] text-[#1c1c1c]" />
+            </button>
+          </div>
         )}
-        {comment.resolved && (
-          <span className="text-[10px] text-green-600 font-medium flex-shrink-0">Resolved</span>
+
+        {/* New indicator (blue dot) */}
+        {isNew && !comment.resolved && (
+          <div className="w-[8px] h-[8px] bg-blue-500 rounded-full flex-shrink-0 mt-[8px]" />
         )}
       </div>
 
-      {/* Expanded replies */}
-      {expanded && replies.map(reply => (
-        <div key={reply.id} className="pl-12 pr-4 pb-2 flex items-start gap-2">
-          <div className="w-5 h-5 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0">
-            {reply.author_name.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <div className="flex items-center gap-1">
-              <span className="text-[11px] font-medium text-gray-800">{reply.author_name}</span>
-              <span className="text-[9px] text-gray-400">{timeAgo(reply.created_at)}</span>
-            </div>
-            <p className="text-[11px] text-gray-600">{reply.message}</p>
-          </div>
+      {/* Text block */}
+      <div className="flex flex-col gap-[8px] text-[12px] text-black">
+        {/* Meta row */}
+        <div className="flex items-center gap-[7px]">
+          <span className="font-medium">{comment.author_name}</span>
+          <span className="font-normal opacity-[0.54]">{timeAgo(comment.created_at)}</span>
+          <span className="font-normal opacity-40">S{comment.section_index + 1}</span>
+          <span className="font-normal opacity-40 w-[16px]">#{comment.page_index + 1}</span>
         </div>
-      ))}
+        {/* Message */}
+        <p className="font-normal" style={{ maxWidth: 265 }}>{comment.message}</p>
+      </div>
     </div>
   );
 }
+
+/* ── Comments Sidebar (replaces right panel) ── */
+export function CommentsSidebar({ comments, onResolve }: {
+  comments: Comment[];
+  onResolve: (id: string) => void;
+}) {
+  const [filter, setFilter] = useState<'open' | 'resolved'>('open');
+
+  const rootComments = comments.filter(c => !c.parent_id);
+  const filtered = rootComments.filter(c => filter === 'open' ? !c.resolved : c.resolved);
+
+  const resolveAll = () => {
+    filtered.forEach(c => { if (!c.resolved) onResolve(c.id); });
+  };
+
+  return (
+    <aside aria-label="Comments" className="w-[240px] border-l border-[#e6e6e6] bg-white flex-shrink-0 flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-[12px] pl-[4px] p-[12px] flex-shrink-0">
+        <span className="text-[14px] font-medium leading-[14px] tracking-[-0.28px] text-[#1c1c1c]">
+          Comments
+        </span>
+        <div className="flex items-center gap-[4px]">
+          {/* Filter pill */}
+          <button
+            onClick={() => setFilter(filter === 'open' ? 'resolved' : 'open')}
+            className="border border-[#e6e6e6] rounded-[6px] h-[28px] w-[60px] flex items-center justify-center text-[11px] font-medium text-[#1c1c1c]"
+          >
+            {filter === 'open' ? 'Open' : 'Resolved'}
+          </button>
+          {/* Overflow menu */}
+          <button className="border border-[#e6e6e6] rounded-[6px] w-[28px] h-[28px] flex items-center justify-center">
+            <MoreHorizontal className="w-[16px] h-[16px] text-[#1c1c1c]" />
+          </button>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="bg-[#e6e6e6] h-px opacity-60 w-full flex-shrink-0" />
+
+      {/* Comment list */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-[12px] py-[12px] px-[12px]">
+          {filtered.length === 0 ? (
+            <p className="text-[12px] text-[#808080] text-center py-6">
+              {filter === 'open' ? 'No open comments' : 'No resolved comments'}
+            </p>
+          ) : (
+            filtered.map((comment, i) => (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                onResolve={onResolve}
+                isNew={i < 2} // first 2 shown as "new" — can be refined with real logic
+              />
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Bottom action */}
+      <div className="p-[12px] flex-shrink-0">
+        <button
+          onClick={resolveAll}
+          className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors"
+        >
+          <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">
+            Mark all as resolved
+          </span>
+          <CheckSquare className="w-[16px] h-[16px] text-[#1c1c1c]" />
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+// Keep legacy exports for the preview page
+export { CommentsSidebar as CommentsPanel };

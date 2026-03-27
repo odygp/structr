@@ -1,14 +1,15 @@
 'use client';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, forwardRef } from 'react';
 import { useBuilderStore, ViewportSize } from '@/lib/store';
 import { exportPageToHTML } from '@/lib/export-html';
-import { useSearchParams } from 'next/navigation';
 import {
+  ArrowLeft,
+  ChevronDown,
   Undo2,
   Redo2,
+  MessageSquare,
   Share2,
   Upload,
-  ChevronDown,
   Download,
   FileJson,
   FileCode,
@@ -17,7 +18,26 @@ import {
   Check,
 } from 'lucide-react';
 
-function ShareButton() {
+/* ── Pill button helper ── */
+const Pill = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { children: React.ReactNode }>(
+  ({ children, className = '', ...props }, ref) => (
+    <button
+      ref={ref}
+      {...props}
+      className={`bg-[#f5f4f2] flex items-center justify-center gap-[10px] px-[10px] py-[8px] rounded-[12px] text-[14px] font-medium leading-[14px] tracking-[-0.28px] text-[#1c1c1c] whitespace-nowrap transition-colors hover:bg-[#edece9] ${className}`}
+    >
+      {children}
+    </button>
+  )
+);
+Pill.displayName = 'Pill';
+
+function Divider() {
+  return <div className="bg-[#f5f4f2] h-[16px] w-px flex-shrink-0" aria-hidden="true" />;
+}
+
+/* ── Share logic (preserved) ── */
+function useShare() {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const activeProjectId = useBuilderStore((s) => s.activeProjectId);
@@ -26,37 +46,27 @@ function ShareButton() {
   const handleShare = async () => {
     if (generating) return;
     setGenerating(true);
-
     try {
-      // Check if this is a Supabase project (UUID format)
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(activeProjectId);
-
       let shareUrl: string;
-
       if (isUUID) {
-        // Supabase project — share directly by ID
         shareUrl = `${window.location.origin}/preview?project=${activeProjectId}`;
       } else {
-        // Local project — compress and encode as URL param
         const json = exportProjectJSON();
         const pako = await import('pako');
         const compressed = pako.deflate(json);
         let binary = '';
         const bytes = new Uint8Array(compressed);
-        const chunkSize = 8192;
-        for (let i = 0; i < bytes.length; i += chunkSize) {
-          const chunk = bytes.subarray(i, i + chunkSize);
-          binary += String.fromCharCode.apply(null, Array.from(chunk));
+        for (let i = 0; i < bytes.length; i += 8192) {
+          binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
         }
         const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         shareUrl = `${window.location.origin}/preview?d=${base64}`;
       }
-
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback: prompt
       const json = exportProjectJSON();
       const pako = await import('pako');
       const compressed = pako.deflate(json);
@@ -71,33 +81,17 @@ function ShareButton() {
       setGenerating(false);
     }
   };
-
-  return (
-    <button
-      onClick={handleShare}
-      aria-label={copied ? 'Link copied!' : 'Share public preview link'}
-      className={`flex items-center gap-1.5 h-8 px-[10px] text-[13px] rounded-md transition-colors ${
-        copied
-          ? 'text-green-700 bg-green-50'
-          : 'text-gray-700 hover:bg-gray-50'
-      }`}
-    >
-      {copied ? (
-        <>
-          Copied!
-          <Check className="w-4 h-4" aria-hidden="true" />
-        </>
-      ) : (
-        <>
-          Share
-          <Link2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
-        </>
-      )}
-    </button>
-  );
+  return { copied, handleShare };
 }
 
-export default function Toolbar() {
+/* ── Toolbar props ── */
+interface ToolbarProps {
+  commentsOpen?: boolean;
+  onToggleComments?: () => void;
+  commentCount?: number;
+}
+
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0 }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -118,9 +112,7 @@ export default function Toolbar() {
     (s) => s.projects.find((p) => p.id === s.activeProjectId)?.name || 'My Website'
   );
   const activeProjectId = useBuilderStore((s) => s.activeProjectId);
-  const activeProject = useBuilderStore((s) =>
-    s.projects.find((p) => p.id === s.activeProjectId)
-  );
+  const activeProject = useBuilderStore((s) => s.projects.find((p) => p.id === s.activeProjectId));
   const pages = activeProject?.pages || [];
   const activePage = pages.find((p) => p.id === activeProject?.activePageId);
 
@@ -136,17 +128,13 @@ export default function Toolbar() {
   const exportProjectJSON = useBuilderStore((s) => s.exportProjectJSON);
   const importProjectJSON = useBuilderStore((s) => s.importProjectJSON);
 
+  const { copied, handleShare } = useShare();
+
   // Close dropdowns on Escape
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
-      if (showExportMenu) {
-        setShowExportMenu(false);
-        exportButtonRef.current?.focus();
-      }
-      if (showPageMenu) {
-        setShowPageMenu(false);
-        pageButtonRef.current?.focus();
-      }
+      if (showExportMenu) { setShowExportMenu(false); exportButtonRef.current?.focus(); }
+      if (showPageMenu) { setShowPageMenu(false); pageButtonRef.current?.focus(); }
     }
   }, [showExportMenu, showPageMenu]);
 
@@ -155,18 +143,15 @@ export default function Toolbar() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Focus first menu item when dropdown opens
   useEffect(() => {
     if (showExportMenu && exportMenuRef.current) {
-      const firstButton = exportMenuRef.current.querySelector('button');
-      firstButton?.focus();
+      exportMenuRef.current.querySelector('button')?.focus();
     }
   }, [showExportMenu]);
 
   useEffect(() => {
     if (showPageMenu && pageMenuRef.current) {
-      const firstItem = pageMenuRef.current.querySelector('[role="menuitem"]');
-      (firstItem as HTMLElement)?.focus();
+      (pageMenuRef.current.querySelector('[role="menuitem"]') as HTMLElement)?.focus();
     }
   }, [showPageMenu]);
 
@@ -175,84 +160,50 @@ export default function Toolbar() {
     const html = exportPageToHTML(projectName, sections);
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}.html`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setShowExportMenu(false);
-    exportButtonRef.current?.focus();
+    const a = document.createElement('a'); a.href = url; a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}.html`; a.click();
+    URL.revokeObjectURL(url); setShowExportMenu(false);
   };
 
   const handleExportJSON = () => {
     const json = exportProjectJSON();
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setShowExportMenu(false);
-    exportButtonRef.current?.focus();
+    const a = document.createElement('a'); a.href = url; a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}.json`; a.click();
+    URL.revokeObjectURL(url); setShowExportMenu(false);
   };
 
   const handleExportFigma = async () => {
     const json = exportProjectJSON();
     try {
-      // Compress and encode as URL
       const pako = await import('pako');
       const compressed = pako.deflate(json);
-      // Convert Uint8Array to base64url (chunk to avoid stack overflow)
       let binary = '';
       const bytes = new Uint8Array(compressed);
-      const chunkSize = 8192;
-      for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, i + chunkSize);
-        binary += String.fromCharCode.apply(null, Array.from(chunk));
+      for (let i = 0; i < bytes.length; i += 8192) {
+        binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
       }
       const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       const shareUrl = `${window.location.origin}/api/share?d=${base64}`;
-
-      // Try clipboard first, then show prompt as fallback
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        alert('Figma share URL copied to clipboard!\n\nOpen the Structr plugin in Figma and paste the URL.');
-      } catch {
-        // Clipboard blocked — show a prompt so user can copy manually
-        prompt('Copy this URL and paste it in the Structr Figma plugin:', shareUrl);
-      }
-    } catch (err) {
-      console.error('Figma export error:', err);
-      // Fallback: download JSON file
+      try { await navigator.clipboard.writeText(shareUrl); alert('Figma share URL copied!\n\nPaste it in the Structr Figma plugin.'); }
+      catch { prompt('Copy this URL:', shareUrl); }
+    } catch {
       const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
-      a.click();
+      const a = document.createElement('a'); a.href = url; a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`; a.click();
       URL.revokeObjectURL(url);
-      alert('JSON file downloaded. Upload it in the Structr Figma plugin.');
     }
     setShowExportMenu(false);
-    exportButtonRef.current?.focus();
   };
 
   const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result;
-      if (typeof text === 'string') {
-        try { importProjectJSON(text); } catch { /* ignore */ }
-      }
-    };
+    reader.onload = (ev) => { const t = ev.target?.result; if (typeof t === 'string') { try { importProjectJSON(t); } catch {} } };
     reader.readAsText(file);
     e.target.value = '';
   };
 
-  // Keyboard navigation within export menu
   const handleExportMenuKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
@@ -260,12 +211,10 @@ export default function Toolbar() {
       if (!items) return;
       const arr = Array.from(items) as HTMLElement[];
       const idx = arr.indexOf(document.activeElement as HTMLElement);
-      const next = e.key === 'ArrowDown' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length;
-      arr[next]?.focus();
+      arr[e.key === 'ArrowDown' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length]?.focus();
     }
   };
 
-  // Keyboard navigation within page menu
   const handlePageMenuKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
@@ -273,158 +222,122 @@ export default function Toolbar() {
       if (!items) return;
       const arr = Array.from(items) as HTMLElement[];
       const idx = arr.indexOf(document.activeElement as HTMLElement);
-      const next = e.key === 'ArrowDown' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length;
-      arr[next]?.focus();
+      arr[e.key === 'ArrowDown' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length]?.focus();
     }
   };
 
-  const viewportOptions: { value: ViewportSize; label: string }[] = [
-    { value: 'desktop', label: 'Desktop' },
-    { value: 'tablet', label: 'Tablet' },
-    { value: 'mobile', label: 'Mobile' },
+  const viewportOptions: { value: ViewportSize; label: string; w: string }[] = [
+    { value: 'desktop', label: 'Desktop', w: 'w-[60px]' },
+    { value: 'tablet', label: 'Tablet', w: 'w-[56px]' },
+    { value: 'mobile', label: 'Mobile', w: 'w-[56px]' },
   ];
 
   return (
-    <div role="toolbar" aria-label="Builder toolbar" className="h-[56px] border-b border-gray-200 bg-white flex items-center px-[10px] flex-shrink-0">
-      {/* Left group: Logo | Project | Page */}
-      <div className="flex items-center h-8 flex-shrink-0">
-        {/* Logo */}
-        <div className="flex items-center gap-2 h-8 px-[10px]">
-          <div className="w-[14px] h-[14px] rounded-[3px] bg-gray-900" aria-hidden="true" />
-          <span className="font-semibold text-gray-900 text-[13px] leading-none">Structr</span>
-        </div>
+    <div role="toolbar" aria-label="Builder toolbar" className="border-b border-[#e6e6e6] bg-white flex items-center justify-between p-[10px] flex-shrink-0">
+      {/* ── Left group ── */}
+      <div className="flex items-center gap-[10px] flex-shrink-0">
+        {/* Back arrow */}
+        <Pill aria-label="Back to dashboard" onClick={() => window.history.back()}>
+          <ArrowLeft className="w-[16px] h-[16px]" />
+        </Pill>
 
-        <div className="h-4 w-px bg-gray-200 mx-[5px]" aria-hidden="true" />
+        <Divider />
 
         {/* Project name */}
-        <input
-          type="text"
-          value={projectName}
-          onChange={(e) => renameProject(activeProjectId, e.target.value)}
-          aria-label="Project name"
-          className="h-8 text-[13px] text-gray-700 placeholder-gray-500 bg-transparent rounded-md px-[10px] outline-none transition-all border border-transparent hover:border-gray-400 focus:border-gray-900 focus:text-gray-900 w-[100px]"
-          placeholder="Project name"
-        />
+        <div className="flex items-center justify-center p-[10px]">
+          <span className="text-[14px] font-medium leading-[14px] tracking-[-0.28px] text-[#1c1c1c] whitespace-nowrap">
+            {projectName}
+          </span>
+        </div>
 
-        <div className="h-4 w-px bg-gray-200 mx-[5px]" aria-hidden="true" />
+        <Divider />
 
-        {/* Page selector */}
-        <div className="relative flex items-center">
-          {/* Editable page name */}
-          <input
-            type="text"
-            value={activePage?.name || 'Home'}
-            onChange={(e) => {
-              if (activePage) renamePage(activePage.id, e.target.value);
-            }}
-            aria-label="Page name"
-            className="h-8 text-[13px] font-medium text-gray-900 bg-transparent rounded-md pl-[10px] pr-1 outline-none transition-all border border-transparent hover:border-gray-400 focus:border-gray-900 w-[80px]"
-          />
-          <span className="text-[11px] text-gray-500 mr-1" aria-hidden="true">({sections.length})</span>
-          {/* Dropdown trigger */}
-          <button
-            ref={pageButtonRef}
-            onClick={() => setShowPageMenu(!showPageMenu)}
-            aria-expanded={showPageMenu}
-            aria-haspopup="true"
-            aria-label={`Switch page. Current: ${activePage?.name || 'Home'}, ${sections.length} sections`}
-            className="h-8 px-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-          >
-            <ChevronDown className="w-4 h-4" aria-hidden="true" />
-          </button>
+        {/* Page + Version pills */}
+        <div className="flex items-center gap-[4px]">
+          {/* Page selector pill */}
+          <div className="relative">
+            <Pill
+              ref={pageButtonRef}
+              onClick={() => setShowPageMenu(!showPageMenu)}
+              aria-expanded={showPageMenu}
+              aria-haspopup="true"
+              aria-label={`Page: ${activePage?.name || 'Homepage'}`}
+            >
+              {activePage?.name || 'Homepage'}
+              <ChevronDown className="w-[16px] h-[16px]" />
+            </Pill>
 
-          {showPageMenu && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => { setShowPageMenu(false); pageButtonRef.current?.focus(); }} />
-              <div
-                ref={pageMenuRef}
-                role="menu"
-                aria-label="Pages"
-                onKeyDown={handlePageMenuKeyDown}
-                className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1"
-              >
-                <div className="px-3 py-2 text-[11px] font-medium text-gray-500 uppercase tracking-wider" aria-hidden="true">Pages</div>
-                {pages.map((page) => (
-                  <div
-                    key={page.id}
-                    role="menuitem"
-                    tabIndex={0}
-                    className={`flex items-center gap-2 px-3 py-2 text-[13px] cursor-pointer group ${
-                      page.id === activeProject?.activePageId
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                    aria-current={page.id === activeProject?.activePageId ? 'page' : undefined}
-                    onClick={() => { switchPage(page.id); setShowPageMenu(false); setEditingPageId(null); pageButtonRef.current?.focus(); }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        switchPage(page.id); setShowPageMenu(false); setEditingPageId(null); pageButtonRef.current?.focus();
-                      }
-                    }}
-                    onDoubleClick={(e) => { e.stopPropagation(); setEditingPageId(page.id); setEditingPageName(page.name); }}
-                  >
-                    {editingPageId === page.id ? (
-                      <input
-                        type="text"
-                        value={editingPageName}
-                        onChange={(e) => setEditingPageName(e.target.value)}
-                        onBlur={() => { renamePage(page.id, editingPageName); setEditingPageId(null); }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') { renamePage(page.id, editingPageName); setEditingPageId(null); }
-                          if (e.key === 'Escape') setEditingPageId(null);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={`Rename page ${page.name}`}
-                        autoFocus
-                        className="flex-1 text-[13px] text-gray-900 px-1 py-0 border border-blue-400 rounded outline-none bg-white"
-                      />
-                    ) : (
-                      <span className="flex-1">{page.name}</span>
-                    )}
-                    {pages.length > 1 && editingPageId !== page.id && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); deletePage(page.id); }}
-                        aria-label={`Delete page ${page.name}`}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-gray-200 rounded focus:opacity-100"
-                      >
-                        <X className="w-3 h-3 text-gray-500" aria-hidden="true" />
-                      </button>
-                    )}
+            {showPageMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => { setShowPageMenu(false); pageButtonRef.current?.focus(); }} />
+                <div
+                  ref={pageMenuRef}
+                  role="menu"
+                  aria-label="Pages"
+                  onKeyDown={handlePageMenuKeyDown}
+                  className="absolute top-full left-0 mt-1 w-56 bg-white border border-[#e6e6e6] rounded-[12px] shadow-lg z-50 py-1"
+                >
+                  <div className="px-3 py-2 text-[11px] font-medium text-[#808080] uppercase tracking-wider">Pages</div>
+                  {pages.map((page) => (
+                    <div
+                      key={page.id}
+                      role="menuitem"
+                      tabIndex={0}
+                      className={`flex items-center gap-2 px-3 py-2 text-[13px] cursor-pointer group ${
+                        page.id === activeProject?.activePageId ? 'bg-[#f5f4f2] text-[#1c1c1c]' : 'text-[#1c1c1c] hover:bg-[#f5f5f5]'
+                      }`}
+                      onClick={() => { switchPage(page.id); setShowPageMenu(false); setEditingPageId(null); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchPage(page.id); setShowPageMenu(false); } }}
+                      onDoubleClick={(e) => { e.stopPropagation(); setEditingPageId(page.id); setEditingPageName(page.name); }}
+                    >
+                      {editingPageId === page.id ? (
+                        <input type="text" value={editingPageName}
+                          onChange={(e) => setEditingPageName(e.target.value)}
+                          onBlur={() => { renamePage(page.id, editingPageName); setEditingPageId(null); }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { renamePage(page.id, editingPageName); setEditingPageId(null); } if (e.key === 'Escape') setEditingPageId(null); }}
+                          onClick={(e) => e.stopPropagation()} autoFocus
+                          className="flex-1 text-[13px] text-[#1c1c1c] px-1 py-0 border border-[#1c1c1c] rounded outline-none bg-white"
+                        />
+                      ) : (
+                        <span className="flex-1">{page.name}</span>
+                      )}
+                      {pages.length > 1 && editingPageId !== page.id && (
+                        <button onClick={(e) => { e.stopPropagation(); deletePage(page.id); }}
+                          className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#e6e6e6] rounded">
+                          <X className="w-3 h-3 text-[#808080]" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <div className="border-t border-[#e6e6e6] mt-1 pt-1">
+                    <button role="menuitem" onClick={() => { addPage('New Page'); setShowPageMenu(false); }}
+                      className="w-full text-left px-3 py-2 text-[13px] text-[#808080] hover:bg-[#f5f5f5] hover:text-[#1c1c1c]">
+                      + Add page
+                    </button>
                   </div>
-                ))}
-                <div className="border-t border-gray-100 mt-1 pt-1">
-                  <button
-                    role="menuitem"
-                    onClick={() => { addPage('New Page'); setShowPageMenu(false); }}
-                    className="w-full text-left px-3 py-2 text-[13px] text-gray-600 hover:bg-gray-50 hover:text-gray-700"
-                  >
-                    + Add page
-                  </button>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
+
+          {/* Version pill */}
+          <Pill>
+            v1
+            <ChevronDown className="w-[16px] h-[16px]" />
+          </Pill>
         </div>
       </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Right group */}
-      <div className="flex items-center h-8 flex-shrink-0">
+      {/* ── Right group ── */}
+      <div className="flex items-center gap-[10px] flex-shrink-0">
         {/* Viewport toggle */}
-        <div role="radiogroup" aria-label="Viewport size" className="flex items-center h-8 bg-gray-100 rounded-lg p-[2px]">
-          {viewportOptions.map(({ value, label }) => (
-            <button
-              key={value}
-              role="radio"
-              aria-checked={viewport === value}
-              onClick={() => setViewport(value)}
-              className={`h-[28px] px-3 text-[12px] font-medium rounded-md transition-colors ${
+        <div role="radiogroup" aria-label="Viewport size" className="bg-[#f5f5f5] flex items-center rounded-[8px] p-[2px]">
+          {viewportOptions.map(({ value, label, w }) => (
+            <button key={value} role="radio" aria-checked={viewport === value} onClick={() => setViewport(value)}
+              className={`${w} flex items-center justify-center rounded-[6px] text-[11px] whitespace-nowrap transition-colors ${
                 viewport === value
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-700'
+                  ? 'bg-white h-[28px] font-medium text-[#1c1c1c]'
+                  : 'h-[24px] font-normal text-[#808080]'
               }`}
             >
               {label}
@@ -432,127 +345,88 @@ export default function Toolbar() {
           ))}
         </div>
 
-        <div className="h-4 w-px bg-gray-200 mx-3" aria-hidden="true" />
+        <Divider />
 
         {/* Undo / Redo */}
-        <div className="flex items-center">
-          <button
-            onClick={undo}
-            aria-label="Undo (Ctrl+Z)"
-            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
-          >
-            <Undo2 className="w-4 h-4" aria-hidden="true" />
-          </button>
-          <button
-            onClick={redo}
-            aria-label="Redo (Ctrl+Shift+Z)"
-            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-600 hover:bg-gray-50 rounded-md transition-colors"
-          >
-            <Redo2 className="w-4 h-4" aria-hidden="true" />
-          </button>
+        <div className="flex items-center gap-[4px]">
+          <Pill onClick={undo} aria-label="Undo" className="opacity-50">
+            <Undo2 className="w-[16px] h-[16px]" />
+          </Pill>
+          <Pill onClick={redo} aria-label="Redo">
+            <Redo2 className="w-[16px] h-[16px]" />
+          </Pill>
         </div>
 
-        <div className="h-4 w-px bg-gray-200 mx-3" aria-hidden="true" />
+        <Divider />
 
-        {/* Share */}
-        <ShareButton />
+        {/* Comments / Share / Export */}
+        <div className="flex items-center gap-[4px]">
+          {/* Comments */}
+          <Pill onClick={onToggleComments} aria-label="Toggle comments" className="relative">
+            {commentCount > 0 ? `${commentCount} Comment${commentCount !== 1 ? 's' : ''}` : 'Comments'}
+            <MessageSquare className="w-[16px] h-[16px]" />
+            {commentCount > 0 && (
+              <div className="absolute right-[8px] top-[7px] w-[8px] h-[8px] bg-blue-500 rounded-full" />
+            )}
+          </Pill>
 
-        {/* Export dropdown */}
-        <div className="relative">
-          <button
-            ref={exportButtonRef}
-            onClick={() => setShowExportMenu(!showExportMenu)}
-            aria-expanded={showExportMenu}
-            aria-haspopup="true"
-            aria-label="Export options"
-            className="flex items-center gap-1.5 h-8 px-[10px] text-[13px] text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-          >
-            Export
-            <Upload className="w-4 h-4 text-gray-600" aria-hidden="true" />
-          </button>
+          {/* Share */}
+          <Pill onClick={handleShare} aria-label={copied ? 'Link copied!' : 'Share'}>
+            {copied ? 'Copied!' : 'Share'}
+            {copied ? <Check className="w-[16px] h-[16px]" /> : <Share2 className="w-[16px] h-[16px]" />}
+          </Pill>
 
-          {showExportMenu && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => { setShowExportMenu(false); exportButtonRef.current?.focus(); }} />
-              <div
-                ref={exportMenuRef}
-                role="menu"
-                aria-label="Export options"
-                onKeyDown={handleExportMenuKeyDown}
-                className="absolute top-full right-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 py-1"
-              >
-                <button
-                  role="menuitem"
-                  onClick={handleExportHTML}
-                  disabled={sections.length === 0}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                >
-                  <FileCode className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                  Export HTML
-                </button>
-                <button
-                  role="menuitem"
-                  onClick={handleExportJSON}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50"
-                >
-                  <FileJson className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                  Export JSON
-                </button>
-                <div className="border-t border-gray-100 mt-1 pt-1">
-                  <div className="px-3 py-1.5 text-[11px] font-medium text-gray-400 uppercase tracking-wider">Figma</div>
-                  <button
-                    role="menuitem"
-                    onClick={handleExportFigma}
-                    disabled={sections.length === 0}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    <Share2 className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                    Figma Link
+          {/* Export */}
+          <div className="relative">
+            <Pill ref={exportButtonRef} onClick={() => setShowExportMenu(!showExportMenu)}
+              aria-expanded={showExportMenu} aria-haspopup="true" aria-label="Export options">
+              Export
+              <Upload className="w-[16px] h-[16px]" />
+            </Pill>
+
+            {showExportMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => { setShowExportMenu(false); exportButtonRef.current?.focus(); }} />
+                <div ref={exportMenuRef} role="menu" aria-label="Export options" onKeyDown={handleExportMenuKeyDown}
+                  className="absolute top-full right-0 mt-1 w-48 bg-white border border-[#e6e6e6] rounded-[12px] shadow-lg z-50 py-1">
+                  <button role="menuitem" onClick={handleExportHTML} disabled={sections.length === 0}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-[#1c1c1c] hover:bg-[#f5f5f5] disabled:opacity-40">
+                    <FileCode className="w-4 h-4 text-[#808080]" /> Export HTML
                   </button>
-                  <button
-                    role="menuitem"
-                    onClick={() => {
+                  <button role="menuitem" onClick={handleExportJSON}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-[#1c1c1c] hover:bg-[#f5f5f5]">
+                    <FileJson className="w-4 h-4 text-[#808080]" /> Export JSON
+                  </button>
+                  <div className="border-t border-[#e6e6e6] mt-1 pt-1">
+                    <div className="px-3 py-1.5 text-[11px] font-medium text-[#808080] uppercase tracking-wider">Figma</div>
+                    <button role="menuitem" onClick={handleExportFigma} disabled={sections.length === 0}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-[#1c1c1c] hover:bg-[#f5f5f5] disabled:opacity-40">
+                      <Share2 className="w-4 h-4 text-[#808080]" /> Figma Link
+                    </button>
+                    <button role="menuitem" onClick={() => {
                       const j = exportProjectJSON();
                       const blob = new Blob([j], { type: 'application/json' });
                       const u = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = u;
-                      a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`;
-                      a.click();
-                      URL.revokeObjectURL(u);
-                      setShowExportMenu(false);
-                    }}
-                    disabled={sections.length === 0}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    <FileJson className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                    Figma JSON
-                  </button>
+                      const a = document.createElement('a'); a.href = u; a.download = `${projectName.toLowerCase().replace(/\s+/g, '-')}-figma.json`; a.click();
+                      URL.revokeObjectURL(u); setShowExportMenu(false);
+                    }} disabled={sections.length === 0}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-[#1c1c1c] hover:bg-[#f5f5f5] disabled:opacity-40">
+                      <FileJson className="w-4 h-4 text-[#808080]" /> Figma JSON
+                    </button>
+                  </div>
+                  <div className="border-t border-[#e6e6e6] mt-1 pt-1">
+                    <button role="menuitem" onClick={() => { fileInputRef.current?.click(); setShowExportMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-[#1c1c1c] hover:bg-[#f5f5f5]">
+                      <Download className="w-4 h-4 text-[#808080]" /> Import JSON
+                    </button>
+                  </div>
                 </div>
-                <div className="border-t border-gray-100 mt-1 pt-1">
-                  <button
-                    role="menuitem"
-                    onClick={() => { fileInputRef.current?.click(); setShowExportMenu(false); exportButtonRef.current?.focus(); }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-gray-700 hover:bg-gray-50"
-                  >
-                    <Download className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                    Import JSON
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleImportJSON}
-          aria-label="Import JSON file"
-          className="hidden"
-          tabIndex={-1}
-        />
+        <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportJSON} className="hidden" tabIndex={-1} />
       </div>
     </div>
   );

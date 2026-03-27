@@ -6,7 +6,7 @@ import Toolbar from './Toolbar';
 import SectionCatalog from './SectionCatalog';
 import Canvas from './Canvas';
 import ContentEditor from './ContentEditor';
-import { CommentsPanel } from './CommentsOverlay';
+import { CommentsSidebar } from './CommentsOverlay';
 
 interface Comment {
   id: string;
@@ -22,7 +22,7 @@ interface Comment {
 
 export default function BuilderLayout() {
   return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center"><div className="animate-pulse text-gray-400">Loading...</div></div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center bg-[#f2f2f2]"><div className="animate-pulse text-[#808080]">Loading...</div></div>}>
       <BuilderLayoutInner />
     </Suspense>
   );
@@ -36,50 +36,58 @@ function BuilderLayoutInner() {
   const pasteSection = useBuilderStore((s) => s.pasteSection);
   const removeSection = useBuilderStore((s) => s.removeSection);
   const selectedSectionId = useBuilderStore((s) => s.selectedSectionId);
-  const activeProject = useBuilderStore(s => s.projects.find(p => p.id === s.activeProjectId));
-  const pages = activeProject?.pages || [];
-  const activePageIndex = pages.findIndex(p => p.id === activeProject?.activePageId);
+  const selectSection = useBuilderStore((s) => s.selectSection);
 
   const [liveMessage, setLiveMessage] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   const searchParams = useSearchParams();
   const projectId = searchParams.get('project');
 
-  // Load comments for this project
+  // Load comments
   useEffect(() => {
     if (!projectId) return;
-    fetch(`/api/comments?project=${projectId}`)
+    const load = () => fetch(`/api/comments?project=${projectId}`)
       .then(r => r.ok ? r.json() : [])
       .then(setComments)
       .catch(() => {});
-
-    // Poll every 30s for new comments
-    const interval = setInterval(() => {
-      fetch(`/api/comments?project=${projectId}`)
-        .then(r => r.ok ? r.json() : [])
-        .then(setComments)
-        .catch(() => {});
-    }, 30000);
-
+    load();
+    const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
   }, [projectId]);
 
   const resolveComment = async (commentId: string) => {
     try {
       const res = await fetch(`/api/comments?id=${commentId}&action=resolve`, { method: 'PATCH' });
-      if (res.ok) {
-        setComments(prev => prev.map(c => c.id === commentId ? { ...c, resolved: true } : c));
-      }
+      if (res.ok) setComments(prev => prev.map(c => c.id === commentId ? { ...c, resolved: true } : c));
     } catch {}
   };
 
+  const handleToggleComments = () => {
+    setCommentsOpen(!commentsOpen);
+    if (!commentsOpen) selectSection(null); // deselect when opening comments
+  };
+
+  // Clicking a section exits comments mode
+  useEffect(() => {
+    if (selectedSectionId && commentsOpen) setCommentsOpen(false);
+  }, [selectedSectionId, commentsOpen]);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       const isEditing = target instanceof HTMLInputElement
         || target instanceof HTMLTextAreaElement
         || target?.isContentEditable;
+
+      // Esc exits comments mode
+      if (e.key === 'Escape' && commentsOpen) {
+        setCommentsOpen(false);
+        return;
+      }
+
       const meta = e.metaKey || e.ctrlKey;
       if (meta && e.key === 'z' && !e.shiftKey && !isEditing) { e.preventDefault(); undo(); }
       if (meta && e.key === 'z' && e.shiftKey && !isEditing) { e.preventDefault(); redo(); }
@@ -87,46 +95,40 @@ function BuilderLayoutInner() {
       if (meta && e.key === 'c' && !isEditing) { if (selectedSectionId) copySection(selectedSectionId); }
       if (meta && e.key === 'v' && !isEditing) { pasteSection(); }
       if ((e.key === 'Delete' || e.key === 'Backspace') && !isEditing) {
-        if (selectedSectionId) {
-          e.preventDefault(); removeSection(selectedSectionId);
-        }
+        if (selectedSectionId) { e.preventDefault(); removeSection(selectedSectionId); }
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [selectedSectionId, undo, redo, duplicateSection, copySection, pasteSection, removeSection]);
+  }, [selectedSectionId, commentsOpen, undo, redo, duplicateSection, copySection, pasteSection, removeSection]);
+
+  const unresolvedCount = comments.filter(c => !c.parent_id && !c.resolved).length;
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* Skip to main content link */}
-      <a
-        href="#canvas"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-blue-600 focus:shadow-lg focus:rounded-lg"
-      >
+    <div className="h-screen flex flex-col bg-[#f2f2f2]">
+      <a href="#canvas" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-[#1c1c1c] focus:shadow-lg focus:rounded-[12px]">
         Skip to canvas
       </a>
 
-      <Toolbar />
+      <Toolbar
+        commentsOpen={commentsOpen}
+        onToggleComments={handleToggleComments}
+        commentCount={unresolvedCount}
+      />
+
       <div className="flex flex-1 overflow-hidden">
         <SectionCatalog />
-        <Canvas
-          liveMessage={liveMessage}
-          setLiveMessage={setLiveMessage}
-          comments={comments}
-          activePageIndex={activePageIndex >= 0 ? activePageIndex : 0}
-        />
-        <ContentEditor />
+        <Canvas liveMessage={liveMessage} setLiveMessage={setLiveMessage} />
+
+        {/* Right sidebar: Comments or ContentEditor */}
+        {commentsOpen ? (
+          <CommentsSidebar comments={comments} onResolve={resolveComment} />
+        ) : (
+          <ContentEditor />
+        )}
       </div>
 
-      {/* Comments panel */}
-      {comments.length > 0 && (
-        <CommentsPanel comments={comments} onResolve={resolveComment} />
-      )}
-
-      {/* Live region for announcing dynamic changes */}
-      <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {liveMessage}
-      </div>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">{liveMessage}</div>
     </div>
   );
 }
