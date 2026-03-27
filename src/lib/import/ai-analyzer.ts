@@ -58,7 +58,7 @@ Given the markdown/text content of a webpage, identify each distinct content sec
 1. Extract REAL content from the page — actual titles, descriptions, prices, names, quotes etc. NO placeholder or generic text.
 2. Every page MUST start with a header and end with a footer.
 3. Choose the variant that best matches the visual layout described by the content structure.
-4. If content doesn't clearly map to a category, choose the closest match.
+4. If content doesn't clearly map to a category, use the closest match BUT also add it to the "unmatchedSections" array.
 5. Maximum 15 sections per page.
 6. Keep text concise — truncate descriptions to ~200 chars.
 7. For stats, extract actual numbers if present.
@@ -66,15 +66,26 @@ Given the markdown/text content of a webpage, identify each distinct content sec
 9. For testimonials, extract actual quotes and attribution.
 
 ## Response Format
-Return ONLY valid JSON array (no markdown, no explanation):
-[
-  {
-    "category": "header",
-    "variantId": "header-simple",
-    "content": { ... },
-    "colorMode": "light"
-  }
-]`;
+Return ONLY valid JSON object (no markdown, no explanation):
+{
+  "sections": [
+    {
+      "category": "header",
+      "variantId": "header-simple",
+      "content": { ... },
+      "colorMode": "light"
+    }
+  ],
+  "unmatchedSections": [
+    {
+      "suggestedCategory": "integrations",
+      "suggestedVariantName": "Integration Grid with Logos",
+      "description": "A grid of integration/partner logos with names and short descriptions. Shows ~12 integrations in a 4x3 grid with hover states.",
+      "extractedContent": { "title": "Integrations", "items": [...] },
+      "previewHtml": "<section style='padding:48px 24px;max-width:960px;margin:0 auto;font-family:Inter,sans-serif'><h2 style='font-size:28px;font-weight:700;text-align:center;margin-bottom:32px'>Integrations</h2><div style='display:grid;grid-template-columns:repeat(4,1fr);gap:16px'>...</div></section>"
+    }
+  ]
+}`;
 
 interface AnalyzedSection {
   category: string;
@@ -83,7 +94,20 @@ interface AnalyzedSection {
   colorMode?: string;
 }
 
-export async function analyzePageWithAI(pageContent: string, pageName: string): Promise<AnalyzedSection[]> {
+export interface UnmatchedSection {
+  suggestedCategory: string;
+  suggestedVariantName: string;
+  description: string;
+  extractedContent: Record<string, unknown>;
+  previewHtml: string;
+}
+
+export interface AnalysisResult {
+  sections: AnalyzedSection[];
+  unmatchedSections: UnmatchedSection[];
+}
+
+export async function analyzePageWithAI(pageContent: string, pageName: string, sourceUrl?: string): Promise<AnalysisResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured — add it to .env.local and Vercel env vars');
 
@@ -136,23 +160,74 @@ export async function analyzePageWithAI(pageContent: string, pageName: string): 
   const codeBlockMatch = json.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (codeBlockMatch) json = codeBlockMatch[1].trim();
 
-  // Also try to find JSON array in the response
-  if (!json.startsWith('[')) {
-    const arrayMatch = json.match(/\[[\s\S]*\]/);
-    if (arrayMatch) json = arrayMatch[0];
+  // Try to find JSON object or array
+  if (!json.startsWith('{') && !json.startsWith('[')) {
+    const objMatch = json.match(/\{[\s\S]*\}/);
+    const arrMatch = json.match(/\[[\s\S]*\]/);
+    if (objMatch) json = objMatch[0];
+    else if (arrMatch) json = arrMatch[0];
   }
 
   try {
-    const sections = JSON.parse(json) as AnalyzedSection[];
-    if (!Array.isArray(sections)) throw new Error('Not an array');
-    return sections.map(s => ({
-      category: s.category || 'hero',
-      variantId: s.variantId || 'hero-centered',
-      content: s.content || {},
-      colorMode: s.colorMode || 'light',
-    }));
+    const parsed = JSON.parse(json);
+
+    // New format: { sections: [...], unmatchedSections: [...] }
+    if (parsed.sections && Array.isArray(parsed.sections)) {
+      const sections = parsed.sections.map((s: AnalyzedSection) => ({
+        category: s.category || 'hero',
+        variantId: s.variantId || 'hero-centered',
+        content: s.content || {},
+        colorMode: s.colorMode || 'light',
+      }));
+      const unmatchedSections = (parsed.unmatchedSections || []) as UnmatchedSection[];
+
+      // Save unmatched sections to Supabase if any
+      if (unmatchedSections.length > 0) {
+        saveUnmatchedSections(unmatchedSections, sourceUrl, pageName).catch(console.error);
+      }
+
+      return { sections, unmatchedSections };
+    }
+
+    // Legacy format: direct array
+    if (Array.isArray(parsed)) {
+      return {
+        sections: parsed.map((s: AnalyzedSection) => ({
+          category: s.category || 'hero',
+          variantId: s.variantId || 'hero-centered',
+          content: s.content || {},
+          colorMode: s.colorMode || 'light',
+        })),
+        unmatchedSections: [],
+      };
+    }
+
+    throw new Error('Unexpected format');
   } catch (e) {
     console.error('Failed to parse AI response (first 500 chars):', text.slice(0, 500));
     throw new Error(`AI returned invalid response. First 100 chars: ${text.slice(0, 100)}`);
+  }
+}
+
+// Save unmatched sections as component requests
+async function saveUnmatchedSections(sections: UnmatchedSection[], sourceUrl?: string, pageName?: string) {
+  try {
+    const { createClient } = await import('@/lib/supabase/server');
+    const supabase = await createClient();
+
+    for (const s of sections) {
+      await supabase.from('structr_component_requests').insert({
+        suggested_category: s.suggestedCategory,
+        suggested_variant_name: s.suggestedVariantName,
+        description: s.description,
+        source_url: sourceUrl || null,
+        source_page_name: pageName || null,
+        extracted_content: s.extractedContent || {},
+        preview_html: s.previewHtml || null,
+        status: 'pending',
+      });
+    }
+  } catch (e) {
+    console.error('Failed to save component requests:', e);
   }
 }

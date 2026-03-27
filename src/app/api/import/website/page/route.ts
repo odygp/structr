@@ -24,10 +24,11 @@ export async function POST(request: Request) {
     }
 
     // AI analysis
-    const sections = await analyzePageWithAI(content, name || 'Page');
-    if (sections.length === 0) {
+    const result = await analyzePageWithAI(content, name || 'Page', url);
+    if (result.sections.length === 0) {
       return NextResponse.json({ error: 'No sections detected', skipped: true }, { status: 200 });
     }
+    const sections = result.sections;
 
     // Create page
     const { data: dbPage, error: pgErr } = await supabase
