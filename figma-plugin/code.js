@@ -374,7 +374,6 @@ var VARIANT_SPECIFIC = {
     comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
     comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
     var textCol = frame("textContent", { dir: "VERTICAL", g: 20 });
-    textCol.layoutSizingHorizontal = "FILL";
     var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
     var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary']);
     textCol.appendChild(tn); linkText(tn, tk);
@@ -385,7 +384,7 @@ var VARIANT_SPECIFIC = {
     var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn"; btns.appendChild(pb);
       var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn"; btns.appendChild(sb);
       textCol.appendChild(btns);
-    comp.appendChild(textCol);
+    comp.appendChild(textCol); try { textCol.layoutSizingHorizontal = "FILL"; } catch(e) {}
     var img = atoms.ImagePlaceholder.createInstance(); img.name = "image"; img.resize(520, 400);
     comp.appendChild(img);
   },
@@ -562,7 +561,7 @@ function buildHeaderOrganism(comp, content, atoms, molecules) {
     try { var props = link.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) link.setProperties(makeObj(k, links[i].label || '')); } } catch(e) {}
     nav.appendChild(link);
   }
-  try { nav.layoutSizingHorizontal = "FILL"; } catch(e) { nav.layoutGrow = 1; } comp.appendChild(nav);
+  comp.appendChild(nav); try { nav.layoutSizingHorizontal = "FILL"; } catch(e) {}
 
   var ctaBtn = atoms.Button.defaultVariant.createInstance();
   ctaBtn.name = "cta";
@@ -880,14 +879,13 @@ function buildAboutOrganism(comp, content, atoms) {
   comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
   var textCol = frame("text", { dir: "VERTICAL", g: 16 });
-  textCol.layoutSizingHorizontal = "FILL";
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "About");
   var tn = txt("title", content.title || "About", 28, FB, C['text/primary']);
   textCol.appendChild(tn); linkText(tn, tk);
   var dk = comp.addComponentProperty("Description", "TEXT", content.description || "Description.");
   var dn = txt("description", content.description || "Description.", 16, FR, C['text/secondary'], { w: 500 });
   textCol.appendChild(dn); linkText(dn, dk);
-  comp.appendChild(textCol);
+  comp.appendChild(textCol); try { textCol.layoutSizingHorizontal = "FILL"; } catch(e) {}
   var img = atoms.ImagePlaceholder.createInstance(); img.name = "image";
   img.resize(480, 320); comp.appendChild(img);
 }
@@ -1128,8 +1126,7 @@ function buildShowcaseOrganism(comp, content, atoms) {
   headerRow.resize(1280, 100); headerRow.counterAxisSizingMode = "FIXED"; headerRow.counterAxisAlignItems = "CENTER";
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Our Collection");
   var tn = txt("title", content.title || "Our Collection", 28, FB, C['text/primary']);
-  try { tn.layoutSizingHorizontal = "FILL"; } catch(e) { tn.layoutGrow = 1; }
-  headerRow.appendChild(tn); linkText(tn, tk);
+  headerRow.appendChild(tn); try { tn.layoutSizingHorizontal = "FILL"; } catch(e) {} linkText(tn, tk);
   var viewBtn = findVariant(atoms.Button, "Secondary").createInstance();
   headerRow.appendChild(viewBtn); hug(viewBtn);
   comp.appendChild(headerRow);
