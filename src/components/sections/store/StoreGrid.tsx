@@ -2,12 +2,14 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import { getGridColsClass } from '@/lib/columns';
 import EditableText from '@/components/builder/EditableText';
 
 export default function StoreGrid({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'store');
+  const gridCols = getGridColsClass(content._columns);
   const products = (content.products as Array<{ title: string; description: string; price: string }>) || [];
 
   return (

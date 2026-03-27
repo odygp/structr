@@ -1,10 +1,12 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
 
 export default function HeroWithForm({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const spacing = getSpacingClasses(content._spacing as string, 'hero');
   const id = sectionId || '';
   return (
     <section className={`${c.bgAlt} px-8 py-24`}>

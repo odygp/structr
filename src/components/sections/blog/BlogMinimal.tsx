@@ -2,10 +2,12 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
 
 export default function BlogMinimal({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const spacing = getSpacingClasses(content._spacing as string, 'blog');
   const id = sectionId || '';
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
 

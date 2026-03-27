@@ -1,10 +1,14 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { getSpacingClasses } from '@/lib/spacing';
+import { getGridColsClass } from '@/lib/columns';
 import EditableText from '@/components/builder/EditableText';
 
 export default function BlogWithCategories({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const spacing = getSpacingClasses(content._spacing as string, 'blog');
+  const gridCols = getGridColsClass(content._columns);
   const id = sectionId || '';
   const posts = (content.posts as Array<{ title: string; excerpt: string; author: string; date: string }>) || [];
   const categories = ['All', 'Design', 'Engineering', 'Product', 'Company'];

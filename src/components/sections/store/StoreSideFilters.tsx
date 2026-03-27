@@ -3,12 +3,14 @@
 import { ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
+import { getGridColsClass } from '@/lib/columns';
 import EditableText from '@/components/builder/EditableText';
 
 export default function StoreSideFilters({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
   const id = sectionId || '';
   const spacing = getSpacingClasses(content._spacing as string, 'store');
+  const gridCols = getGridColsClass(content._columns);
   const products = Array.isArray(content.products) ? content.products : [];
 
   const filterGroups = [

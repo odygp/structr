@@ -2,10 +2,12 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
 
 export default function LogoSimple({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const spacing = getSpacingClasses(content._spacing as string, 'logos');
   const id = sectionId || '';
   const logos = (content.logos as Array<{ name: string }>) || [];
 

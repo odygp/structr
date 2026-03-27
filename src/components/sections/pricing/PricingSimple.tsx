@@ -1,10 +1,12 @@
 'use client';
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
 
 export default function PricingSimple({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
+  const spacing = getSpacingClasses(content._spacing as string, 'pricing');
   const id = sectionId || '';
   const plans = (content.plans as Array<{ name: string; price: string; period?: string; description?: string; features?: string; ctaText?: string }>) || [];
 
