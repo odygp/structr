@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { componentRegistry } from '@/components/sections';
+import CommentSystem from '@/components/preview/CommentSystem';
 import type { PlacedSection, ContentValue, ColorMode } from '@/lib/types';
 
 interface PreviewPage {
@@ -159,6 +160,15 @@ function PreviewContent() {
           </div>
         )}
       </main>
+
+      {/* Comment system */}
+      {projectId && (
+        <CommentSystem
+          projectId={projectId}
+          activePage={activePage}
+          sectionCount={currentPage?.sections.length || 0}
+        />
+      )}
     </div>
   );
 }
