@@ -2,6 +2,7 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { safeLinks } from '@/lib/safe-content';
 import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
 
@@ -41,7 +42,7 @@ export default function FooterWithNewsletter({ content, colorMode, sectionId }: 
             <div key={index}>
               <h4 className="text-white font-semibold mb-4">{col.title}</h4>
               <ul className="space-y-2">
-                {(col.links || '').split(',').map((link: string, i: number) => (
+                {safeLinks(col.links).map((link: string, i: number) => (
                   <li key={i}>
                     <span className="text-gray-400 text-sm hover:text-gray-300 cursor-pointer">
                       {link.trim()}

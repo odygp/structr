@@ -4,6 +4,7 @@ import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
 import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
+import { safeLinks } from '@/lib/safe-content';
 
 export default function FooterCentered({ content, colorMode, sectionId }: { content: Record<string, any>; colorMode?: ColorMode; sectionId?: string }) {
   const c = getColors(colorMode || 'light');
@@ -11,7 +12,7 @@ export default function FooterCentered({ content, colorMode, sectionId }: { cont
   const id = sectionId || '';
   const columns = (content.columns as Array<{ title: string; links: string }>) || [];
   const allLinks = columns.flatMap((col) =>
-    (col.links || '').split(',').map((l: string) => l.trim()).filter(Boolean)
+    safeLinks(col.links)
   );
 
   return (

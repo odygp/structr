@@ -2,6 +2,7 @@
 
 import { SectionContent, ColorMode } from '@/lib/types';
 import { getColors } from '@/lib/colors';
+import { safeLinks } from '@/lib/safe-content';
 import { getSpacingClasses } from '@/lib/spacing';
 import EditableText from '@/components/builder/EditableText';
 
@@ -27,7 +28,7 @@ export default function Footer4Col({ content, colorMode, sectionId }: { content:
             <div key={index}>
               <h4 className="${c.text} font-semibold mb-4">{col.title}</h4>
               <ul className="space-y-2">
-                {(col.links || '').split(',').map((link: string, i: number) => (
+                {safeLinks(col.links).map((link: string, i: number) => (
                   <li key={i}>
                     <span className="${c.textMuted} text-sm hover:${c.textSecondary} cursor-pointer">
                       {link.trim()}
