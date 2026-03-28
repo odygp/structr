@@ -1,5 +1,6 @@
 // Uses Claude to analyze page content and map to wireframe sections
 import Anthropic from '@anthropic-ai/sdk';
+import { MODELS } from '@/lib/ai/track-usage';
 
 const IMPORT_SYSTEM_PROMPT = `You analyze website page content and convert it into wireframe section definitions.
 
@@ -117,16 +118,15 @@ export async function analyzePageWithAI(pageContent: string, pageName: string, s
   // Truncate content to avoid token limits (~20k chars ≈ ~5k tokens)
   const truncated = pageContent.slice(0, 20000);
 
+  const userContent = `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`;
+
   let message;
   try {
     message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      system: IMPORT_SYSTEM_PROMPT,
-      messages: [{
-        role: 'user',
-        content: `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`,
-      }],
+      model: MODELS.analyze,
+      max_tokens: 3000,
+      system: [{ type: 'text', text: IMPORT_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+      messages: [{ role: 'user', content: userContent }],
     });
   } catch (apiError: unknown) {
     const errMsg = apiError instanceof Error ? apiError.message : String(apiError);
@@ -137,12 +137,9 @@ export async function analyzePageWithAI(pageContent: string, pageName: string, s
       try {
         message = await client.messages.create({
           model: 'claude-3-5-sonnet-20241022',
-          max_tokens: 4096,
-          system: IMPORT_SYSTEM_PROMPT,
-          messages: [{
-            role: 'user',
-            content: `Analyze this "${pageName}" page and convert it into wireframe sections. Extract the REAL content from the page.\n\n---\n${truncated}\n---`,
-          }],
+          max_tokens: 3000,
+          system: [{ type: 'text', text: IMPORT_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+          messages: [{ role: 'user', content: userContent }],
         });
       } catch (fallbackError) {
         console.error('Fallback model also failed:', fallbackError);
@@ -295,18 +292,18 @@ export async function generateSectionsForPage(
   let message;
   try {
     message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      system: GENERATE_SYSTEM_PROMPT,
+      model: MODELS.generateFromName,
+      max_tokens: 2048,
+      system: [{ type: 'text', text: GENERATE_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: userPrompt }],
     });
   } catch (apiError: unknown) {
     const errMsg = apiError instanceof Error ? apiError.message : String(apiError);
     if (errMsg.includes('model') || errMsg.includes('not_found')) {
       message = await client.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 4096,
-        system: GENERATE_SYSTEM_PROMPT,
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 2048,
+        system: [{ type: 'text', text: GENERATE_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
         messages: [{ role: 'user', content: userPrompt }],
       });
     } else {

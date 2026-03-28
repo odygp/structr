@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 const PRICING: Record<string, { input: number; output: number }> = {
   'claude-sonnet-4-20250514': { input: 3.0, output: 15.0 },
   'claude-3-5-sonnet-20241022': { input: 3.0, output: 15.0 },
+  'claude-haiku-4-5-20251001': { input: 1.0, output: 5.0 },
   'claude-3-5-haiku-20241022': { input: 0.80, output: 4.0 },
   'claude-haiku-4-20250414': { input: 0.80, output: 4.0 },
 };
@@ -15,7 +16,7 @@ export const MODELS = {
   // Page analysis from website import — needs understanding
   analyze: 'claude-sonnet-4-20250514',
   // Section generation from page name only — simpler task, haiku is fine
-  generateFromName: 'claude-haiku-4-20250414',
+  generateFromName: 'claude-haiku-4-5-20251001',
   // Wizard page generation — needs quality content
   wizard: 'claude-sonnet-4-20250514',
 } as const;

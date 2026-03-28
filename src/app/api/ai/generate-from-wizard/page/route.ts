@@ -37,8 +37,8 @@ export async function POST(request: Request) {
     const anthropic = new Anthropic({ apiKey });
     const message = await anthropic.messages.create({
       model,
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
+      max_tokens: 3000,
+      system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: focusedPrompt }],
     });
 
