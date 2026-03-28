@@ -32,6 +32,7 @@ export default function TemplateWizard({ onClose, onComplete }: Props) {
   const [products, setProducts] = useState<string[]>([]);
   const [productInput, setProductInput] = useState('');
   const [audience, setAudience] = useState('');
+  const [contentLanguage, setContentLanguage] = useState('English');
 
   // Step 4
   const [tone, setTone] = useState({ formality: 50, voice: 50, language: 50, approach: 50 });
@@ -90,6 +91,7 @@ export default function TemplateWizard({ onClose, onComplete }: Props) {
         tagline: tagline || undefined,
         products: products.length ? products : undefined,
         audience: audience || undefined,
+        contentLanguage: contentLanguage !== 'English' ? contentLanguage : undefined,
         tone,
         extras,
       });
@@ -337,7 +339,21 @@ export default function TemplateWizard({ onClose, onComplete }: Props) {
             <div className="flex flex-col gap-[20px]">
               <div>
                 <h3 className="text-[16px] font-medium text-[#34322d] mb-[4px]">Content direction</h3>
-                <p className="text-[13px] text-[#34322d] opacity-50">Set the tone for all the text in your wireframe</p>
+                <p className="text-[13px] text-[#34322d] opacity-50">Set the tone and language for all the text in your wireframe</p>
+              </div>
+
+              {/* Language selector */}
+              <div>
+                <label className="text-[12px] font-medium text-[#34322d] opacity-60 mb-[6px] block">Content language</label>
+                <select
+                  value={contentLanguage}
+                  onChange={e => setContentLanguage(e.target.value)}
+                  className="w-full px-[16px] py-[12px] text-[14px] border border-[#ebebeb] rounded-[12px] bg-white text-[#34322d] focus:outline-none focus:border-[#34322d] appearance-none"
+                >
+                  {['English', 'Greek', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Polish', 'Czech', 'Romanian', 'Hungarian', 'Turkish', 'Arabic', 'Hebrew', 'Chinese', 'Japanese', 'Korean', 'Hindi', 'Thai', 'Vietnamese', 'Indonesian', 'Malay', 'Russian', 'Ukrainian'].map(lang => (
+                    <option key={lang} value={lang}>{lang}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex flex-col gap-[20px]">

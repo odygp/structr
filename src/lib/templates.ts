@@ -28,6 +28,7 @@ export interface WizardData {
   tagline?: string;
   products?: string[];
   audience?: string;
+  contentLanguage?: string; // e.g., 'English', 'Greek', 'Spanish'
   tone: {
     formality: number;   // 0=formal, 100=casual
     voice: number;       // 0=professional, 100=friendly
@@ -58,6 +59,9 @@ export function buildWizardPrompt(data: WizardData): string {
   if (data.tagline) parts.push(`Tagline: ${data.tagline}`);
   if (data.products?.length) parts.push(`Key products/services: ${data.products.join(', ')}`);
   if (data.audience) parts.push(`Target audience: ${data.audience}`);
+  if (data.contentLanguage && data.contentLanguage !== 'English') {
+    parts.push(`IMPORTANT: All content MUST be written in ${data.contentLanguage}. Every headline, description, button text, testimonial, and any other text must be in ${data.contentLanguage}.`);
+  }
 
   parts.push('');
   parts.push(`Pages to create (in this order): ${data.pages.join(', ')}`);
