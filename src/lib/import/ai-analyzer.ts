@@ -205,9 +205,21 @@ export async function analyzePageWithAI(pageContent: string, pageName: string, s
     }
 
     throw new Error('Unexpected format');
-  } catch (e) {
+  } catch {
     console.error('Failed to parse AI response (first 500 chars):', text.slice(0, 500));
-    throw new Error(`AI returned invalid response. First 100 chars: ${text.slice(0, 100)}`);
+
+    // Fallback: if parsing failed, generate from page name instead of analyzing content
+    // This is cheaper (uses Haiku) and more reliable
+    try {
+      console.log(`Fallback: generating sections for "${pageName}" from name only`);
+      const fallbackResult = await generateSectionsForPage(pageName);
+      return {
+        ...fallbackResult,
+        usage: { inputTokens: message.usage.input_tokens + (fallbackResult.usage?.inputTokens || 0), outputTokens: message.usage.output_tokens + (fallbackResult.usage?.outputTokens || 0), model: message.model },
+      };
+    } catch {
+      throw new Error(`AI returned invalid response for "${pageName}"`);
+    }
   }
 }
 

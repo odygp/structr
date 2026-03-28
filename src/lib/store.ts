@@ -65,6 +65,7 @@ interface BuilderState {
 
   // Section actions
   addSection: (category: SectionCategory, variantId: string) => void;
+  addSectionWithContent: (category: SectionCategory, variantId: string, content: Record<string, ContentValue>, colorMode?: ColorMode) => void;
   insertSectionAt: (category: SectionCategory, variantId: string, index: number) => void;
   removeSection: (id: string) => void;
   moveSection: (fromIndex: number, toIndex: number) => void;
@@ -235,6 +236,21 @@ export const useBuilderStore = create<BuilderState>()(
           variantId,
           content: deepClone(variant.defaultContent),
           colorMode: 'light',
+        };
+        page.sections.push(newSection);
+        s.selectedSectionId = newSection.id;
+      }),
+
+      addSectionWithContent: (category, variantId, content, colorMode = 'light') => set((s) => {
+        const page = activePage(s);
+        if (!page) return;
+        pushHistory(s);
+        const newSection: PlacedSection = {
+          id: generateId(),
+          category,
+          variantId,
+          content: deepClone(content) as Record<string, ContentValue>,
+          colorMode,
         };
         page.sections.push(newSection);
         s.selectedSectionId = newSection.id;

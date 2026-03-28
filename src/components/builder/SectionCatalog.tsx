@@ -1,17 +1,43 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sectionRegistry } from '@/lib/registry';
 import { useBuilderStore } from '@/lib/store';
 import { SectionCategory } from '@/lib/types';
 import * as Icons from 'lucide-react';
-import { ChevronRight, Search } from 'lucide-react';
+import { ChevronRight, Search, Bookmark, Trash2 } from 'lucide-react';
 import VariantThumbnail from './VariantThumbnail';
+
+interface ReusableSection {
+  id: string;
+  name: string;
+  category: string;
+  variant_id: string;
+  content: Record<string, unknown>;
+  color_mode: string;
+}
 
 export default function SectionCatalog({ width = 240 }: { width?: number }) {
   const addSection = useBuilderStore((s) => s.addSection);
+  const addSectionWithContent = useBuilderStore((s) => s.addSectionWithContent);
   const sidebarSearch = useBuilderStore((s) => s.sidebarSearch);
   const setSidebarSearch = useBuilderStore((s) => s.setSidebarSearch);
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const [reusableSections, setReusableSections] = useState<ReusableSection[]>([]);
+
+  // Fetch reusable sections
+  useEffect(() => {
+    fetch('/api/reusable-sections')
+      .then(r => r.ok ? r.json() : [])
+      .then(setReusableSections)
+      .catch(() => {});
+  }, []);
+
+  const deleteReusable = async (id: string) => {
+    try {
+      await fetch(`/api/reusable-sections?id=${id}`, { method: 'DELETE' });
+      setReusableSections(prev => prev.filter(s => s.id !== id));
+    } catch {}
+  };
 
   const toggleCategory = (cat: string) => {
     setOpenCategories((prev) => {
@@ -64,6 +90,47 @@ export default function SectionCatalog({ width = 240 }: { width?: number }) {
 
         {/* Category list */}
         <div className="flex flex-col gap-[2px] p-[4px]">
+          {/* Reusable sections */}
+          {reusableSections.length > 0 && (!query || 'reusable'.includes(query)) && (
+            <div>
+              <button
+                onClick={() => toggleCategory('_reusable')}
+                aria-expanded={openCategories.has('_reusable') || !!query}
+                className="w-full flex items-center justify-between h-[36px] px-[12px] rounded-[8px] hover:bg-[#f5f5f5] transition-colors"
+              >
+                <div className="flex items-center gap-[8px]">
+                  <Bookmark className="w-[14px] h-[14px] text-[#1c1c1c]" aria-hidden="true" />
+                  <span className="text-[12px] font-normal text-[#1c1c1c] whitespace-nowrap">Reusable</span>
+                  <span className="text-[10px] text-[#808080] bg-[#f0f0f0] rounded-full px-[6px] py-[1px]">{reusableSections.length}</span>
+                </div>
+                <ChevronRight className={`w-[14px] h-[14px] text-[#1c1c1c] transition-transform ${openCategories.has('_reusable') || !!query ? 'rotate-90' : ''}`} aria-hidden="true" />
+              </button>
+              {(openCategories.has('_reusable') || !!query) && (
+                <div className="flex flex-col gap-[2px] px-[8px] mt-1 mb-2">
+                  {reusableSections
+                    .filter(s => !query || s.name.toLowerCase().includes(query) || s.category.toLowerCase().includes(query))
+                    .map(s => (
+                    <div key={s.id} className="flex items-center gap-[8px] group">
+                      <button
+                        onClick={() => addSectionWithContent(s.category as SectionCategory, s.variant_id, s.content as Record<string, string>, s.color_mode as 'light' | 'dark')}
+                        className="flex-1 flex items-center gap-[8px] h-[32px] px-[8px] rounded-[6px] hover:bg-[#f5f5f5] transition-colors text-left"
+                      >
+                        <Bookmark className="w-[12px] h-[12px] text-[#808080] flex-shrink-0" />
+                        <span className="text-[11px] text-[#1c1c1c] truncate">{s.name}</span>
+                      </button>
+                      <button
+                        onClick={() => deleteReusable(s.id)}
+                        className="opacity-0 group-hover:opacity-100 w-[20px] h-[20px] flex items-center justify-center text-[#808080] hover:text-red-500 transition-all"
+                      >
+                        <Trash2 size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {filteredRegistry.map((def) => {
             const isOpen = openCategories.has(def.category) || !!query;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

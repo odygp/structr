@@ -224,7 +224,7 @@ export default function Canvas({ liveMessage, setLiveMessage, isImporting, backg
     // Importing skeleton
     if (isImporting) {
       return (
-        <main id="canvas" aria-label="Canvas" className="flex-1 overflow-y-auto bg-[#f2f2f2]">
+        <main id="canvas" aria-label="Canvas" className="flex-1 overflow-y-auto" style={{ backgroundColor: backgroundColor || '#f2f2f2' }}>
           <div className="w-full px-[64px] flex flex-col mt-[48px] mb-[48px]">
             {/* Skeleton sections */}
             {[1, 2, 3, 4].map(i => (
@@ -295,7 +295,8 @@ export default function Canvas({ liveMessage, setLiveMessage, isImporting, backg
       <main
         id="canvas"
         aria-label="Canvas"
-        className={`flex-1 flex items-center justify-center bg-[#f2f2f2] transition-colors ${isDraggingOver ? 'bg-[#e8e8e8]' : ''}`}
+        className={`flex-1 flex items-center justify-center transition-colors ${isDraggingOver ? 'bg-[#e8e8e8]' : ''}`}
+        style={{ backgroundColor: isDraggingOver ? undefined : (backgroundColor || '#f2f2f2') }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -320,7 +321,8 @@ export default function Canvas({ liveMessage, setLiveMessage, isImporting, backg
       id="canvas"
       aria-label="Canvas"
       ref={scrollRef}
-      className="flex-1 overflow-y-auto bg-[#f2f2f2]"
+      className="flex-1 overflow-y-auto"
+      style={{ backgroundColor: backgroundColor || '#f2f2f2' }}
       onClick={(e) => {
         // Deselect when clicking canvas background (not on a section)
         const target = e.target as HTMLElement;

@@ -80,13 +80,48 @@ function BuilderLayoutInner() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get('project');
 
+  // Load background color from project settings
+  useEffect(() => {
+    if (!projectId) return;
+    fetch(`/api/projects/${projectId}/settings`)
+      .then(r => r.ok ? r.json() : {})
+      .then((data: Record<string, string>) => { if (data.backgroundColor) setBackgroundColor(data.backgroundColor); })
+      .catch(() => {});
+  }, [projectId]);
+
+  const handleBackgroundColorChange = useCallback((color: string) => {
+    setBackgroundColor(color);
+    if (projectId) {
+      fetch(`/api/projects/${projectId}/settings`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ backgroundColor: color }),
+      }).catch(() => {});
+    }
+  }, [projectId]);
+
   const activeProject = useBuilderStore((s) => s.projects.find(p => p.id === s.activeProjectId));
   const activePage = activeProject?.pages.find(p => p.id === activeProject.activePageId);
   const selectedSection = activePage?.sections.find(s => s.id === selectedSectionId);
 
+  const setViewport = useBuilderStore((s) => s.setViewport);
+  const currentViewport = useBuilderStore((s) => s.viewport);
+
   // Persist sidebar widths
   useEffect(() => { localStorage.setItem('structr-left-width', String(leftWidth)); }, [leftWidth]);
   useEffect(() => { localStorage.setItem('structr-right-width', String(rightWidth)); }, [rightWidth]);
+
+  // Auto-switch viewport when sidebars resize makes canvas too narrow
+  useEffect(() => {
+    const canvasWidth = window.innerWidth - leftWidth - rightWidth - 8; // 8px for resize handles
+    if (canvasWidth < 500 && currentViewport === 'desktop') {
+      setViewport('mobile');
+    } else if (canvasWidth < 850 && currentViewport === 'desktop') {
+      setViewport('tablet');
+    } else if (canvasWidth >= 850 && currentViewport !== 'desktop') {
+      // Only auto-switch back if user didn't manually choose
+    }
+  }, [leftWidth, rightWidth, currentViewport, setViewport]);
 
   const handleLeftResize = useCallback((delta: number) => {
     setLeftWidth(w => Math.min(MAX_SIDEBAR, Math.max(MIN_SIDEBAR, w + delta)));
@@ -251,7 +286,7 @@ function BuilderLayoutInner() {
       );
     }
     if (selectedSectionId) return <ContentEditor onEditWithAi={handleOpenAiChat} />;
-    return <DocumentSidebar backgroundColor={backgroundColor} onBackgroundColorChange={setBackgroundColor} />;
+    return <DocumentSidebar backgroundColor={backgroundColor} onBackgroundColorChange={handleBackgroundColorChange} />;
   };
 
   return (
