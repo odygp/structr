@@ -25,22 +25,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No sections generated', skipped: true });
     }
 
-    // Create page
-    const { data: dbPage, error: pgErr } = await supabase
+    // Check if page already exists (e.g., Home placeholder)
+    let pageId: string;
+    const { data: existingPages } = await supabase
       .from('structr_pages')
-      .insert({
-        project_id: projectId,
-        name,
-        sort_order: sortOrder ?? 0,
-      })
-      .select()
-      .single();
+      .select('id')
+      .eq('project_id', projectId)
+      .eq('sort_order', sortOrder ?? 0);
 
-    if (pgErr) throw pgErr;
+    if (existingPages && existingPages.length > 0) {
+      pageId = existingPages[0].id;
+      await supabase.from('structr_sections').delete().eq('page_id', pageId);
+      await supabase.from('structr_pages').update({ name }).eq('id', pageId);
+    } else {
+      const { data: dbPage, error: pgErr } = await supabase
+        .from('structr_pages')
+        .insert({ project_id: projectId, name, sort_order: sortOrder ?? 0 })
+        .select()
+        .single();
+      if (pgErr) throw pgErr;
+      pageId = dbPage.id;
+    }
 
     // Insert sections
     const sectionRows = result.sections.map((s, i) => ({
-      page_id: dbPage.id,
+      page_id: pageId,
       category: s.category,
       variant_id: s.variantId,
       content: s.content,

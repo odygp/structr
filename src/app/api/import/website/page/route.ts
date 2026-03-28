@@ -30,20 +30,37 @@ export async function POST(request: Request) {
     }
     const sections = result.sections;
 
-    // Create page
-    const { data: dbPage, error: pgErr } = await supabase
+    // Check if page already exists at this sort_order (e.g., Home placeholder)
+    let pageId: string;
+    const { data: existingPages } = await supabase
       .from('structr_pages')
-      .insert({
-        project_id: projectId,
-        name: name || 'Page',
-        sort_order: sortOrder ?? 0,
-      })
-      .select()
-      .single();
+      .select('id')
+      .eq('project_id', projectId)
+      .eq('sort_order', sortOrder ?? 0);
 
-    if (pgErr || !dbPage) {
-      return NextResponse.json({ error: 'Failed to create page' }, { status: 500 });
+    if (existingPages && existingPages.length > 0) {
+      // Update existing page — delete placeholder sections first
+      pageId = existingPages[0].id;
+      await supabase.from('structr_sections').delete().eq('page_id', pageId);
+      await supabase.from('structr_pages').update({ name: name || 'Page' }).eq('id', pageId);
+    } else {
+      // Create new page
+      const { data: dbPage, error: pgErr } = await supabase
+        .from('structr_pages')
+        .insert({
+          project_id: projectId,
+          name: name || 'Page',
+          sort_order: sortOrder ?? 0,
+        })
+        .select()
+        .single();
+
+      if (pgErr || !dbPage) {
+        return NextResponse.json({ error: 'Failed to create page' }, { status: 500 });
+      }
+      pageId = dbPage.id;
     }
+    const dbPage = { id: pageId };
 
     // Create sections
     const sectionRows = sections.map((s, idx) => ({
