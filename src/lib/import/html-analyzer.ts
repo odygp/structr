@@ -10,8 +10,11 @@ export async function discoverPages(baseUrl: string): Promise<DiscoveredPage[]> 
   const origin = new URL(baseUrl).origin;
   const pages: Map<string, string> = new Map(); // url -> name
 
+  // Normalize base URL: strip trailing slash for consistent dedup
+  const normalizedBase = baseUrl.replace(/\/$/, '') || origin;
+
   // Always include the provided URL
-  pages.set(baseUrl, 'Home');
+  pages.set(normalizedBase, 'Home');
 
   // 1. Try sitemap.xml
   try {
@@ -28,9 +31,10 @@ export async function discoverPages(baseUrl: string): Promise<DiscoveredPage[]> 
         for (const loc of locs) {
           const url = loc.replace(/<\/?loc>/gi, '').trim();
           if (url.startsWith(origin) && !url.match(/\.(jpg|png|gif|svg|css|js|pdf|xml|json|ico|woff|ttf)$/i)) {
-            const path = new URL(url).pathname;
-            const name = pathToName(path);
-            if (!pages.has(url)) pages.set(url, name);
+            const parsed = new URL(url);
+            const normalizedUrl = (parsed.origin + parsed.pathname).replace(/\/$/, '') || parsed.origin;
+            const name = pathToName(parsed.pathname);
+            if (!pages.has(normalizedUrl)) pages.set(normalizedUrl, name);
           }
         }
         if (pages.size > 1) break; // Found pages from sitemap
@@ -60,7 +64,7 @@ export async function discoverPages(baseUrl: string): Promise<DiscoveredPage[]> 
           const url = new URL(href);
           if (url.origin !== origin) continue;
           if (url.pathname.match(/\.(jpg|png|gif|svg|css|js|pdf|xml|json|ico|woff|ttf)$/i)) continue;
-          const clean = url.origin + url.pathname.replace(/\/$/, '') || url.origin + '/';
+          const clean = (url.origin + url.pathname).replace(/\/$/, '') || url.origin;
           const name = pathToName(url.pathname);
           if (!pages.has(clean) && name) pages.set(clean, name);
         } catch {}
@@ -75,8 +79,8 @@ export async function discoverPages(baseUrl: string): Promise<DiscoveredPage[]> 
     const bName = b[1].toLowerCase();
     const aIdx = priority.findIndex(p => aName.includes(p));
     const bIdx = priority.findIndex(p => bName.includes(p));
-    if (a[0] === baseUrl) return -1;
-    if (b[0] === baseUrl) return 1;
+    if (a[0] === normalizedBase) return -1;
+    if (b[0] === normalizedBase) return 1;
     if (aIdx >= 0 && bIdx >= 0) return aIdx - bIdx;
     if (aIdx >= 0) return -1;
     if (bIdx >= 0) return 1;
