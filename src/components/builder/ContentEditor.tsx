@@ -236,32 +236,32 @@ export default function ContentEditor({ onEditWithAi }: { onEditWithAi?: () => v
         </div>
       </div>
 
-      {/* Bottom: Actions (sticky) */}
-      <div className="p-[12px] flex-shrink-0">
-        <div className="flex flex-col gap-[8px]">
+      {/* Bottom: Actions (sticky) — Figma: 224x32 rows, 4px gap, 8px container padding */}
+      <div className="p-[8px] flex-shrink-0">
+        <div className="flex flex-col gap-[4px]">
           <button
             onClick={() => duplicateSection(selectedSection.id)}
-            className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors"
+            className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors"
           >
-            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Duplicate Section</span>
+            <span className="text-[14px] text-[#1c1c1c]">Duplicate Section</span>
             <Plus className="w-[16px] h-[16px] text-[#1c1c1c]" />
           </button>
           <button
             onClick={onEditWithAi}
-            className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors"
+            className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors"
           >
-            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Edit with AI</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#1c1c1c]"><path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11l-1.5-3.5L3 6l3.5-1.5L8 1zM3 11l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <span className="text-[14px] text-[#1c1c1c]">Edit with AI</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11l-1.5-3.5L3 6l3.5-1.5L8 1zM3 11l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" stroke="#1c1c1c" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-          <button className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors">
-            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Save as reusable</span>
+          <button className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors">
+            <span className="text-[14px] text-[#1c1c1c]">Save as reusable</span>
             <Save className="w-[16px] h-[16px] text-[#1c1c1c]" />
           </button>
           <button
             onClick={() => removeSection(selectedSection.id)}
-            className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full opacity-70 hover:opacity-100 transition-opacity"
+            className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors opacity-70 hover:opacity-100"
           >
-            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Delete Section</span>
+            <span className="text-[14px] text-[#1c1c1c]">Delete Section</span>
             <Trash2 className="w-[16px] h-[16px] text-[#1c1c1c]" />
           </button>
         </div>

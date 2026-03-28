@@ -39,9 +39,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import SectionActions from './SectionActions';
 
-function SortableSection({ section, index, total, onEditWithAi, isAiGenerating }: {
+function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, isAiChanged }: {
   section: PlacedSection; index: number; total: number;
-  onEditWithAi?: () => void; isAiGenerating?: boolean;
+  onEditWithAi?: () => void; isAiGenerating?: boolean; isAiChanged?: boolean;
 }) {
   const { selectSection, selectedSectionId, duplicateSection, removeSection } = useBuilderStore();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
@@ -98,7 +98,7 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating }
             ? 'border-2 border-black border-dashed'
             : 'border-2 border-transparent hover:border-[#e6e6e6]'
       }`}>
-        <div className="overflow-hidden rounded-[10px]">
+        <div className="overflow-hidden rounded-[10px]" {...(isAiChanged ? { 'data-ai-changed': 'true' } : {})}>
           <SectionErrorBoundary sectionId={section.id} variantId={section.variantId}>
             <div className={isAiGenerating ? 'animate-pulse' : ''}>
               <Component content={section.content} colorMode={section.colorMode || 'light'} sectionId={section.id} />
@@ -127,9 +127,10 @@ interface CanvasProps {
   backgroundColor?: string;
   onEditWithAi?: () => void;
   aiGeneratingSectionId?: string | null;
+  aiChangedSectionId?: string | null;
 }
 
-export default function Canvas({ liveMessage, setLiveMessage, isImporting, backgroundColor, onEditWithAi, aiGeneratingSectionId }: CanvasProps) {
+export default function Canvas({ liveMessage, setLiveMessage, isImporting, backgroundColor, onEditWithAi, aiGeneratingSectionId, aiChangedSectionId }: CanvasProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sections = useBuilderStore(s => {
     const proj = s.projects.find(p => p.id === s.activeProjectId);
@@ -346,6 +347,7 @@ export default function Canvas({ liveMessage, setLiveMessage, isImporting, backg
                   total={sections.length}
                   onEditWithAi={onEditWithAi}
                   isAiGenerating={aiGeneratingSectionId === section.id}
+                  isAiChanged={aiChangedSectionId === section.id}
                 />
               </div>
             ))}

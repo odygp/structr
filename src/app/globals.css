@@ -38,3 +38,48 @@ body {
   75% { border-image-source: linear-gradient(270deg, #ff6b9d, #c084fc, #ff6b9d); }
   100% { border-image-source: linear-gradient(360deg, #ff6b9d, #c084fc, #ff6b9d); }
 }
+
+/* Typewriter animation for AI-changed text */
+[data-ai-changed] * {
+  animation: ai-typewriter-reveal 0.8s ease-out;
+}
+
+@keyframes ai-typewriter-reveal {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(4px);
+  }
+  30% {
+    opacity: 0.4;
+    filter: blur(2px);
+    text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+  }
+  60% {
+    opacity: 0.8;
+    filter: blur(0);
+    text-shadow: 0 0 8px rgba(192, 132, 252, 0.3);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: none;
+    transform: translateY(0);
+  }
+}
+
+/* Magical shimmer effect on section during AI change */
+[data-ai-changed]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(192, 132, 252, 0.08), transparent);
+  animation: ai-shimmer 1.5s ease-out forwards;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+@keyframes ai-shimmer {
+  0% { transform: translateX(-100%); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}

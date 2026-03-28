@@ -21,7 +21,7 @@ export default function SectionActions({ onDuplicate, onEditWithAi, onSaveReusab
 
   return (
     <div
-      className="absolute top-[8px] right-[-44px] flex flex-col gap-[4px] z-20"
+      className="absolute top-[8px] right-[8px] flex flex-col gap-[2px] z-20"
       onClick={e => e.stopPropagation()}
     >
       {buttons.map((btn, i) => (
@@ -29,9 +29,9 @@ export default function SectionActions({ onDuplicate, onEditWithAi, onSaveReusab
           key={i}
           onClick={btn.onClick}
           title={btn.label}
-          className={`w-[32px] h-[32px] rounded-[8px] bg-[#1c1c1c] text-white flex items-center justify-center hover:bg-[#333] transition-colors ${btn.className || ''}`}
+          className={`w-[26px] h-[26px] rounded-[6px] bg-[#1c1c1c] text-white flex items-center justify-center hover:bg-[#333] transition-colors ${btn.className || ''}`}
         >
-          <btn.icon size={14} />
+          <btn.icon size={12} />
         </button>
       ))}
     </div>

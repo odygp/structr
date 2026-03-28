@@ -7,7 +7,7 @@ import * as Icons from 'lucide-react';
 import { ChevronRight, Search } from 'lucide-react';
 import VariantThumbnail from './VariantThumbnail';
 
-export default function SectionCatalog() {
+export default function SectionCatalog({ width = 240 }: { width?: number }) {
   const addSection = useBuilderStore((s) => s.addSection);
   const sidebarSearch = useBuilderStore((s) => s.sidebarSearch);
   const setSidebarSearch = useBuilderStore((s) => s.setSidebarSearch);
@@ -38,7 +38,7 @@ export default function SectionCatalog() {
     .filter(Boolean) as typeof sectionRegistry;
 
   return (
-    <nav aria-label="Section catalog" className="w-[240px] border-r border-[#e6e6e6] bg-white overflow-y-auto flex-shrink-0">
+    <nav aria-label="Section catalog" style={{ width }} className="border-r border-[#e6e6e6] bg-white overflow-y-auto flex-shrink-0">
       {/* Header + Search */}
       <div className="flex flex-col gap-[12px] p-[12px]">
         <div className="flex flex-col gap-[12px] py-[4px]">

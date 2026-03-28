@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useBuilderStore } from '@/lib/store';
 import { useSearchParams } from 'next/navigation';
 import Toolbar from './Toolbar';
@@ -7,7 +7,8 @@ import SectionCatalog from './SectionCatalog';
 import Canvas from './Canvas';
 import ContentEditor from './ContentEditor';
 import DocumentSidebar from './DocumentSidebar';
-import AiSectionChat from './AiSectionChat';
+import AiSectionChat, { type ChatMessage } from './AiSectionChat';
+import ResizeHandle from './ResizeHandle';
 import { CommentsSidebar } from './CommentsOverlay';
 
 interface Comment {
@@ -21,6 +22,10 @@ interface Comment {
   parent_id: string | null;
   created_at: string;
 }
+
+const MIN_SIDEBAR = 180;
+const MAX_SIDEBAR = 400;
+const DEFAULT_SIDEBAR = 240;
 
 export default function BuilderLayout() {
   return (
@@ -49,13 +54,47 @@ function BuilderLayoutInner() {
   const [backgroundColor, setBackgroundColor] = useState('#F2F2F2');
   const [pendingPages, setPendingPages] = useState<{ name: string; url: string; sortOrder: number; loading: boolean; done: boolean; error?: boolean }[]>([]);
 
+  // Persistent chat history per section
+  const [chatHistory, setChatHistory] = useState<Record<string, ChatMessage[]>>({});
+
+  // Resizable sidebars
+  const [leftWidth, setLeftWidth] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('structr-left-width');
+      return saved ? parseInt(saved) : DEFAULT_SIDEBAR;
+    }
+    return DEFAULT_SIDEBAR;
+  });
+  const [rightWidth, setRightWidth] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('structr-right-width');
+      return saved ? parseInt(saved) : DEFAULT_SIDEBAR;
+    }
+    return DEFAULT_SIDEBAR;
+  });
+
+  // Typewriter: track which section was just AI-edited
+  const [aiChangedSectionId, setAiChangedSectionId] = useState<string | null>(null);
+  const aiChangedTimeoutRef = useRef<NodeJS.Timeout>(null);
+
   const searchParams = useSearchParams();
   const projectId = searchParams.get('project');
 
-  // Get selected section data for AI chat
   const activeProject = useBuilderStore((s) => s.projects.find(p => p.id === s.activeProjectId));
   const activePage = activeProject?.pages.find(p => p.id === activeProject.activePageId);
   const selectedSection = activePage?.sections.find(s => s.id === selectedSectionId);
+
+  // Persist sidebar widths
+  useEffect(() => { localStorage.setItem('structr-left-width', String(leftWidth)); }, [leftWidth]);
+  useEffect(() => { localStorage.setItem('structr-right-width', String(rightWidth)); }, [rightWidth]);
+
+  const handleLeftResize = useCallback((delta: number) => {
+    setLeftWidth(w => Math.min(MAX_SIDEBAR, Math.max(MIN_SIDEBAR, w + delta)));
+  }, []);
+
+  const handleRightResize = useCallback((delta: number) => {
+    setRightWidth(w => Math.min(MAX_SIDEBAR, Math.max(MIN_SIDEBAR, w + delta)));
+  }, []);
 
   // Load comments
   useEffect(() => {
@@ -69,20 +108,15 @@ function BuilderLayoutInner() {
     return () => clearInterval(interval);
   }, [projectId]);
 
-  // Load/reload project data from Supabase
   const loadRemoteProject = useBuilderStore((s) => s.loadRemoteProject);
   const reloadProject = async () => {
     if (!projectId) return;
     try {
       const res = await fetch(`/api/projects/${projectId}`);
-      if (res.ok) {
-        const data = await res.json();
-        loadRemoteProject(data);
-      }
+      if (res.ok) { loadRemoteProject(await res.json()); }
     } catch {}
   };
 
-  // Initial load
   useEffect(() => {
     if (!projectId) return;
     const existing = useBuilderStore.getState().projects.find(p => p.id === projectId);
@@ -92,12 +126,11 @@ function BuilderLayoutInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
-  // Poll server-side import queue
+  // Poll import queue
   useEffect(() => {
     if (!projectId) return;
     let active = true;
     let completedSoFar = 0;
-
     const poll = async () => {
       if (!active) return;
       try {
@@ -106,29 +139,17 @@ function BuilderLayoutInner() {
         const data = await res.json();
         const jobs = data.jobs || [];
         if (jobs.length === 0) return;
-
         const mapped = jobs.map((j: { page_name: string; sort_order: number; status: string }) => ({
           name: j.page_name, url: '', sortOrder: j.sort_order,
           loading: j.status === 'processing',
-          done: j.status === 'completed' || j.status === 'failed' || j.status === 'skipped',
+          done: ['completed', 'failed', 'skipped'].includes(j.status),
           error: j.status === 'failed' || j.status === 'skipped',
         }));
         setPendingPages(mapped);
-
-        const newCompleted = data.summary.completed;
-        if (newCompleted > completedSoFar) {
-          completedSoFar = newCompleted;
-          await reloadProject();
-        }
-
-        if (data.allDone) {
-          setTimeout(() => { if (active) setPendingPages([]); }, 3000);
-          return;
-        }
+        if (data.summary.completed > completedSoFar) { completedSoFar = data.summary.completed; await reloadProject(); }
+        if (data.allDone) { setTimeout(() => { if (active) setPendingPages([]); }, 3000); return; }
         setTimeout(poll, 3000);
-      } catch {
-        setTimeout(poll, 5000);
-      }
+      } catch { setTimeout(poll, 5000); }
     };
     poll();
     return () => { active = false; };
@@ -163,14 +184,20 @@ function BuilderLayoutInner() {
     for (const [key, value] of Object.entries(updatedContent)) {
       updateContent(selectedSectionId, key, value as string | boolean | Array<Record<string, string>>);
     }
+    // Trigger typewriter animation
+    setAiChangedSectionId(selectedSectionId);
+    if (aiChangedTimeoutRef.current) clearTimeout(aiChangedTimeoutRef.current);
+    aiChangedTimeoutRef.current = setTimeout(() => setAiChangedSectionId(null), 2000);
   }, [selectedSectionId, updateContent]);
 
-  // Clicking a section exits comments mode
+  const handleChatMessagesChange = useCallback((sectionId: string, messages: ChatMessage[]) => {
+    setChatHistory(prev => ({ ...prev, [sectionId]: messages }));
+  }, []);
+
   useEffect(() => {
     if (selectedSectionId && commentsOpen) setCommentsOpen(false);
   }, [selectedSectionId, commentsOpen]);
 
-  // Close AI chat when deselecting section
   useEffect(() => {
     if (!selectedSectionId && aiChatOpen) setAiChatOpen(false);
   }, [selectedSectionId, aiChatOpen]);
@@ -179,15 +206,11 @@ function BuilderLayoutInner() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      const isEditing = target instanceof HTMLInputElement
-        || target instanceof HTMLTextAreaElement
-        || target?.isContentEditable;
-
+      const isEditing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
       if (e.key === 'Escape') {
         if (aiChatOpen) { handleCloseAiChat(); return; }
         if (commentsOpen) { setCommentsOpen(false); return; }
       }
-
       const meta = e.metaKey || e.ctrlKey;
       if (meta && e.key === 'z' && !e.shiftKey && !isEditing) { e.preventDefault(); undo(); }
       if (meta && e.key === 'z' && e.shiftKey && !isEditing) { e.preventDefault(); redo(); }
@@ -204,16 +227,10 @@ function BuilderLayoutInner() {
 
   const unresolvedCount = comments.filter(c => !c.parent_id && !c.resolved).length;
 
-  // Get category label for selected section
-  const getCategoryLabel = (category: string) => {
-    return category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
-  };
+  const getCategoryLabel = (category: string) => category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
 
-  // Determine right sidebar content
   const renderRightSidebar = () => {
-    if (commentsOpen) {
-      return <CommentsSidebar comments={comments} onResolve={resolveComment} />;
-    }
+    if (commentsOpen) return <CommentsSidebar comments={comments} onResolve={resolveComment} />;
     if (aiChatOpen && selectedSection) {
       return (
         <AiSectionChat
@@ -227,12 +244,13 @@ function BuilderLayoutInner() {
           onApply={handleAiApply}
           generating={aiGenerating}
           onSetGenerating={setAiGenerating}
+          initialMessages={chatHistory[selectedSection.id] || []}
+          onMessagesChange={(msgs) => handleChatMessagesChange(selectedSection.id, msgs)}
+          width={rightWidth}
         />
       );
     }
-    if (selectedSectionId) {
-      return <ContentEditor onEditWithAi={handleOpenAiChat} />;
-    }
+    if (selectedSectionId) return <ContentEditor onEditWithAi={handleOpenAiChat} />;
     return <DocumentSidebar backgroundColor={backgroundColor} onBackgroundColorChange={setBackgroundColor} />;
   };
 
@@ -251,7 +269,9 @@ function BuilderLayoutInner() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <SectionCatalog />
+        <SectionCatalog width={leftWidth} />
+        <ResizeHandle side="left" onResize={handleLeftResize} />
+
         <Canvas
           liveMessage={liveMessage}
           setLiveMessage={setLiveMessage}
@@ -259,7 +279,10 @@ function BuilderLayoutInner() {
           backgroundColor={backgroundColor}
           onEditWithAi={handleOpenAiChat}
           aiGeneratingSectionId={aiGenerating ? selectedSectionId : null}
+          aiChangedSectionId={aiChangedSectionId}
         />
+
+        <ResizeHandle side="right" onResize={handleRightResize} />
         {renderRightSidebar()}
       </div>
 
