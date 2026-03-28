@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ImportWebsiteModal from './ImportWebsiteModal';
 import ImportOctopusModal from './ImportOctopusModal';
+import TemplateWizard from './TemplateWizard';
+import type { WizardData } from '@/lib/templates';
 
 export default function ActionCards() {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [octopusModalOpen, setOctopusModalOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   const handleNewBlank = async () => {
     if (creating) return;
@@ -27,9 +30,25 @@ export default function ActionCards() {
     } catch {} finally { setCreating(false); }
   };
 
+  const handleWizardComplete = async (data: WizardData) => {
+    const res = await fetch('/api/ai/generate-from-wizard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      const { projectId } = await res.json();
+      router.push(`/builder?project=${projectId}`);
+    } else {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to generate');
+    }
+  };
+
   const cards = [
     { icon: '/Add.svg', label: 'New Blank project', onClick: handleNewBlank, disabled: creating },
-    { icon: '/Document--multiple-01.svg', label: 'Choose a template', onClick: () => {}, disabled: true },
+    { icon: '/Document--multiple-01.svg', label: 'Guided Setup', onClick: () => setWizardOpen(true), disabled: false },
     { icon: '/Website.svg', label: 'Import a website', onClick: () => setImportModalOpen(true), disabled: false },
     { icon: '/octopus.svg', label: 'Import from Octopus', onClick: () => setOctopusModalOpen(true), disabled: false },
   ];
@@ -56,6 +75,7 @@ export default function ActionCards() {
 
       {importModalOpen && <ImportWebsiteModal onClose={() => setImportModalOpen(false)} />}
       {octopusModalOpen && <ImportOctopusModal onClose={() => setOctopusModalOpen(false)} />}
+      {wizardOpen && <TemplateWizard onClose={() => setWizardOpen(false)} onComplete={handleWizardComplete} />}
     </>
   );
 }
