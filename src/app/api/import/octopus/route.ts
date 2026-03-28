@@ -50,7 +50,6 @@ export async function POST(request: Request) {
       .insert({
         user_id: user.id,
         name: projectName,
-        description: `Imported from Octopus.do (${file.name})`,
       })
       .select()
       .single();
