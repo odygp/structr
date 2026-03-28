@@ -51,7 +51,35 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent projects */}
-        <RecentProjects projects={projects} loading={loading} />
+        <RecentProjects
+          projects={projects}
+          loading={loading}
+          onDelete={async (id) => {
+            try {
+              await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+              setProjects(prev => prev.filter(p => p.id !== id));
+            } catch {}
+          }}
+          onDuplicate={async (id) => {
+            try {
+              const res = await fetch(`/api/projects/${id}/duplicate`, { method: 'POST' });
+              if (res.ok) {
+                const newProject = await res.json();
+                setProjects(prev => [newProject, ...prev]);
+              }
+            } catch {}
+          }}
+          onRename={async (id, name) => {
+            try {
+              await fetch(`/api/projects/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name }),
+              });
+              setProjects(prev => prev.map(p => p.id === id ? { ...p, name } : p));
+            } catch {}
+          }}
+        />
       </main>
     </div>
   );

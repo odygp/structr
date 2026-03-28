@@ -4,7 +4,13 @@ import { useState } from 'react';
 import ProjectCard from './ProjectCard';
 import type { DbProject } from '@/lib/db/types';
 
-export default function RecentProjects({ projects, loading }: { projects: DbProject[]; loading: boolean }) {
+export default function RecentProjects({ projects, loading, onDelete, onDuplicate, onRename }: {
+  projects: DbProject[];
+  loading: boolean;
+  onDelete?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
+  onRename?: (id: string, name: string) => void;
+}) {
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
@@ -70,7 +76,7 @@ export default function RecentProjects({ projects, loading }: { projects: DbProj
       ) : (
         <div className="grid grid-cols-4 gap-x-[12px] gap-y-[24px]">
           {filtered.map(project => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} onDelete={onDelete} onDuplicate={onDuplicate} onRename={onRename} />
           ))}
         </div>
       )}
