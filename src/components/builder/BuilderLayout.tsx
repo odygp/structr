@@ -58,7 +58,7 @@ function BuilderLayoutInner() {
     return () => clearInterval(interval);
   }, [projectId]);
 
-  // Reload project data from Supabase
+  // Load/reload project data from Supabase
   const loadRemoteProject = useBuilderStore((s) => s.loadRemoteProject);
   const reloadProject = async () => {
     if (!projectId) return;
@@ -70,6 +70,17 @@ function BuilderLayoutInner() {
       }
     } catch {}
   };
+
+  // Initial load: fetch project from Supabase on mount
+  useEffect(() => {
+    if (!projectId) return;
+    // Check if we already have this project loaded
+    const existing = useBuilderStore.getState().projects.find(p => p.id === projectId);
+    if (!existing || existing.pages.length === 0 || (existing.pages.length === 1 && existing.pages[0].sections.length === 0)) {
+      reloadProject();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   // Background import: process pending pages one by one
   useEffect(() => {
