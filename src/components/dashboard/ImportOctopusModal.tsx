@@ -90,13 +90,8 @@ export default function ImportOctopusModal({ onClose }: { onClose: () => void })
       if (!res.ok) throw new Error(data.error || 'Import failed');
 
       const projectId = data.projectId;
-      const remainingPages = data.pages || [];
 
-      // Store remaining pages for background processing in builder
-      if (remainingPages.length > 0) {
-        sessionStorage.setItem(`structr-octopus-${projectId}`, JSON.stringify(remainingPages));
-      }
-
+      // Server handles background processing — just navigate
       setStatus('Redirecting...');
       router.push(`/builder?project=${projectId}`);
     } catch (e) {

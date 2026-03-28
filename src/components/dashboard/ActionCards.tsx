@@ -43,15 +43,9 @@ export default function ActionCards() {
       throw new Error(err.error || 'Failed to create project');
     }
 
-    const { projectId, pages, wizardData } = await res.json();
+    const { projectId } = await res.json();
 
-    // Step 2: Store pages in sessionStorage for background generation
-    sessionStorage.setItem(
-      `structr-wizard-${projectId}`,
-      JSON.stringify({ pages, wizardData })
-    );
-
-    // Step 3: Redirect immediately
+    // Server handles background generation — just navigate
     router.push(`/builder?project=${projectId}`);
   };
 

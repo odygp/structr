@@ -60,15 +60,33 @@ export async function POST(request: Request) {
       });
     }
 
-    // Return immediately — pages will be generated in background via the per-page endpoint
+    // Insert all pages into the import queue for server-side processing
+    const queueRows = wizardData.pages.map((name, i) => ({
+      project_id: project.id,
+      user_id: user.id,
+      job_type: 'wizard',
+      page_name: name,
+      sort_order: i,
+      status: 'pending',
+      payload: { wizardData },
+    }));
+
+    await supabase.from('structr_import_queue').insert(queueRows);
+
+    // Trigger processing immediately (fire-and-forget)
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://structr.holy.black';
+    fetch(`${baseUrl}/api/import/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId: project.id }),
+    }).catch(() => {});
+
     return NextResponse.json({
       projectId: project.id,
       projectName,
-      pages: wizardData.pages.map((name, i) => ({
-        name,
-        sortOrder: i,
-      })),
-      wizardData, // Pass back so frontend can use it for per-page generation
+      pageCount: wizardData.pages.length,
     });
   } catch (e) {
     console.error('Wizard setup error:', e);

@@ -56,10 +56,37 @@ export async function POST(request: Request) {
 
     if (projErr) throw new Error(projErr.message || JSON.stringify(projErr));
 
-    // Return project ID + full page list for background processing
+    // Insert all pages into the import queue
+    const queueRows = pageList.map((p) => ({
+      project_id: project.id,
+      user_id: user.id,
+      job_type: 'octopus',
+      page_name: p.name,
+      sort_order: p.sortOrder,
+      status: 'pending',
+      payload: {
+        description: p.description,
+        seoTitle: p.seoTitle,
+        seoDescription: p.seoDescription,
+        blocks: p.blocks,
+      },
+    }));
+
+    await supabase.from('structr_import_queue').insert(queueRows);
+
+    // Trigger processing immediately (fire-and-forget)
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://structr.holy.black';
+    fetch(`${baseUrl}/api/import/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId: project.id }),
+    }).catch(() => {});
+
     return NextResponse.json({
       projectId: project.id,
-      pages: pageList,
+      pageCount: queueRows.length,
     });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : (typeof e === 'object' ? JSON.stringify(e) : String(e));

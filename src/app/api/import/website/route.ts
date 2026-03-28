@@ -40,17 +40,33 @@ export async function POST(request: Request) {
       .single();
     if (pErr) throw pErr;
 
-    // Return project + ALL discovered pages for background processing
+    // Insert all pages into the import queue
     const allPages = discoveredPages.slice(0, 10).map((p, i) => ({
-      url: p.url,
-      name: p.name,
-      sortOrder: i,
+      project_id: project.id,
+      user_id: user.id,
+      job_type: 'website',
+      page_name: p.name,
+      sort_order: i,
+      status: 'pending',
+      payload: { url: p.url },
     }));
+
+    await supabase.from('structr_import_queue').insert(allPages);
+
+    // Trigger processing immediately (fire-and-forget)
+    const apiBase = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://structr.holy.black';
+    fetch(`${apiBase}/api/import/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId: project.id }),
+    }).catch(() => {});
 
     return NextResponse.json({
       projectId: project.id,
       projectName,
-      pages: allPages,
+      pageCount: allPages.length,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

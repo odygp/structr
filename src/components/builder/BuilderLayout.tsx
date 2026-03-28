@@ -82,155 +82,59 @@ function BuilderLayoutInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
-  // Background import: process pending pages one by one
+  // Poll server-side import queue for progress (replaces all sessionStorage-based imports)
   useEffect(() => {
     if (!projectId) return;
-    const stored = sessionStorage.getItem(`structr-import-${projectId}`);
-    if (!stored) return;
-    sessionStorage.removeItem(`structr-import-${projectId}`);
 
-    let pages: { url: string; name: string; sortOrder: number }[];
-    try { pages = JSON.parse(stored); } catch { return; }
-    if (!pages.length) return;
+    let active = true;
+    let completedSoFar = 0;
 
-    const initial = pages.map(p => ({ ...p, loading: false, done: false, error: false }));
-    setPendingPages(initial);
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const res = await fetch(`/api/import/queue?projectId=${projectId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const jobs = data.jobs || [];
 
-    (async () => {
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i];
-        setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
+        if (jobs.length === 0) return; // No import queue for this project
 
-        try {
-          const res = await fetch('/api/import/website/page', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              projectId,
-              url: page.url,
-              name: page.name,
-              sortOrder: page.sortOrder,
-            }),
-          });
-          const data = await res.json();
-          const success = !data.skipped && data.done;
+        // Map queue jobs to pendingPages format for the existing UI
+        const mapped = jobs.map((j: { page_name: string; sort_order: number; status: string; error_message?: string }) => ({
+          name: j.page_name,
+          url: '',
+          sortOrder: j.sort_order,
+          loading: j.status === 'processing',
+          done: j.status === 'completed' || j.status === 'failed' || j.status === 'skipped',
+          error: j.status === 'failed' || j.status === 'skipped',
+        }));
+        setPendingPages(mapped);
 
-          setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: !success } : p
-          ));
-
-          // Reload project from Supabase after each successful page import
-          if (success) await reloadProject();
-        } catch {
-          setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: true } : p
-          ));
+        // Reload project when new pages complete
+        const newCompleted = data.summary.completed;
+        if (newCompleted > completedSoFar) {
+          completedSoFar = newCompleted;
+          await reloadProject();
         }
-      }
 
-      // Clear pending indicators after all done
-      setTimeout(() => setPendingPages([]), 3000);
-    })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
-
-  // Background import: Octopus.do pages (same pattern, different API endpoint)
-  useEffect(() => {
-    if (!projectId) return;
-    const stored = sessionStorage.getItem(`structr-octopus-${projectId}`);
-    if (!stored) return;
-    sessionStorage.removeItem(`structr-octopus-${projectId}`);
-
-    let pages: { name: string; description?: string; seoTitle?: string; seoDescription?: string; sortOrder: number }[];
-    try { pages = JSON.parse(stored); } catch { return; }
-    if (!pages.length) return;
-
-    const initial = pages.map(p => ({ ...p, url: '', loading: false, done: false, error: false }));
-    setPendingPages(initial);
-
-    (async () => {
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i];
-        setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
-
-        try {
-          const res = await fetch('/api/import/octopus/page', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              projectId,
-              name: page.name,
-              description: page.description,
-              seoTitle: page.seoTitle,
-              seoDescription: page.seoDescription,
-              sortOrder: page.sortOrder,
-            }),
-          });
-          const data = await res.json();
-          const success = data.done;
-
-          setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: !success } : p
-          ));
-
-          if (success) await reloadProject();
-        } catch {
-          setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: true } : p
-          ));
+        // Stop polling when all done
+        if (data.allDone) {
+          setTimeout(() => { if (active) setPendingPages([]); }, 3000);
+          return;
         }
+
+        // Poll again in 3 seconds
+        setTimeout(poll, 3000);
+      } catch {
+        // Retry after delay on error
+        setTimeout(poll, 5000);
       }
-      setTimeout(() => setPendingPages([]), 3000);
-    })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
+    };
 
-  // Background: Wizard-generated pages (same pattern)
-  useEffect(() => {
-    if (!projectId) return;
-    const stored = sessionStorage.getItem(`structr-wizard-${projectId}`);
-    if (!stored) return;
-    sessionStorage.removeItem(`structr-wizard-${projectId}`);
+    // Start polling immediately
+    poll();
 
-    let parsed: { pages: { name: string; sortOrder: number }[]; wizardData: unknown };
-    try { parsed = JSON.parse(stored); } catch { return; }
-    if (!parsed.pages?.length) return;
-
-    const initial = parsed.pages.map(p => ({ ...p, url: '', loading: false, done: false, error: false }));
-    setPendingPages(initial);
-
-    (async () => {
-      for (let i = 0; i < parsed.pages.length; i++) {
-        const page = parsed.pages[i];
-        setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
-
-        try {
-          const res = await fetch('/api/ai/generate-from-wizard/page', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              projectId,
-              pageName: page.name,
-              sortOrder: page.sortOrder,
-              wizardData: parsed.wizardData,
-            }),
-          });
-          const data = await res.json();
-          const success = data.done;
-
-          setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: !success } : p
-          ));
-
-          if (success) await reloadProject();
-        } catch {
-          setPendingPages(prev => prev.map((p, j) =>
-            j === i ? { ...p, loading: false, done: true, error: true } : p
-          ));
-        }
-      }
-      setTimeout(() => setPendingPages([]), 3000);
-    })();
+    return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 

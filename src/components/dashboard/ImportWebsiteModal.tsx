@@ -38,17 +38,9 @@ export default function ImportWebsiteModal({ onClose }: { onClose: () => void })
 
       if (!res.ok) throw new Error(data.error || 'Import failed');
 
-      const { projectId, pages } = data as {
-        projectId: string;
-        pages: { url: string; name: string; sortOrder: number }[];
-      };
+      const { projectId } = data as { projectId: string };
 
-      // Store ALL pages for background processing in the builder
-      if (pages && pages.length > 0) {
-        sessionStorage.setItem(`structr-import-${projectId}`, JSON.stringify(pages));
-      }
-
-      // Navigate to builder INSTANTLY — pages import in background
+      // Server handles background processing — just navigate
       router.push(`/builder?project=${projectId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
