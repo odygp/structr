@@ -58,7 +58,7 @@ export default function DashboardNav({ user }: { user: User }) {
                 <div className="text-[12px] text-[#34322d] opacity-50 truncate">{user.email}</div>
               </div>
               <button
-                onClick={() => {}}
+                onClick={() => { setDropdownOpen(false); window.location.href = '/settings'; }}
                 className="w-full px-[16px] py-[10px] text-left text-[14px] text-[#34322d] hover:bg-[#f8f8f8]"
               >
                 Settings

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { Star } from 'lucide-react';
 import type { DbProject } from '@/lib/db/types';
 
 function formatDate(dateStr: string): string {
@@ -9,16 +10,15 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-interface ContextMenuPos {
-  x: number;
-  y: number;
-}
+interface ContextMenuPos { x: number; y: number; }
 
-export default function ProjectCard({ project, onDelete, onDuplicate, onRename }: {
+export default function ProjectCard({ project, onDelete, onDuplicate, onRename, onToggleFavorite, onChangeStatus }: {
   project: DbProject;
   onDelete?: (id: string) => void;
   onDuplicate?: (id: string) => void;
   onRename?: (id: string, name: string) => void;
+  onToggleFavorite?: (id: string, current: boolean) => void;
+  onChangeStatus?: (id: string, status: 'draft' | 'published' | 'archived') => void;
 }) {
   const router = useRouter();
   const [contextMenu, setContextMenu] = useState<ContextMenuPos | null>(null);
@@ -27,97 +27,80 @@ export default function ProjectCard({ project, onDelete, onDuplicate, onRename }
   const menuRef = useRef<HTMLDivElement>(null);
   const renameRef = useRef<HTMLInputElement>(null);
 
-  // Close context menu on click outside
   useEffect(() => {
     if (!contextMenu) return;
     const handleClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setContextMenu(null);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setContextMenu(null);
     };
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setContextMenu(null);
-    };
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setContextMenu(null); };
     document.addEventListener('mousedown', handleClick);
     document.addEventListener('keydown', handleEsc);
-    return () => {
-      document.removeEventListener('mousedown', handleClick);
-      document.removeEventListener('keydown', handleEsc);
-    };
+    return () => { document.removeEventListener('mousedown', handleClick); document.removeEventListener('keydown', handleEsc); };
   }, [contextMenu]);
 
-  // Focus rename input
   useEffect(() => {
-    if (isRenaming && renameRef.current) {
-      renameRef.current.focus();
-      renameRef.current.select();
-    }
+    if (isRenaming && renameRef.current) { renameRef.current.focus(); renameRef.current.select(); }
   }, [isRenaming]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    setContextMenu({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    setContextMenu({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   }, []);
-
-  const handleOpen = () => {
-    setContextMenu(null);
-    router.push(`/builder?project=${project.id}`);
-  };
-
-  const handleCopyLink = () => {
-    setContextMenu(null);
-    const url = `${window.location.origin}/builder?project=${project.id}`;
-    navigator.clipboard.writeText(url).catch(() => {});
-  };
-
-  const handleDuplicate = () => {
-    setContextMenu(null);
-    onDuplicate?.(project.id);
-  };
-
-  const handleRename = () => {
-    setContextMenu(null);
-    setRenameValue(project.name);
-    setIsRenaming(true);
-  };
 
   const handleRenameSubmit = () => {
     const trimmed = renameValue.trim();
-    if (trimmed && trimmed !== project.name) {
-      onRename?.(project.id, trimmed);
-    }
+    if (trimmed && trimmed !== project.name) onRename?.(project.id, trimmed);
     setIsRenaming(false);
   };
 
-  const handleMoveToTrash = () => {
-    setContextMenu(null);
-    onDelete?.(project.id);
-  };
-
   const menuItems = [
-    { label: 'Open', action: handleOpen, highlight: true },
-    { label: 'Copy link', action: handleCopyLink },
-    { label: 'Duplicate', action: handleDuplicate },
-    { label: 'Rename', action: handleRename },
-    { label: 'Move to trash', action: handleMoveToTrash },
+    { label: 'Open', action: () => { setContextMenu(null); router.push(`/builder?project=${project.id}`); }, highlight: true },
+    { label: 'Copy link', action: () => { setContextMenu(null); navigator.clipboard.writeText(`${window.location.origin}/builder?project=${project.id}`).catch(() => {}); } },
+    { label: project.is_favorite ? 'Remove from favorites' : 'Add to favorites', action: () => { setContextMenu(null); onToggleFavorite?.(project.id, project.is_favorite); } },
+    { label: 'Duplicate', action: () => { setContextMenu(null); onDuplicate?.(project.id); } },
+    { label: 'Rename', action: () => { setContextMenu(null); setRenameValue(project.name); setIsRenaming(true); } },
+    { label: project.status === 'archived' ? 'Restore' : 'Archive', action: () => { setContextMenu(null); onChangeStatus?.(project.id, project.status === 'archived' ? 'draft' : 'archived'); } },
+    ...(project.status !== 'archived' ? [{ label: 'Move to trash', action: () => { setContextMenu(null); onDelete?.(project.id); }, danger: true }] : []),
   ];
+
+  const statusColors = {
+    draft: 'bg-[#e6e6e6] text-[#808080]',
+    published: 'bg-green-100 text-green-700',
+    archived: 'bg-orange-100 text-orange-600',
+  };
 
   return (
     <div
-      className="relative flex flex-col gap-[12px] p-[4px] rounded-[20px] cursor-pointer hover:bg-white transition-colors"
+      className="relative flex flex-col gap-[12px] p-[4px] rounded-[20px] cursor-pointer hover:bg-white transition-colors group"
       onClick={() => !isRenaming && router.push(`/builder?project=${project.id}`)}
       onContextMenu={handleContextMenu}
     >
       {/* Thumbnail */}
-      <div className="bg-[#efefef] h-[140px] rounded-[16px] overflow-hidden w-full">
+      <div className="bg-[#efefef] h-[140px] rounded-[16px] overflow-hidden w-full relative">
         {project.thumbnail_url ? (
           <img src={project.thumbnail_url} alt="" className="w-full h-full object-cover" />
         ) : null}
+
+        {/* Favorite star — visible on hover or when favorited */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onToggleFavorite?.(project.id, project.is_favorite); }}
+          className={`absolute top-[8px] right-[8px] w-[28px] h-[28px] rounded-full flex items-center justify-center transition-all ${
+            project.is_favorite
+              ? 'bg-yellow-400 text-white opacity-100'
+              : 'bg-white/80 text-[#808080] opacity-0 group-hover:opacity-100 hover:text-yellow-500'
+          }`}
+        >
+          <Star size={14} fill={project.is_favorite ? 'currentColor' : 'none'} />
+        </button>
+
+        {/* Status badge */}
+        {project.status !== 'draft' && (
+          <div className={`absolute top-[8px] left-[8px] px-[8px] py-[2px] rounded-full text-[10px] font-medium ${statusColors[project.status] || statusColors.draft}`}>
+            {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -149,23 +132,21 @@ export default function ProjectCard({ project, onDelete, onDuplicate, onRename }
       {contextMenu && (
         <div
           ref={menuRef}
-          className="absolute z-50 bg-white flex flex-col items-start p-[4px] rounded-[12px] w-[161px]"
-          style={{
-            left: contextMenu.x,
-            top: contextMenu.y,
-            boxShadow: '0px 4px 12px 0px rgba(0, 0, 0, 0.15)',
-          }}
+          className="absolute z-50 bg-white flex flex-col items-start p-[4px] rounded-[12px] w-[190px]"
+          style={{ left: contextMenu.x, top: contextMenu.y, boxShadow: '0px 4px 12px 0px rgba(0, 0, 0, 0.15)' }}
           onClick={e => e.stopPropagation()}
         >
           {menuItems.map(item => (
             <button
               key={item.label}
               onClick={item.action}
-              className={`flex items-center justify-center p-[8px] rounded-[4px] w-full text-left transition-colors ${
-                item.highlight ? 'bg-[#efefef]' : 'hover:bg-[#efefef]'
+              className={`flex items-center p-[8px] rounded-[4px] w-full text-left transition-colors ${
+                'danger' in item && item.danger ? 'hover:bg-red-50' : item.highlight ? 'bg-[#efefef]' : 'hover:bg-[#efefef]'
               }`}
             >
-              <span className="flex-1 text-[14px] font-medium leading-[16px] tracking-[-0.28px] text-[#1c1c1c]">
+              <span className={`flex-1 text-[14px] font-medium leading-[16px] tracking-[-0.28px] ${
+                'danger' in item && item.danger ? 'text-red-500' : 'text-[#1c1c1c]'
+              }`}>
                 {item.label}
               </span>
             </button>

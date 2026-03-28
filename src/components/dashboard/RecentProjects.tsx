@@ -4,36 +4,77 @@ import { useState } from 'react';
 import ProjectCard from './ProjectCard';
 import type { DbProject } from '@/lib/db/types';
 
-export default function RecentProjects({ projects, loading, onDelete, onDuplicate, onRename }: {
+type Tab = 'all' | 'favorites' | 'drafts' | 'archived';
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'all', label: 'All Projects' },
+  { id: 'favorites', label: 'Favorites' },
+  { id: 'drafts', label: 'Drafts' },
+  { id: 'archived', label: 'Archived' },
+];
+
+export default function RecentProjects({ projects, loading, onDelete, onDuplicate, onRename, onToggleFavorite, onChangeStatus, onRefresh }: {
   projects: DbProject[];
   loading: boolean;
   onDelete?: (id: string) => void;
   onDuplicate?: (id: string) => void;
   onRename?: (id: string, name: string) => void;
+  onToggleFavorite?: (id: string, current: boolean) => void;
+  onChangeStatus?: (id: string, status: 'draft' | 'published' | 'archived') => void;
+  onRefresh?: () => void;
 }) {
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('all');
 
+  // Filter by tab
+  let tabFiltered = projects;
+  if (activeTab === 'favorites') tabFiltered = projects.filter(p => p.is_favorite);
+  else if (activeTab === 'drafts') tabFiltered = projects.filter(p => p.status === 'draft');
+  else if (activeTab === 'archived') tabFiltered = projects.filter(p => p.status === 'archived');
+  else tabFiltered = projects.filter(p => p.status !== 'archived');
+
+  // Filter by search
   const filtered = search
-    ? projects.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
-    : projects;
+    ? tabFiltered.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    : tabFiltered;
+
+  const counts = {
+    all: projects.filter(p => p.status !== 'archived').length,
+    favorites: projects.filter(p => p.is_favorite).length,
+    drafts: projects.filter(p => p.status === 'draft').length,
+    archived: projects.filter(p => p.status === 'archived').length,
+  };
 
   return (
     <div className="flex flex-col gap-[20px]">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-[6px]">
-          <h2 className="text-[20px] font-medium leading-[16px] tracking-[-0.4px] text-[#34322d]">
-            Recent Projects
-          </h2>
-          <div className="bg-[#efefef] flex flex-col items-center justify-center h-[24px] min-w-[24px] px-[6px] rounded-[6px]">
-            <span className="text-[12px] font-normal leading-[12px] tracking-[-0.24px] text-[#34322d] opacity-50 text-center">
-              {projects.length}
-            </span>
-          </div>
-        </div>
+      {/* Tabs */}
+      <div className="flex items-center gap-[4px] border-b border-[#ebebeb] pb-[1px]">
+        {TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-[16px] py-[10px] text-[14px] font-medium transition-colors relative ${
+              activeTab === tab.id
+                ? 'text-[#1c1c1c]'
+                : 'text-[#808080] hover:text-[#1c1c1c]'
+            }`}
+          >
+            {tab.label}
+            {counts[tab.id] > 0 && (
+              <span className="ml-[6px] text-[12px] text-[#808080] bg-[#f0f0f0] rounded-full px-[6px] py-[1px]">
+                {counts[tab.id]}
+              </span>
+            )}
+            {activeTab === tab.id && (
+              <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-[#1c1c1c] rounded-full" />
+            )}
+          </button>
+        ))}
 
-        <div className="flex items-start gap-[4px]">
+        {/* Spacer + Search + Filter */}
+        <div className="flex-1" />
+        <div className="flex items-center gap-[4px]">
           {showSearch && (
             <input
               type="text"
@@ -49,9 +90,6 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
             className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors"
           >
             <img src="/Search.svg" alt="Search" width={16} height={16} />
-          </button>
-          <button className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors">
-            <img src="/Filter.svg" alt="Filter" width={16} height={16} />
           </button>
         </div>
       </div>
@@ -71,12 +109,23 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-[48px] text-[#34322d] opacity-40 text-[14px]">
-          {projects.length === 0 ? 'No projects yet. Create one above!' : 'No projects match your search.'}
+          {activeTab === 'favorites' ? 'No favorite projects yet. Star a project to see it here.'
+            : activeTab === 'archived' ? 'No archived projects.'
+            : projects.length === 0 ? 'No projects yet. Create one above!'
+            : 'No projects match your search.'}
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-x-[12px] gap-y-[24px]">
           {filtered.map(project => (
-            <ProjectCard key={project.id} project={project} onDelete={onDelete} onDuplicate={onDuplicate} onRename={onRename} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onDelete={onDelete}
+              onDuplicate={onDuplicate}
+              onRename={onRename}
+              onToggleFavorite={onToggleFavorite}
+              onChangeStatus={onChangeStatus}
+            />
           ))}
         </div>
       )}

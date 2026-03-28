@@ -5,6 +5,12 @@ export interface DbProject {
   user_id: string;
   name: string;
   thumbnail_url: string | null;
+  status: 'draft' | 'published' | 'archived';
+  is_favorite: boolean;
+  tags: string[];
+  folder_id: string | null;
+  is_template: boolean;
+  settings: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import DashboardNav from '@/components/dashboard/DashboardNav';
 import AiPromptCard from '@/components/dashboard/AiPromptCard';
@@ -13,18 +13,77 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<DbProject[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const loadProjects = useCallback(async () => {
+    try {
+      const res = await fetch('/api/projects');
+      if (res.ok) setProjects(await res.json());
+    } catch {} finally { setLoading(false); }
+  }, []);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { window.location.href = '/login'; return; }
-
-    async function loadProjects() {
-      try {
-        const res = await fetch('/api/projects');
-        if (res.ok) setProjects(await res.json());
-      } catch {} finally { setLoading(false); }
-    }
     loadProjects();
-  }, [user, authLoading]);
+  }, [user, authLoading, loadProjects]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      setProjects(prev => prev.filter(p => p.id !== id));
+    } catch {}
+  };
+
+  const handleDuplicate = async (id: string) => {
+    try {
+      const res = await fetch(`/api/projects/${id}/duplicate`, { method: 'POST' });
+      if (res.ok) {
+        const newProject = await res.json();
+        setProjects(prev => [newProject, ...prev]);
+      }
+    } catch {}
+  };
+
+  const handleRename = async (id: string, name: string) => {
+    try {
+      await fetch(`/api/projects/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, name } : p));
+    } catch {}
+  };
+
+  const handleToggleFavorite = async (id: string, current: boolean) => {
+    const newValue = !current;
+    // Optimistic update
+    setProjects(prev => prev.map(p => p.id === id ? { ...p, is_favorite: newValue } : p));
+    try {
+      await fetch(`/api/projects/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_favorite: newValue }),
+      });
+    } catch {
+      // Revert on error
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, is_favorite: current } : p));
+    }
+  };
+
+  const handleChangeStatus = async (id: string, status: 'draft' | 'published' | 'archived') => {
+    const prev = projects.find(p => p.id === id)?.status;
+    // Optimistic update
+    setProjects(ps => ps.map(p => p.id === id ? { ...p, status } : p));
+    try {
+      await fetch(`/api/projects/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+    } catch {
+      if (prev) setProjects(ps => ps.map(p => p.id === id ? { ...p, status: prev } : p));
+    }
+  };
 
   if (authLoading || !user) {
     return (
@@ -50,35 +109,16 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent projects */}
+        {/* Projects with tabs */}
         <RecentProjects
           projects={projects}
           loading={loading}
-          onDelete={async (id) => {
-            try {
-              await fetch(`/api/projects/${id}`, { method: 'DELETE' });
-              setProjects(prev => prev.filter(p => p.id !== id));
-            } catch {}
-          }}
-          onDuplicate={async (id) => {
-            try {
-              const res = await fetch(`/api/projects/${id}/duplicate`, { method: 'POST' });
-              if (res.ok) {
-                const newProject = await res.json();
-                setProjects(prev => [newProject, ...prev]);
-              }
-            } catch {}
-          }}
-          onRename={async (id, name) => {
-            try {
-              await fetch(`/api/projects/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name }),
-              });
-              setProjects(prev => prev.map(p => p.id === id ? { ...p, name } : p));
-            } catch {}
-          }}
+          onDelete={handleDelete}
+          onDuplicate={handleDuplicate}
+          onRename={handleRename}
+          onToggleFavorite={handleToggleFavorite}
+          onChangeStatus={handleChangeStatus}
+          onRefresh={loadProjects}
         />
       </main>
     </div>

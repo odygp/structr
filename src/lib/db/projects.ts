@@ -60,7 +60,7 @@ export async function deleteProject(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function updateProject(id: string, data: Partial<Pick<DbProject, 'name' | 'thumbnail_url'>>): Promise<void> {
+export async function updateProject(id: string, data: Partial<Pick<DbProject, 'name' | 'thumbnail_url' | 'status' | 'is_favorite' | 'tags' | 'folder_id' | 'is_template'>>): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase.from('structr_projects').update(data).eq('id', id);
   if (error) throw error;
