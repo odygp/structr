@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { fetchCleanContent } from '@/lib/import/html-analyzer';
 import { analyzePageWithAI } from '@/lib/import/ai-analyzer';
+import { trackUsage } from '@/lib/ai/track-usage';
 
 export const maxDuration = 60;
 
@@ -24,7 +25,23 @@ export async function POST(request: Request) {
     }
 
     // AI analysis
+    const startTime = Date.now();
     const result = await analyzePageWithAI(content, name || 'Page', url);
+    const durationMs = Date.now() - startTime;
+
+    // Track AI usage
+    if (result.usage) {
+      await trackUsage({
+        userId: user.id,
+        projectId,
+        endpoint: 'import/website/page',
+        model: result.usage.model,
+        inputTokens: result.usage.inputTokens,
+        outputTokens: result.usage.outputTokens,
+        durationMs,
+      });
+    }
+
     if (result.sections.length === 0) {
       return NextResponse.json({ error: 'No sections detected', skipped: true }, { status: 200 });
     }

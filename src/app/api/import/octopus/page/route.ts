@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { generateSectionsForPage } from '@/lib/import/ai-analyzer';
+import { trackUsage } from '@/lib/ai/track-usage';
 
 export const maxDuration = 60;
 
@@ -13,13 +14,30 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
     // Generate sections using AI
+    const startTime = Date.now();
     const result = await generateSectionsForPage(
       name,
       description,
       { title: seoTitle, description: seoDescription }
     );
+
+    const durationMs = Date.now() - startTime;
+
+    // Track AI usage
+    if (result.usage && user) {
+      await trackUsage({
+        userId: user.id,
+        projectId,
+        endpoint: 'import/octopus/page',
+        model: result.usage.model,
+        inputTokens: result.usage.inputTokens,
+        outputTokens: result.usage.outputTokens,
+        durationMs,
+      });
+    }
 
     if (result.sections.length === 0) {
       return NextResponse.json({ error: 'No sections generated', skipped: true });
@@ -65,7 +83,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       done: true,
-      pageId: dbPage.id,
+      pageId,
       sectionCount: sectionRows.length,
     });
   } catch (e) {
