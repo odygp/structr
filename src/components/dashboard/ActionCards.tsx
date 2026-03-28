@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, FileText, Globe } from 'lucide-react';
 import ImportWebsiteModal from './ImportWebsiteModal';
+import ImportOctopusModal from './ImportOctopusModal';
 
 export default function ActionCards() {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [octopusModalOpen, setOctopusModalOpen] = useState(false);
 
   const handleNewBlank = async () => {
     if (creating) return;
@@ -30,7 +32,7 @@ export default function ActionCards() {
     { icon: <Plus size={16} />, label: 'New Blank project', onClick: handleNewBlank, disabled: creating },
     { icon: <FileText size={16} />, label: 'Choose a template', onClick: () => {}, disabled: true },
     { icon: <WebsiteIcon />, label: 'Import a website', onClick: () => setImportModalOpen(true), disabled: false },
-    { icon: <OctopusIcon />, label: 'Import from Octopus', onClick: () => {}, disabled: true },
+    { icon: <OctopusIcon />, label: 'Import from Octopus', onClick: () => setOctopusModalOpen(true), disabled: false },
   ];
 
   return (
@@ -54,6 +56,7 @@ export default function ActionCards() {
       </div>
 
       {importModalOpen && <ImportWebsiteModal onClose={() => setImportModalOpen(false)} />}
+      {octopusModalOpen && <ImportOctopusModal onClose={() => setOctopusModalOpen(false)} />}
     </>
   );
 }

@@ -209,6 +209,130 @@ export async function analyzePageWithAI(pageContent: string, pageName: string, s
   }
 }
 
+// ── Generate sections for a page based on name only (used by Octopus.do import) ──
+
+const GENERATE_SYSTEM_PROMPT = `You generate wireframe section definitions for a website page based ONLY on its name and optional description.
+
+## Available Section Categories and Variants
+
+### Header: header-simple, header-centered, header-with-cta, header-mega
+### Hero: hero-centered, hero-split, hero-with-image, hero-minimal, hero-with-form
+### Logo Cloud: logos-simple, logos-with-title, logos-grid
+### Features: features-grid, features-alternating, features-2column, features-with-image, features-bento, features-icon-list, features-accordion
+### Stats: stats-row, stats-with-description, stats-cards
+### Pricing: pricing-3col, pricing-2col, pricing-simple, pricing-toggle, pricing-comparison
+### Testimonials: testimonials-cards, testimonials-single, testimonials-grid, testimonials-minimal, testimonials-carousel
+### FAQ: faq-accordion, faq-two-column, faq-centered, faq-side-title
+### CTA: cta-centered, cta-banner, cta-with-image, cta-newsletter, cta-simple
+### Blog: blog-grid, blog-list, blog-featured, blog-minimal, blog-with-categories
+### About: about-centered, about-split, about-with-stats, about-timeline
+### Team: team-grid, team-cards, team-compact, team-list, team-with-bio
+### Gallery: gallery-grid, gallery-masonry, gallery-lightbox, gallery-carousel
+### Contact: contact-centered, contact-split, contact-with-map, contact-cards, contact-minimal
+### Store: store-grid, store-list, store-with-filters, store-side-filters
+### Footer: footer-4col, footer-simple, footer-centered, footer-minimal, footer-with-newsletter
+### Banner: banner-top, banner-floating, banner-cookie, banner-minimal
+### Process: process-steps, process-timeline
+### Downloads: downloads-cards, downloads-simple
+### Error: error-404, error-simple
+### Comparison: comparison-table, comparison-side-by-side
+### Showcase: showcase-cards, showcase-with-links
+
+## Content Fields per Category
+Each section needs realistic placeholder content appropriate for the page type:
+- **Header**: logo, links (array of {label}), ctaText
+- **Hero**: title, subtitle, ctaText, ctaSecondaryText
+- **Features**: title, subtitle, features (array of {title, description})
+- **Stats**: title, stats (array of {value, label})
+- **Pricing**: title, subtitle, plans (array of {name, price, period, features, ctaText, highlighted})
+- **Testimonials**: title, testimonials (array of {quote, author, role})
+- **FAQ**: title, faqs (array of {question, answer})
+- **CTA**: title, subtitle, ctaText
+- **Blog**: title, posts (array of {title, excerpt, author, date, category})
+- **About**: title, description, mission
+- **Team**: title, subtitle, members (array of {name, role})
+- **Contact**: title, subtitle, email, phone, address
+- **Footer**: logo, description, copyright, columns (array of {title, links})
+
+## Rules
+1. Generate REALISTIC placeholder content appropriate for the page type and business context.
+2. Every page MUST start with a header-simple and end with footer-4col.
+3. Choose variants that make sense for the page type.
+4. Generate 4-8 sections per page (including header and footer).
+5. Use the page description and SEO metadata if provided for context.
+
+## Response Format
+Return ONLY a valid JSON array (no markdown, no explanation):
+[
+  {
+    "category": "header",
+    "variantId": "header-simple",
+    "content": { ... },
+    "colorMode": "light"
+  }
+]`;
+
+export async function generateSectionsForPage(
+  pageName: string,
+  pageDescription?: string,
+  seoMeta?: { title?: string; description?: string }
+): Promise<AnalysisResult> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
+
+  const client = new Anthropic({ apiKey });
+
+  let userPrompt = `Generate wireframe sections for a "${pageName}" page.`;
+  if (pageDescription) userPrompt += `\nPage description: ${pageDescription}`;
+  if (seoMeta?.title) userPrompt += `\nSEO Title: ${seoMeta.title}`;
+  if (seoMeta?.description) userPrompt += `\nSEO Description: ${seoMeta.description}`;
+
+  let message;
+  try {
+    message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      system: GENERATE_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+  } catch (apiError: unknown) {
+    const errMsg = apiError instanceof Error ? apiError.message : String(apiError);
+    if (errMsg.includes('model') || errMsg.includes('not_found')) {
+      message = await client.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 4096,
+        system: GENERATE_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: userPrompt }],
+      });
+    } else {
+      throw new Error(`AI generation failed: ${errMsg}`);
+    }
+  }
+
+  const text = message.content[0].type === 'text' ? message.content[0].text : '';
+  let json = text.trim();
+  const codeBlockMatch = json.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (codeBlockMatch) json = codeBlockMatch[1].trim();
+  if (!json.startsWith('[') && !json.startsWith('{')) {
+    const arrMatch = json.match(/\[[\s\S]*\]/);
+    if (arrMatch) json = arrMatch[0];
+  }
+
+  try {
+    const parsed = JSON.parse(json);
+    const sections = (Array.isArray(parsed) ? parsed : parsed.sections || []).map((s: AnalyzedSection) => ({
+      category: s.category || 'hero',
+      variantId: s.variantId || 'hero-centered',
+      content: s.content || {},
+      colorMode: s.colorMode || 'light',
+    }));
+    return { sections, unmatchedSections: [] };
+  } catch {
+    console.error('Failed to parse AI generation response:', text.slice(0, 500));
+    throw new Error(`AI returned invalid response for page "${pageName}"`);
+  }
+}
+
 // Save unmatched sections as component requests
 async function saveUnmatchedSections(sections: UnmatchedSection[], sourceUrl?: string, pageName?: string) {
   try {

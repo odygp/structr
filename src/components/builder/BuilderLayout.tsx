@@ -123,6 +123,57 @@ function BuilderLayoutInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
+  // Background import: Octopus.do pages (same pattern, different API endpoint)
+  useEffect(() => {
+    if (!projectId) return;
+    const stored = sessionStorage.getItem(`structr-octopus-${projectId}`);
+    if (!stored) return;
+    sessionStorage.removeItem(`structr-octopus-${projectId}`);
+
+    let pages: { name: string; description?: string; seoTitle?: string; seoDescription?: string; sortOrder: number }[];
+    try { pages = JSON.parse(stored); } catch { return; }
+    if (!pages.length) return;
+
+    const initial = pages.map(p => ({ ...p, url: '', loading: false, done: false, error: false }));
+    setPendingPages(initial);
+
+    (async () => {
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
+
+        try {
+          const res = await fetch('/api/import/octopus/page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              projectId,
+              name: page.name,
+              description: page.description,
+              seoTitle: page.seoTitle,
+              seoDescription: page.seoDescription,
+              sortOrder: page.sortOrder,
+            }),
+          });
+          const data = await res.json();
+          const success = data.done;
+
+          setPendingPages(prev => prev.map((p, j) =>
+            j === i ? { ...p, loading: false, done: true, error: !success } : p
+          ));
+
+          if (success) await reloadProject();
+        } catch {
+          setPendingPages(prev => prev.map((p, j) =>
+            j === i ? { ...p, loading: false, done: true, error: true } : p
+          ));
+        }
+      }
+      setTimeout(() => setPendingPages([]), 3000);
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
+
   const resolveComment = async (commentId: string) => {
     try {
       const res = await fetch(`/api/comments?id=${commentId}&action=resolve`, { method: 'PATCH' });
