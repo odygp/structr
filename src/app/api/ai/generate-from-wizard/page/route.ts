@@ -4,6 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
 import { buildWizardPrompt, type WizardData } from '@/lib/templates';
+import { trackUsage, MODELS } from '@/lib/ai/track-usage';
 
 export const maxDuration = 60;
 
@@ -31,9 +32,11 @@ export async function POST(request: Request) {
     const basePrompt = buildWizardPrompt({ ...wizardData, pages: [pageName] });
     const focusedPrompt = `${basePrompt}\n\nIMPORTANT: Generate sections for ONLY the "${pageName}" page. Return a single page with appropriate sections.`;
 
+    const startTime = Date.now();
+    const model = MODELS.wizard;
     const anthropic = new Anthropic({ apiKey });
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model,
       max_tokens: 4096,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: focusedPrompt }],
@@ -90,6 +93,17 @@ export async function POST(request: Request) {
     }));
 
     await supabase.from('structr_sections').insert(sectionRows);
+
+    // Track usage
+    await trackUsage({
+      userId: user.id,
+      projectId,
+      endpoint: '/api/ai/generate-from-wizard/page',
+      model,
+      inputTokens: message.usage.input_tokens,
+      outputTokens: message.usage.output_tokens,
+      durationMs: Date.now() - startTime,
+    });
 
     return NextResponse.json({ done: true, pageName, sectionCount: sectionRows.length });
   } catch (e) {

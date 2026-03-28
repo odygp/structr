@@ -105,6 +105,7 @@ export interface UnmatchedSection {
 export interface AnalysisResult {
   sections: AnalyzedSection[];
   unmatchedSections: UnmatchedSection[];
+  usage?: { inputTokens: number; outputTokens: number; model: string };
 }
 
 export async function analyzePageWithAI(pageContent: string, pageName: string, sourceUrl?: string): Promise<AnalysisResult> {
@@ -186,7 +187,11 @@ export async function analyzePageWithAI(pageContent: string, pageName: string, s
         saveUnmatchedSections(unmatchedSections, sourceUrl, pageName).catch(console.error);
       }
 
-      return { sections, unmatchedSections };
+      return {
+        sections,
+        unmatchedSections,
+        usage: { inputTokens: message.usage.input_tokens, outputTokens: message.usage.output_tokens, model: message.model },
+      };
     }
 
     // Legacy format: direct array

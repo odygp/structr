@@ -26,18 +26,40 @@ const STATUS_TABS = [
   { value: 'built', label: 'Built', icon: Hammer },
 ];
 
+interface UsageData {
+  kpis: { totalCalls: number; totalCost: number; totalInputTokens: number; totalOutputTokens: number; todayCalls: number; todayCost: number; avgCostPerCall: number };
+  byModel: { model: string; calls: number; cost: number; inputTokens: number; outputTokens: number }[];
+  byEndpoint: { endpoint: string; calls: number; cost: number }[];
+  topProjects: { projectId: string; projectName: string; userEmail: string; calls: number; cost: number; tokens: number }[];
+  topUsers: { userId: string; calls: number; cost: number; tokens: number }[];
+  recentCalls: { endpoint: string; model: string; inputTokens: number; outputTokens: number; cost: number; durationMs: number; createdAt: string }[];
+}
+
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
+  const [section, setSection] = useState<'requests' | 'usage'>('requests');
   const [requests, setRequests] = useState<ComponentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pending');
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
 
   useEffect(() => {
     if (authLoading || !user) return;
-    loadRequests(activeTab);
-  }, [user, authLoading, activeTab]);
+    if (section === 'requests') loadRequests(activeTab);
+    if (section === 'usage') loadUsage();
+  }, [user, authLoading, activeTab, section]);
+
+  const loadUsage = async () => {
+    setUsageLoading(true);
+    try {
+      const res = await fetch('/api/admin/usage');
+      if (res.ok) setUsageData(await res.json());
+    } catch {}
+    setUsageLoading(false);
+  };
 
   const loadRequests = async (status: string) => {
     setLoading(true);
@@ -81,6 +103,153 @@ export default function AdminPage() {
       </nav>
 
       <main className="w-[960px] mx-auto pt-[48px] pb-[80px]">
+        {/* Section toggle */}
+        <div className="flex items-center gap-[4px] mb-[32px]">
+          <button
+            onClick={() => setSection('requests')}
+            className={`px-[20px] py-[10px] rounded-[12px] text-[14px] font-medium transition-colors ${
+              section === 'requests' ? 'bg-[#34322d] text-white' : 'bg-[#efefef] text-[#34322d] hover:bg-[#e6e6e6]'
+            }`}
+          >
+            Component Requests
+          </button>
+          <button
+            onClick={() => setSection('usage')}
+            className={`px-[20px] py-[10px] rounded-[12px] text-[14px] font-medium transition-colors ${
+              section === 'usage' ? 'bg-[#34322d] text-white' : 'bg-[#efefef] text-[#34322d] hover:bg-[#e6e6e6]'
+            }`}
+          >
+            AI Usage & Costs
+          </button>
+        </div>
+
+        {/* Usage Dashboard */}
+        {section === 'usage' && (
+          <div className="flex flex-col gap-[24px]">
+            <h1 className="text-[24px] font-medium tracking-[-0.48px] text-[#34322d]">AI Usage & Costs</h1>
+
+            {usageLoading || !usageData ? (
+              <div className="grid grid-cols-4 gap-[12px]">
+                {[1,2,3,4].map(i => <div key={i} className="bg-white border border-[#ebebeb] rounded-[20px] p-[24px] h-[100px] animate-pulse" />)}
+              </div>
+            ) : (
+              <>
+                {/* KPI Cards */}
+                <div className="grid grid-cols-4 gap-[12px]">
+                  {[
+                    { label: 'Total Calls', value: usageData.kpis.totalCalls, sub: `$${usageData.kpis.totalCost.toFixed(4)} total` },
+                    { label: 'Today', value: usageData.kpis.todayCalls, sub: `$${usageData.kpis.todayCost.toFixed(4)} today` },
+                    { label: 'Avg Cost/Call', value: `$${usageData.kpis.avgCostPerCall.toFixed(4)}`, sub: `${((usageData.kpis.totalInputTokens + usageData.kpis.totalOutputTokens) / 1000).toFixed(0)}K total tokens` },
+                    { label: 'Input vs Output', value: `${((usageData.kpis.totalInputTokens / (usageData.kpis.totalInputTokens + usageData.kpis.totalOutputTokens || 1)) * 100).toFixed(0)}% / ${((usageData.kpis.totalOutputTokens / (usageData.kpis.totalInputTokens + usageData.kpis.totalOutputTokens || 1)) * 100).toFixed(0)}%`, sub: 'input / output ratio' },
+                  ].map(kpi => (
+                    <div key={kpi.label} className="bg-white border border-[#ebebeb] rounded-[20px] p-[20px]">
+                      <p className="text-[12px] font-medium text-[#34322d] opacity-50 mb-[8px]">{kpi.label}</p>
+                      <p className="text-[24px] font-medium text-[#34322d] tracking-[-0.48px]">{kpi.value}</p>
+                      <p className="text-[11px] text-[#34322d] opacity-40 mt-[4px]">{kpi.sub}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* By Model + By Endpoint */}
+                <div className="grid grid-cols-2 gap-[12px]">
+                  <div className="bg-white border border-[#ebebeb] rounded-[20px] p-[20px]">
+                    <p className="text-[14px] font-medium text-[#34322d] mb-[12px]">By Model</p>
+                    <div className="flex flex-col gap-[8px]">
+                      {usageData.byModel.map(m => (
+                        <div key={m.model} className="flex items-center justify-between text-[12px]">
+                          <span className="text-[#34322d] font-medium truncate max-w-[200px]">{m.model.split('-').slice(0, 2).join('-')}</span>
+                          <div className="flex items-center gap-[12px] text-[#34322d] opacity-60">
+                            <span>{m.calls} calls</span>
+                            <span className="font-medium text-[#34322d]">${m.cost.toFixed(4)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-[#ebebeb] rounded-[20px] p-[20px]">
+                    <p className="text-[14px] font-medium text-[#34322d] mb-[12px]">By Endpoint</p>
+                    <div className="flex flex-col gap-[8px]">
+                      {usageData.byEndpoint.map(e => (
+                        <div key={e.endpoint} className="flex items-center justify-between text-[12px]">
+                          <span className="text-[#34322d] font-medium truncate max-w-[200px]">{e.endpoint.replace('/api/', '')}</span>
+                          <div className="flex items-center gap-[12px] text-[#34322d] opacity-60">
+                            <span>{e.calls} calls</span>
+                            <span className="font-medium text-[#34322d]">${e.cost.toFixed(4)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top Projects Table */}
+                <div className="bg-white border border-[#ebebeb] rounded-[20px] p-[20px]">
+                  <p className="text-[14px] font-medium text-[#34322d] mb-[12px]">Most Expensive Projects</p>
+                  {usageData.topProjects.length === 0 ? (
+                    <p className="text-[12px] text-[#34322d] opacity-40 text-center py-[16px]">No data yet</p>
+                  ) : (
+                    <table className="w-full text-[12px]">
+                      <thead>
+                        <tr className="border-b border-[#ebebeb]">
+                          <th className="text-left py-[8px] font-medium text-[#34322d] opacity-50">Project</th>
+                          <th className="text-left py-[8px] font-medium text-[#34322d] opacity-50">User</th>
+                          <th className="text-right py-[8px] font-medium text-[#34322d] opacity-50">Calls</th>
+                          <th className="text-right py-[8px] font-medium text-[#34322d] opacity-50">Tokens</th>
+                          <th className="text-right py-[8px] font-medium text-[#34322d] opacity-50">Cost</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {usageData.topProjects.map(p => (
+                          <tr key={p.projectId} className="border-b border-[#f5f5f5]">
+                            <td className="py-[8px] text-[#34322d] font-medium">{p.projectName}</td>
+                            <td className="py-[8px] text-[#34322d] opacity-60">{p.userEmail}</td>
+                            <td className="py-[8px] text-[#34322d] opacity-60 text-right">{p.calls}</td>
+                            <td className="py-[8px] text-[#34322d] opacity-60 text-right">{(p.tokens / 1000).toFixed(1)}K</td>
+                            <td className="py-[8px] text-[#34322d] font-medium text-right">${p.cost.toFixed(4)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+
+                {/* Recent Calls Table */}
+                <div className="bg-white border border-[#ebebeb] rounded-[20px] p-[20px]">
+                  <p className="text-[14px] font-medium text-[#34322d] mb-[12px]">Recent API Calls</p>
+                  <table className="w-full text-[12px]">
+                    <thead>
+                      <tr className="border-b border-[#ebebeb]">
+                        <th className="text-left py-[8px] font-medium text-[#34322d] opacity-50">Time</th>
+                        <th className="text-left py-[8px] font-medium text-[#34322d] opacity-50">Endpoint</th>
+                        <th className="text-left py-[8px] font-medium text-[#34322d] opacity-50">Model</th>
+                        <th className="text-right py-[8px] font-medium text-[#34322d] opacity-50">In / Out</th>
+                        <th className="text-right py-[8px] font-medium text-[#34322d] opacity-50">Cost</th>
+                        <th className="text-right py-[8px] font-medium text-[#34322d] opacity-50">Duration</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {usageData.recentCalls.map((c, i) => (
+                        <tr key={i} className="border-b border-[#f5f5f5]">
+                          <td className="py-[8px] text-[#34322d] opacity-60">{new Date(c.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</td>
+                          <td className="py-[8px] text-[#34322d] font-medium">{c.endpoint.replace('/api/', '')}</td>
+                          <td className="py-[8px] text-[#34322d] opacity-60">{c.model.split('-').slice(0, 2).join('-')}</td>
+                          <td className="py-[8px] text-[#34322d] opacity-60 text-right">{c.inputTokens} / {c.outputTokens}</td>
+                          <td className="py-[8px] text-[#34322d] font-medium text-right">${c.cost.toFixed(4)}</td>
+                          <td className="py-[8px] text-[#34322d] opacity-60 text-right">{c.durationMs ? `${(c.durationMs / 1000).toFixed(1)}s` : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Component Requests Section */}
+        {section === 'requests' && (
+          <>
         <h1 className="text-[24px] font-medium tracking-[-0.48px] text-[#34322d] mb-[32px]">Component Requests</h1>
 
         {/* Tabs */}
@@ -216,6 +385,8 @@ export default function AdminPage() {
               </div>
             ))}
           </div>
+        )}
+          </>
         )}
       </main>
     </div>
