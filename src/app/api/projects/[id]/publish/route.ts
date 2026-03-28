@@ -112,8 +112,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       version_id: version.id,
       url: `/p/${slug}`,
     });
-  } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : typeof e === 'object' && e !== null && 'message' in e ? String((e as { message: unknown }).message) : String(e);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 

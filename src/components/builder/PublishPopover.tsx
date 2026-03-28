@@ -36,8 +36,9 @@ export default function PublishPopover({
         body: JSON.stringify({}),
       });
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Failed to publish');
+        const data = await res.json().catch(() => ({}));
+        const msg = typeof data.error === 'string' ? data.error : JSON.stringify(data.error) || 'Failed to publish';
+        setError(msg);
         return;
       }
       const data = await res.json();
