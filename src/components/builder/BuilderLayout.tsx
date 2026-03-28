@@ -10,6 +10,7 @@ import DocumentSidebar from './DocumentSidebar';
 import AiSectionChat, { type ChatMessage } from './AiSectionChat';
 import ResizeHandle from './ResizeHandle';
 import { CommentsSidebar } from './CommentsOverlay';
+import ActivityPanel from './ActivityPanel';
 
 interface Comment {
   id: string;
@@ -20,6 +21,7 @@ interface Comment {
   message: string;
   resolved: boolean;
   parent_id: string | null;
+  user_id: string | null;
   created_at: string;
 }
 
@@ -49,7 +51,10 @@ function BuilderLayoutInner() {
   const [liveMessage, setLiveMessage] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [activityOpen, setActivityOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [projectSlug, setProjectSlug] = useState<string | null>(null);
+  const [projectStatus, setProjectStatus] = useState<string>('draft');
   const [aiGenerating, setAiGenerating] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#F2F2F2');
   const [pendingPages, setPendingPages] = useState<{ name: string; url: string; sortOrder: number; loading: boolean; done: boolean; error?: boolean }[]>([]);
@@ -148,7 +153,12 @@ function BuilderLayoutInner() {
     if (!projectId) return;
     try {
       const res = await fetch(`/api/projects/${projectId}`);
-      if (res.ok) { loadRemoteProject(await res.json()); }
+      if (res.ok) {
+        const data = await res.json();
+        loadRemoteProject(data);
+        if (data.slug !== undefined) setProjectSlug(data.slug);
+        if (data.status) setProjectStatus(data.status);
+      }
     } catch {}
   };
 
@@ -198,10 +208,25 @@ function BuilderLayoutInner() {
     } catch {}
   };
 
+  const unresolveComment = async (commentId: string) => {
+    try {
+      const res = await fetch(`/api/comments?id=${commentId}&action=unresolve`, { method: 'PATCH' });
+      if (res.ok) setComments(prev => prev.map(c => c.id === commentId ? { ...c, resolved: false } : c));
+    } catch {}
+  };
+
   const handleToggleComments = () => {
     setCommentsOpen(!commentsOpen);
     setAiChatOpen(false);
+    setActivityOpen(false);
     if (!commentsOpen) selectSection(null);
+  };
+
+  const handleToggleActivity = () => {
+    setActivityOpen(!activityOpen);
+    setCommentsOpen(false);
+    setAiChatOpen(false);
+    if (!activityOpen) selectSection(null);
   };
 
   const handleOpenAiChat = useCallback(() => {
@@ -265,7 +290,8 @@ function BuilderLayoutInner() {
   const getCategoryLabel = (category: string) => category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
 
   const renderRightSidebar = () => {
-    if (commentsOpen) return <CommentsSidebar comments={comments} onResolve={resolveComment} />;
+    if (activityOpen && projectId) return <ActivityPanel projectId={projectId} />;
+    if (commentsOpen) return <CommentsSidebar comments={comments} onResolve={resolveComment} onUnresolve={unresolveComment} />;
     if (aiChatOpen && selectedSection) {
       return (
         <AiSectionChat
@@ -301,6 +327,9 @@ function BuilderLayoutInner() {
         commentCount={unresolvedCount}
         pendingPages={pendingPages}
         onOpenAiChat={handleOpenAiChat}
+        onToggleActivity={handleToggleActivity}
+        projectSlug={projectSlug}
+        projectStatus={projectStatus}
       />
 
       <div className="flex flex-1 overflow-hidden">

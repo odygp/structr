@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createProject } from '@/lib/db/projects';
+import { getSharedProjectIds, acceptPendingInvites } from '@/lib/db/members';
+import { logActivity } from '@/lib/db/activity';
 
 export async function GET(request: Request) {
   try {
@@ -8,28 +10,47 @@ export async function GET(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { searchParams } = new URL(request.url);
-    const tab = searchParams.get('tab'); // all, favorites, drafts, archived
-    const search = searchParams.get('search');
-    const sort = searchParams.get('sort') || 'updated_at'; // updated_at, name, created_at
+    // Auto-accept pending invites
+    if (user.email) await acceptPendingInvites(user.id, user.email);
 
+    const { searchParams } = new URL(request.url);
+    const tab = searchParams.get('tab'); // all, favorites, drafts, archived, shared
+    const search = searchParams.get('search');
+    const sort = searchParams.get('sort') || 'updated_at';
+
+    // Handle "shared" tab separately
+    if (tab === 'shared') {
+      const sharedIds = await getSharedProjectIds(user.id, user.email || '');
+      if (sharedIds.length === 0) return NextResponse.json([]);
+
+      let query = supabase
+        .from('structr_projects')
+        .select('id, name, thumbnail_url, status, is_favorite, tags, slug, published_at, created_at, updated_at, user_id')
+        .in('id', sharedIds);
+
+      if (search?.trim()) query = query.ilike('name', `%${search.trim()}%`);
+      if (sort === 'name') query = query.order('name', { ascending: true });
+      else if (sort === 'created_at') query = query.order('created_at', { ascending: false });
+      else query = query.order('updated_at', { ascending: false });
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return NextResponse.json(data || []);
+    }
+
+    // Own projects
     let query = supabase
       .from('structr_projects')
-      .select('id, name, thumbnail_url, status, is_favorite, tags, created_at, updated_at')
+      .select('id, name, thumbnail_url, status, is_favorite, tags, slug, published_at, created_at, updated_at')
       .eq('user_id', user.id);
 
-    // Tab filtering
     if (tab === 'favorites') query = query.eq('is_favorite', true);
     else if (tab === 'drafts') query = query.eq('status', 'draft');
     else if (tab === 'archived') query = query.eq('status', 'archived');
-    else query = query.neq('status', 'archived'); // "All" hides archived
+    else query = query.neq('status', 'archived');
 
-    // Search
-    if (search?.trim()) {
-      query = query.ilike('name', `%${search.trim()}%`);
-    }
+    if (search?.trim()) query = query.ilike('name', `%${search.trim()}%`);
 
-    // Sort
     if (sort === 'name') query = query.order('name', { ascending: true });
     else if (sort === 'created_at') query = query.order('created_at', { ascending: false });
     else query = query.order('updated_at', { ascending: false });
@@ -51,6 +72,9 @@ export async function POST(request: Request) {
 
     const body = await request.json().catch(() => ({}));
     const project = await createProject(user.id, body.name || 'Untitled Project');
+
+    await logActivity(project.id, user.id, 'created', { name: project.name });
+
     return NextResponse.json(project);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });

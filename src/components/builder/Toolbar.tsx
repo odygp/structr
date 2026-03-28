@@ -14,9 +14,12 @@ import {
   FileJson,
   FileCode,
   X,
-  Link2,
   Check,
+  Globe,
+  Clock,
 } from 'lucide-react';
+import ShareModal from './ShareModal';
+import PublishPopover from './PublishPopover';
 
 /* ── Pill button helper ── */
 const Pill = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { children: React.ReactNode }>(
@@ -34,54 +37,6 @@ Pill.displayName = 'Pill';
 
 function Divider() {
   return <div className="bg-[#f5f4f2] h-[16px] w-px flex-shrink-0" aria-hidden="true" />;
-}
-
-/* ── Share logic (preserved) ── */
-function useShare() {
-  const [copied, setCopied] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const activeProjectId = useBuilderStore((s) => s.activeProjectId);
-  const exportProjectJSON = useBuilderStore((s) => s.exportProjectJSON);
-
-  const handleShare = async () => {
-    if (generating) return;
-    setGenerating(true);
-    try {
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(activeProjectId);
-      let shareUrl: string;
-      if (isUUID) {
-        shareUrl = `${window.location.origin}/preview?project=${activeProjectId}`;
-      } else {
-        const json = exportProjectJSON();
-        const pako = await import('pako');
-        const compressed = pako.deflate(json);
-        let binary = '';
-        const bytes = new Uint8Array(compressed);
-        for (let i = 0; i < bytes.length; i += 8192) {
-          binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
-        }
-        const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        shareUrl = `${window.location.origin}/preview?d=${base64}`;
-      }
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const json = exportProjectJSON();
-      const pako = await import('pako');
-      const compressed = pako.deflate(json);
-      let binary = '';
-      const bytes = new Uint8Array(compressed);
-      for (let i = 0; i < bytes.length; i += 8192) {
-        binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
-      }
-      const base64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      prompt('Copy this share link:', `${window.location.origin}/preview?d=${base64}`);
-    } finally {
-      setGenerating(false);
-    }
-  };
-  return { copied, handleShare };
 }
 
 /* ── Circular progress indicator ── */
@@ -109,9 +64,12 @@ interface ToolbarProps {
   commentCount?: number;
   pendingPages?: PendingPageInfo[];
   onOpenAiChat?: () => void;
+  onToggleActivity?: () => void;
+  projectSlug?: string | null;
+  projectStatus?: string;
 }
 
-export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat }: ToolbarProps) {
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, projectSlug, projectStatus }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -121,6 +79,15 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
   const [showPageMenu, setShowPageMenu] = useState(false);
   const [editingPageId, setEditingPageId] = useState<string | null>(null);
   const [editingPageName, setEditingPageName] = useState('');
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showPublishPopover, setShowPublishPopover] = useState(false);
+  const [publishedSlug, setPublishedSlug] = useState<string | null>(projectSlug || null);
+  const [isPublished, setIsPublished] = useState(projectStatus === 'published');
+
+  useEffect(() => {
+    setPublishedSlug(projectSlug || null);
+    setIsPublished(projectStatus === 'published');
+  }, [projectSlug, projectStatus]);
 
   const sections = useBuilderStore((s) => {
     const proj = s.projects.find((p) => p.id === s.activeProjectId);
@@ -148,15 +115,17 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
   const exportProjectJSON = useBuilderStore((s) => s.exportProjectJSON);
   const importProjectJSON = useBuilderStore((s) => s.importProjectJSON);
 
-  const { copied, handleShare } = useShare();
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(activeProjectId);
 
   // Close dropdowns on Escape
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       if (showExportMenu) { setShowExportMenu(false); exportButtonRef.current?.focus(); }
       if (showPageMenu) { setShowPageMenu(false); pageButtonRef.current?.focus(); }
+      if (showShareModal) setShowShareModal(false);
+      if (showPublishPopover) setShowPublishPopover(false);
     }
-  }, [showExportMenu, showPageMenu]);
+  }, [showExportMenu, showPageMenu, showShareModal, showPublishPopover]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -405,7 +374,7 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
 
         <Divider />
 
-        {/* Comments / Share / Export */}
+        {/* Comments / Activity / Share / Publish / Export */}
         <div className="flex items-center gap-[4px]">
           {/* Comments */}
           <Pill onClick={onToggleComments} aria-label="Toggle comments" className="relative">
@@ -416,11 +385,51 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
             )}
           </Pill>
 
+          {/* Activity */}
+          {isUUID && (
+            <Pill onClick={onToggleActivity} aria-label="Activity feed">
+              <Clock className="w-[16px] h-[16px]" />
+            </Pill>
+          )}
+
           {/* Share */}
-          <Pill onClick={handleShare} aria-label={copied ? 'Link copied!' : 'Share'}>
-            {copied ? 'Copied!' : 'Share'}
-            {copied ? <Check className="w-[16px] h-[16px]" /> : <Share2 className="w-[16px] h-[16px]" />}
+          <Pill onClick={() => isUUID ? setShowShareModal(true) : undefined} aria-label="Share">
+            Share
+            <Share2 className="w-[16px] h-[16px]" />
           </Pill>
+
+          {/* Publish */}
+          {isUUID && (
+            <div className="relative">
+              <Pill
+                onClick={() => setShowPublishPopover(!showPublishPopover)}
+                aria-label={isPublished ? 'Published' : 'Publish'}
+                className={isPublished ? 'bg-green-50 hover:bg-green-100' : ''}
+              >
+                {isPublished && <div className="w-[6px] h-[6px] bg-green-500 rounded-full" />}
+                {isPublished ? 'Published' : 'Publish'}
+                <Globe className="w-[16px] h-[16px]" />
+              </Pill>
+
+              {showPublishPopover && (
+                <PublishPopover
+                  projectId={activeProjectId}
+                  currentSlug={publishedSlug}
+                  isPublished={isPublished}
+                  onPublished={(data) => {
+                    setPublishedSlug(data.slug);
+                    setIsPublished(true);
+                    setShowPublishPopover(false);
+                  }}
+                  onUnpublished={() => {
+                    setIsPublished(false);
+                    setShowPublishPopover(false);
+                  }}
+                  onClose={() => setShowPublishPopover(false)}
+                />
+              )}
+            </div>
+          )}
 
           {/* Export */}
           <div className="relative">
@@ -483,6 +492,11 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
 
         <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportJSON} className="hidden" tabIndex={-1} />
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && isUUID && (
+        <ShareModal projectId={activeProjectId} onClose={() => setShowShareModal(false)} />
+      )}
     </div>
   );
 }

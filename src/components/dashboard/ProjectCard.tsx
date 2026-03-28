@@ -12,13 +12,14 @@ function formatDate(dateStr: string): string {
 
 interface ContextMenuPos { x: number; y: number; }
 
-export default function ProjectCard({ project, onDelete, onDuplicate, onRename, onToggleFavorite, onChangeStatus }: {
+export default function ProjectCard({ project, onDelete, onDuplicate, onRename, onToggleFavorite, onChangeStatus, isShared }: {
   project: DbProject;
   onDelete?: (id: string) => void;
   onDuplicate?: (id: string) => void;
   onRename?: (id: string, name: string) => void;
   onToggleFavorite?: (id: string, current: boolean) => void;
   onChangeStatus?: (id: string, status: 'draft' | 'published' | 'archived') => void;
+  isShared?: boolean;
 }) {
   const router = useRouter();
   const [contextMenu, setContextMenu] = useState<ContextMenuPos | null>(null);
@@ -97,8 +98,16 @@ export default function ProjectCard({ project, onDelete, onDuplicate, onRename, 
 
         {/* Status badge */}
         {project.status !== 'draft' && (
-          <div className={`absolute top-[8px] left-[8px] px-[8px] py-[2px] rounded-full text-[10px] font-medium ${statusColors[project.status] || statusColors.draft}`}>
+          <div className={`absolute top-[8px] left-[8px] px-[8px] py-[2px] rounded-full text-[10px] font-medium flex items-center gap-1 ${statusColors[project.status] || statusColors.draft}`}>
+            {project.status === 'published' && <div className="w-[5px] h-[5px] bg-green-500 rounded-full" />}
             {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+          </div>
+        )}
+
+        {/* Shared badge */}
+        {isShared && (
+          <div className="absolute bottom-[8px] left-[8px] px-[8px] py-[2px] rounded-full text-[10px] font-medium bg-blue-100 text-blue-700">
+            Shared
           </div>
         )}
       </div>

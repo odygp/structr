@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logActivity, notifyCollaborators } from '@/lib/db/activity';
 
 // GET /api/comments?project=ID
 export async function GET(request: Request) {
@@ -33,6 +34,10 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
+
+    // Auto-link user_id if authenticated
+    const { data: { user } } = await supabase.auth.getUser();
+
     const { data, error } = await supabase
       .from('structr_comments')
       .insert({
@@ -45,18 +50,29 @@ export async function POST(request: Request) {
         x_percent: x_percent ?? null,
         y_percent: y_percent ?? null,
         parent_id: parent_id || null,
+        user_id: user?.id || null,
       })
       .select()
       .single();
 
     if (error) throw error;
+
+    // Log activity and notify collaborators
+    if (user) {
+      await logActivity(project_id, user.id, 'commented', {
+        message: message.trim().substring(0, 100),
+        section_index,
+      });
+    }
+    await notifyCollaborators(project_id, user?.id || '', `${author_name.trim()} commented: "${message.trim().substring(0, 60)}"`);
+
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
 
-// PATCH /api/comments?id=ID&action=resolve
+// PATCH /api/comments?id=ID&action=resolve|unresolve
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -67,7 +83,7 @@ export async function PATCH(request: Request) {
 
     const supabase = await createClient();
 
-    // Auth check — only project owner can resolve
+    // Auth check
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -76,7 +92,15 @@ export async function PATCH(request: Request) {
         .from('structr_comments')
         .update({ resolved: true })
         .eq('id', id);
+      if (error) throw error;
+      return NextResponse.json({ success: true });
+    }
 
+    if (action === 'unresolve') {
+      const { error } = await supabase
+        .from('structr_comments')
+        .update({ resolved: false })
+        .eq('id', id);
       if (error) throw error;
       return NextResponse.json({ success: true });
     }

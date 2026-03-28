@@ -1,16 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProjectCard from './ProjectCard';
 import type { DbProject } from '@/lib/db/types';
 
-type Tab = 'all' | 'favorites' | 'drafts' | 'archived';
+type Tab = 'all' | 'favorites' | 'drafts' | 'archived' | 'shared';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'all', label: 'All Projects' },
   { id: 'favorites', label: 'Favorites' },
   { id: 'drafts', label: 'Drafts' },
   { id: 'archived', label: 'Archived' },
+  { id: 'shared', label: 'Shared with me' },
 ];
 
 export default function RecentProjects({ projects, loading, onDelete, onDuplicate, onRename, onToggleFavorite, onChangeStatus, onRefresh }: {
@@ -26,25 +27,48 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('all');
+  const [sharedProjects, setSharedProjects] = useState<DbProject[]>([]);
+  const [sharedLoading, setSharedLoading] = useState(false);
+
+  // Load shared projects when tab is selected
+  useEffect(() => {
+    if (activeTab !== 'shared') return;
+    setSharedLoading(true);
+    fetch('/api/projects?tab=shared')
+      .then(r => r.ok ? r.json() : [])
+      .then(setSharedProjects)
+      .catch(() => setSharedProjects([]))
+      .finally(() => setSharedLoading(false));
+  }, [activeTab]);
 
   // Filter by tab
-  let tabFiltered = projects;
-  if (activeTab === 'favorites') tabFiltered = projects.filter(p => p.is_favorite);
-  else if (activeTab === 'drafts') tabFiltered = projects.filter(p => p.status === 'draft');
-  else if (activeTab === 'archived') tabFiltered = projects.filter(p => p.status === 'archived');
-  else tabFiltered = projects.filter(p => p.status !== 'archived');
+  let tabFiltered: DbProject[] = [];
+  if (activeTab === 'shared') {
+    tabFiltered = sharedProjects;
+  } else if (activeTab === 'favorites') {
+    tabFiltered = projects.filter(p => p.is_favorite);
+  } else if (activeTab === 'drafts') {
+    tabFiltered = projects.filter(p => p.status === 'draft');
+  } else if (activeTab === 'archived') {
+    tabFiltered = projects.filter(p => p.status === 'archived');
+  } else {
+    tabFiltered = projects.filter(p => p.status !== 'archived');
+  }
 
   // Filter by search
   const filtered = search
     ? tabFiltered.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
     : tabFiltered;
 
-  const counts = {
+  const counts: Record<Tab, number> = {
     all: projects.filter(p => p.status !== 'archived').length,
     favorites: projects.filter(p => p.is_favorite).length,
     drafts: projects.filter(p => p.status === 'draft').length,
     archived: projects.filter(p => p.status === 'archived').length,
+    shared: sharedProjects.length,
   };
+
+  const isLoading = activeTab === 'shared' ? sharedLoading : loading;
 
   return (
     <div className="flex flex-col gap-[20px]">
@@ -72,7 +96,7 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
           </button>
         ))}
 
-        {/* Spacer + Search + Filter */}
+        {/* Spacer + Search */}
         <div className="flex-1" />
         <div className="flex items-center gap-[4px]">
           {showSearch && (
@@ -95,7 +119,7 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
       </div>
 
       {/* Grid */}
-      {loading ? (
+      {isLoading ? (
         <div className="grid grid-cols-4 gap-x-[12px] gap-y-[24px]">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
             <div key={i} className="flex flex-col gap-[12px] animate-pulse">
@@ -111,6 +135,7 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
         <div className="text-center py-[48px] text-[#34322d] opacity-40 text-[14px]">
           {activeTab === 'favorites' ? 'No favorite projects yet. Star a project to see it here.'
             : activeTab === 'archived' ? 'No archived projects.'
+            : activeTab === 'shared' ? 'No projects have been shared with you yet.'
             : projects.length === 0 ? 'No projects yet. Create one above!'
             : 'No projects match your search.'}
         </div>
@@ -120,11 +145,12 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
             <ProjectCard
               key={project.id}
               project={project}
-              onDelete={onDelete}
+              onDelete={activeTab !== 'shared' ? onDelete : undefined}
               onDuplicate={onDuplicate}
-              onRename={onRename}
-              onToggleFavorite={onToggleFavorite}
-              onChangeStatus={onChangeStatus}
+              onRename={activeTab !== 'shared' ? onRename : undefined}
+              onToggleFavorite={activeTab !== 'shared' ? onToggleFavorite : undefined}
+              onChangeStatus={activeTab !== 'shared' ? onChangeStatus : undefined}
+              isShared={activeTab === 'shared'}
             />
           ))}
         </div>
