@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { Bell } from 'lucide-react';
 import Image from 'next/image';
 
 export default function DashboardNav({ user }: { user: User }) {
@@ -35,7 +34,7 @@ export default function DashboardNav({ user }: { user: User }) {
       <div className="flex items-center gap-[12px]">
         {/* Notifications */}
         <button className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors">
-          <Bell size={16} className="text-[#34322d]" />
+          <Image src="/Notification.svg" alt="Notifications" width={16} height={16} />
         </button>
 
         {/* User avatar */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import Image from 'next/image';
 import ProjectCard from './ProjectCard';
 import type { DbProject } from '@/lib/db/types';
 
@@ -43,10 +43,10 @@ export default function RecentProjects({ projects, loading }: { projects: DbProj
             onClick={() => setShowSearch(!showSearch)}
             className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors"
           >
-            <Search size={16} className="text-[#34322d]" />
+            <Image src="/Search.svg" alt="Search" width={16} height={16} />
           </button>
           <button className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors">
-            <Filter size={16} className="text-[#34322d]" />
+            <Image src="/Filter.svg" alt="Filter" width={16} height={16} />
           </button>
         </div>
       </div>
