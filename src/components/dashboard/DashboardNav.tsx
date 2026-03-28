@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { useAuth } from '@/lib/hooks/useAuth';
-import Image from 'next/image';
 
 export default function DashboardNav({ user }: { user: User }) {
   const { signOut } = useAuth();
@@ -26,7 +25,7 @@ export default function DashboardNav({ user }: { user: User }) {
     <nav className="flex items-center justify-between p-[16px] border-b border-[#efefef]">
       {/* Logo */}
       <div className="flex items-center gap-[10px]">
-        <Image src="/structr-logo.svg" alt="Structr" width={20} height={20} />
+        <img src="/structr-logo.svg" alt="Structr" width={20} height={20} />
         <span className="text-[18px] font-medium leading-[16px] tracking-[-0.36px] text-[#34322d]">Structr</span>
       </div>
 
@@ -34,7 +33,7 @@ export default function DashboardNav({ user }: { user: User }) {
       <div className="flex items-center gap-[12px]">
         {/* Notifications */}
         <button className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors">
-          <Image src="/Notification.svg" alt="Notifications" width={16} height={16} />
+          <img src="/Notification.svg" alt="Notifications" width={16} height={16} />
         </button>
 
         {/* User avatar */}

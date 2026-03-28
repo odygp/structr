@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import ImportWebsiteModal from './ImportWebsiteModal';
 import ImportOctopusModal from './ImportOctopusModal';
 
@@ -46,7 +45,7 @@ export default function ActionCards() {
             className="flex-1 border border-[#ebebeb] rounded-[20px] h-[112px] p-[16px] flex flex-col items-start justify-between hover:border-[#d4d4d4] hover:bg-white transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="bg-white flex items-center p-[8px] rounded-[8px]">
-              <Image src={card.icon} alt="" width={16} height={16} />
+              <img src={card.icon} alt="" width={16} height={16} />
             </div>
             <span className="text-[16px] font-medium leading-[16px] tracking-[-0.32px] text-[#34322d]">
               {card.label}

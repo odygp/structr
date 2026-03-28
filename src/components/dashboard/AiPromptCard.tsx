@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import Image from 'next/image';
 
 export default function AiPromptCard() {
   const [prompt, setPrompt] = useState('');
@@ -108,7 +107,7 @@ export default function AiPromptCard() {
           onClick={() => fileInputRef.current?.click()}
           className="border border-[rgba(52,50,45,0.2)] flex items-center p-[8px] rounded-full hover:border-[rgba(52,50,45,0.4)] transition-colors"
         >
-          <Image src="/Add-1.svg" alt="Add" width={16} height={16} />
+          <img src="/Add-1.svg" alt="Add" width={16} height={16} />
         </button>
         <input
           ref={fileInputRef}
@@ -129,7 +128,7 @@ export default function AiPromptCard() {
               : 'bg-[#34322d] text-white opacity-40'
           }`}
         >
-          {generating ? <Loader2 size={16} className="animate-spin" /> : <Image src="/Arrow--up.svg" alt="Send" width={16} height={16} />}
+          {generating ? <Loader2 size={16} className="animate-spin" /> : <img src="/Arrow--up.svg" alt="Send" width={16} height={16} />}
         </button>
       </div>
 
