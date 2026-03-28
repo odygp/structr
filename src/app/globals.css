@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* AI generating section border animation */
+.ai-generating-border {
+  border-image: linear-gradient(90deg, #ff6b9d, #c084fc, #ff6b9d) 1;
+  animation: ai-border-shift 2s linear infinite;
+}
+
+@keyframes ai-border-shift {
+  0% { border-image-source: linear-gradient(0deg, #ff6b9d, #c084fc, #ff6b9d); }
+  25% { border-image-source: linear-gradient(90deg, #ff6b9d, #c084fc, #ff6b9d); }
+  50% { border-image-source: linear-gradient(180deg, #ff6b9d, #c084fc, #ff6b9d); }
+  75% { border-image-source: linear-gradient(270deg, #ff6b9d, #c084fc, #ff6b9d); }
+  100% { border-image-source: linear-gradient(360deg, #ff6b9d, #c084fc, #ff6b9d); }
+}

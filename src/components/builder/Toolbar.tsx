@@ -108,9 +108,10 @@ interface ToolbarProps {
   onToggleComments?: () => void;
   commentCount?: number;
   pendingPages?: PendingPageInfo[];
+  onOpenAiChat?: () => void;
 }
 
-export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [] }: ToolbarProps) {
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -408,7 +409,7 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
         <div className="flex items-center gap-[4px]">
           {/* Comments */}
           <Pill onClick={onToggleComments} aria-label="Toggle comments" className="relative">
-            {commentCount > 0 ? `${commentCount} Comment${commentCount !== 1 ? 's' : ''}` : 'Comments'}
+            {commentCount > 0 && <span>{commentCount} new</span>}
             <MessageSquare className="w-[16px] h-[16px]" />
             {commentCount > 0 && (
               <div className="absolute right-[8px] top-[7px] w-[8px] h-[8px] bg-blue-500 rounded-full" />
@@ -469,6 +470,15 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
               </>
             )}
           </div>
+
+          {/* AI button */}
+          <button
+            onClick={onOpenAiChat}
+            aria-label="Edit with AI"
+            className="w-[36px] h-[32px] flex items-center justify-center rounded-[8px] hover:bg-[#f5f5f5] transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11l-1.5-3.5L3 6l3.5-1.5L8 1zM3 11l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" stroke="#1c1c1c" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
         </div>
 
         <input ref={fileInputRef} type="file" accept=".json" onChange={handleImportJSON} className="hidden" tabIndex={-1} />

@@ -147,14 +147,14 @@ function FieldEditor({ field, sectionId, value }: { field: FieldSchema; sectionI
 
 const gridCategories = ['features', 'pricing', 'team', 'stats', 'gallery', 'blog', 'store', 'showcase', 'testimonials'];
 
-export default function ContentEditor() {
+export default function ContentEditor({ onEditWithAi }: { onEditWithAi?: () => void }) {
   const variantSelectId = useId();
   const sections = useBuilderStore(s => {
     const proj = s.projects.find(p => p.id === s.activeProjectId);
     const page = proj?.pages.find(pg => pg.id === proj.activePageId);
     return page?.sections || [];
   });
-  const { selectedSectionId, changeVariant, toggleColorMode, updateSectionSpacing, updateSectionColumns, removeSection } = useBuilderStore();
+  const { selectedSectionId, changeVariant, toggleColorMode, updateSectionSpacing, updateSectionColumns, removeSection, duplicateSection } = useBuilderStore();
   const selectedSection = sections.find(s => s.id === selectedSectionId);
 
   if (!selectedSection) {
@@ -239,6 +239,20 @@ export default function ContentEditor() {
       {/* Bottom: Actions (sticky) */}
       <div className="p-[12px] flex-shrink-0">
         <div className="flex flex-col gap-[8px]">
+          <button
+            onClick={() => duplicateSection(selectedSection.id)}
+            className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors"
+          >
+            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Duplicate Section</span>
+            <Plus className="w-[16px] h-[16px] text-[#1c1c1c]" />
+          </button>
+          <button
+            onClick={onEditWithAi}
+            className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors"
+          >
+            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Edit with AI</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#1c1c1c]"><path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11l-1.5-3.5L3 6l3.5-1.5L8 1zM3 11l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
           <button className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors">
             <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">Save as reusable</span>
             <Save className="w-[16px] h-[16px] text-[#1c1c1c]" />

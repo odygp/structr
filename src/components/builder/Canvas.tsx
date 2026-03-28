@@ -37,9 +37,13 @@ import {
   SortableContext, useSortable, verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import SectionActions from './SectionActions';
 
-function SortableSection({ section, index, total }: { section: PlacedSection; index: number; total: number }) {
-  const { selectSection, selectedSectionId } = useBuilderStore();
+function SortableSection({ section, index, total, onEditWithAi, isAiGenerating }: {
+  section: PlacedSection; index: number; total: number;
+  onEditWithAi?: () => void; isAiGenerating?: boolean;
+}) {
+  const { selectSection, selectedSectionId, duplicateSection, removeSection } = useBuilderStore();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
 
   const style = {
@@ -53,6 +57,22 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
   const def = getDefinition(section.category);
 
   if (!Component) return null;
+
+  const handleSaveReusable = async () => {
+    try {
+      await fetch('/api/reusable-sections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${def?.categoryLabel || section.category} — ${section.variantId}`,
+          category: section.category,
+          variantId: section.variantId,
+          content: section.content,
+          colorMode: section.colorMode || 'light',
+        }),
+      });
+    } catch {}
+  };
 
   return (
     <div
@@ -71,12 +91,30 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
       }}
       className="p-[6px] outline-none cursor-grab active:cursor-grabbing"
     >
-      <div className={`bg-white rounded-[12px] overflow-hidden transition-all ${
-        isSelected ? 'border-2 border-black border-dashed' : 'border-2 border-transparent hover:border-[#e6e6e6]'
+      <div className={`relative bg-white rounded-[12px] overflow-visible transition-all ${
+        isAiGenerating
+          ? 'border-2 border-dashed ai-generating-border'
+          : isSelected
+            ? 'border-2 border-black border-dashed'
+            : 'border-2 border-transparent hover:border-[#e6e6e6]'
       }`}>
-        <SectionErrorBoundary sectionId={section.id} variantId={section.variantId}>
-          <Component content={section.content} colorMode={section.colorMode || 'light'} sectionId={section.id} />
-        </SectionErrorBoundary>
+        <div className="overflow-hidden rounded-[10px]">
+          <SectionErrorBoundary sectionId={section.id} variantId={section.variantId}>
+            <div className={isAiGenerating ? 'animate-pulse' : ''}>
+              <Component content={section.content} colorMode={section.colorMode || 'light'} sectionId={section.id} />
+            </div>
+          </SectionErrorBoundary>
+        </div>
+
+        {/* Floating action buttons */}
+        {isSelected && !isAiGenerating && (
+          <SectionActions
+            onDuplicate={() => duplicateSection(section.id)}
+            onEditWithAi={() => { selectSection(section.id); onEditWithAi?.(); }}
+            onSaveReusable={handleSaveReusable}
+            onDelete={() => removeSection(section.id)}
+          />
+        )}
       </div>
     </div>
   );
@@ -86,9 +124,12 @@ interface CanvasProps {
   liveMessage?: string;
   setLiveMessage?: (msg: string) => void;
   isImporting?: boolean;
+  backgroundColor?: string;
+  onEditWithAi?: () => void;
+  aiGeneratingSectionId?: string | null;
 }
 
-export default function Canvas({ liveMessage, setLiveMessage, isImporting }: CanvasProps) {
+export default function Canvas({ liveMessage, setLiveMessage, isImporting, backgroundColor, onEditWithAi, aiGeneratingSectionId }: CanvasProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sections = useBuilderStore(s => {
     const proj = s.projects.find(p => p.id === s.activeProjectId);
@@ -299,7 +340,13 @@ export default function Canvas({ liveMessage, setLiveMessage, isImporting }: Can
                 {isDraggingOver && dropIndex === i && (
                   <div className="mx-[6px] h-[3px] bg-[#1c1c1c] rounded-full my-[2px] transition-all" />
                 )}
-                <SortableSection section={section} index={i} total={sections.length} />
+                <SortableSection
+                  section={section}
+                  index={i}
+                  total={sections.length}
+                  onEditWithAi={onEditWithAi}
+                  isAiGenerating={aiGeneratingSectionId === section.id}
+                />
               </div>
             ))}
             {/* Drop indicator at end */}
