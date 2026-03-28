@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const projectName = (formData.get('projectName') as string) || 'Octopus Import';
+    const parseOnly = formData.get('parseOnly') === 'true';
 
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
@@ -28,6 +29,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No pages found in file' }, { status: 400 });
     }
 
+    const pageList = pages.map((p, i) => ({
+      name: p.name,
+      level: p.level,
+      description: p.description,
+      seoTitle: p.seoTitle,
+      seoDescription: p.seoDescription,
+      blocks: p.blocks,
+      sortOrder: i,
+    }));
+
+    // Parse-only mode: just return the page list without creating a project
+    if (parseOnly) {
+      return NextResponse.json({ pages: pageList });
+    }
+
     // Create project
     const { data: project, error: projErr } = await supabase
       .from('structr_projects')
@@ -39,22 +55,16 @@ export async function POST(request: Request) {
       .select()
       .single();
 
-    if (projErr) throw projErr;
+    if (projErr) throw new Error(projErr.message || JSON.stringify(projErr));
 
     // Return project ID + full page list for background processing
     return NextResponse.json({
       projectId: project.id,
-      pages: pages.map((p, i) => ({
-        name: p.name,
-        level: p.level,
-        description: p.description,
-        seoTitle: p.seoTitle,
-        seoDescription: p.seoDescription,
-        sortOrder: i,
-      })),
+      pages: pageList,
     });
-  } catch (e) {
-    console.error('Octopus import error:', e);
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : JSON.stringify(e);
+    console.error('Octopus import error:', msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
