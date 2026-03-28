@@ -15,6 +15,9 @@ export async function POST(request: Request) {
     const file = formData.get('file') as File;
     const projectName = (formData.get('projectName') as string) || 'Octopus Import';
     const parseOnly = formData.get('parseOnly') === 'true';
+    const selectedPagesRaw = formData.get('selectedPages') as string | null;
+    let selectedPages: string[] | null = null;
+    try { if (selectedPagesRaw) selectedPages = JSON.parse(selectedPagesRaw); } catch {}
 
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
@@ -56,13 +59,17 @@ export async function POST(request: Request) {
 
     if (projErr) throw new Error(projErr.message || JSON.stringify(projErr));
 
-    // Insert all pages into the import queue
-    const queueRows = pageList.map((p) => ({
+    // Insert selected pages into the import queue
+    const pagesToImport = selectedPages
+      ? pageList.filter(p => selectedPages.includes(p.name))
+      : pageList;
+
+    const queueRows = pagesToImport.map((p, i) => ({
       project_id: project.id,
       user_id: user.id,
       job_type: 'octopus',
       page_name: p.name,
-      sort_order: p.sortOrder,
+      sort_order: i,
       status: 'pending',
       payload: {
         description: p.description,

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { prompt } = await request.json();
+    const { prompt, selectedPages } = await request.json();
     if (!prompt?.trim()) return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -27,7 +27,10 @@ export async function POST(request: Request) {
       model,
       max_tokens: 4096,
       system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
-      messages: [{ role: 'user', content: prompt.trim() }],
+      messages: [{ role: 'user', content: selectedPages?.length
+        ? `${prompt.trim()}\n\nIMPORTANT: Generate ONLY these pages: ${selectedPages.join(', ')}`
+        : prompt.trim()
+      }],
     });
 
     const textBlock = message.content.find(b => b.type === 'text');

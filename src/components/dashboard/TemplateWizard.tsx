@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, ChevronRight, ChevronLeft, Plus, Loader2 } from 'lucide-react';
 import { CATEGORIES, type WizardData } from '@/lib/templates';
+import PageSelector from './PageSelector';
 
 const STEPS = ['Category', 'Pages', 'Details', 'Tone'];
 
@@ -23,8 +24,6 @@ export default function TemplateWizard({ onClose, onComplete }: Props) {
 
   // Step 2
   const [pages, setPages] = useState<string[]>([]);
-  const [newPage, setNewPage] = useState('');
-  const [showAddPage, setShowAddPage] = useState(false);
 
   // Step 3
   const [businessName, setBusinessName] = useState('');
@@ -56,14 +55,6 @@ export default function TemplateWizard({ onClose, onComplete }: Props) {
     setPages(prev => prev.includes(page) ? prev.filter(p => p !== page) : [...prev, page]);
   };
 
-  const addCustomPage = () => {
-    const trimmed = newPage.trim();
-    if (trimmed && !pages.includes(trimmed)) {
-      setPages(prev => [...prev, trimmed]);
-      setNewPage('');
-      setShowAddPage(false);
-    }
-  };
 
   const addProduct = () => {
     const trimmed = productInput.trim();
@@ -208,57 +199,15 @@ export default function TemplateWizard({ onClose, onComplete }: Props) {
                 <p className="text-[13px] text-[#34322d] opacity-50">We suggested pages based on your category. Toggle on/off or add custom pages.</p>
               </div>
 
-              <div className="flex flex-col gap-[4px]">
-                {allPossiblePages.map(page => {
-                  const isSelected = pages.includes(page);
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => togglePage(page)}
-                      className={`flex items-center gap-[12px] px-[16px] py-[12px] rounded-[12px] text-left transition-colors ${
-                        isSelected ? 'bg-[#fafafa]' : 'hover:bg-[#fafafa]'
-                      }`}
-                    >
-                      <div className={`w-[20px] h-[20px] rounded-[6px] border flex items-center justify-center transition-colors ${
-                        isSelected ? 'bg-[#34322d] border-[#34322d]' : 'border-[#d4d4d4]'
-                      }`}>
-                        {isSelected && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        )}
-                      </div>
-                      <span className={`text-[14px] font-medium text-[#34322d] ${!isSelected ? 'opacity-50' : ''}`}>{page}</span>
-                    </button>
-                  );
-                })}
-
-                {/* Add custom page */}
-                {showAddPage ? (
-                  <div className="flex items-center gap-[8px] px-[16px] py-[8px]">
-                    <input
-                      type="text"
-                      placeholder="Page name..."
-                      value={newPage}
-                      onChange={e => setNewPage(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') addCustomPage(); if (e.key === 'Escape') setShowAddPage(false); }}
-                      className="flex-1 px-[12px] py-[8px] text-[14px] border border-[#ebebeb] rounded-[8px] focus:outline-none focus:border-[#34322d]"
-                      autoFocus
-                    />
-                    <button onClick={addCustomPage} className="text-[13px] font-medium text-[#34322d] px-[12px] py-[8px] bg-[#efefef] rounded-[8px]">Add</button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowAddPage(true)}
-                    className="flex items-center gap-[12px] px-[16px] py-[12px] rounded-[12px] text-left hover:bg-[#fafafa] transition-colors"
-                  >
-                    <div className="w-[20px] h-[20px] rounded-[6px] border border-dashed border-[#d4d4d4] flex items-center justify-center">
-                      <Plus size={12} className="text-[#34322d] opacity-40" />
-                    </div>
-                    <span className="text-[14px] text-[#34322d] opacity-40">Add custom page</span>
-                  </button>
-                )}
-              </div>
+              <PageSelector
+                pages={allPossiblePages.map(page => ({
+                  name: page,
+                  checked: pages.includes(page),
+                }))}
+                onToggle={(index) => togglePage(allPossiblePages[index])}
+                onAddCustom={(name) => setPages(prev => [...prev, name])}
+                maxHeight="320px"
+              />
             </div>
           )}
 

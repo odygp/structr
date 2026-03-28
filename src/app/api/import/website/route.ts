@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { url } = await request.json();
+    const { url, discoverOnly, selectedPages } = await request.json();
     if (!url?.trim()) return NextResponse.json({ error: 'URL is required' }, { status: 400 });
 
     let parsedUrl: URL;
@@ -32,7 +32,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Could not discover any pages on this website' }, { status: 400 });
     }
 
-    // Step 2: Create empty project in Supabase
+    const pageList = discoveredPages.slice(0, 20).map((p, i) => ({
+      url: p.url,
+      name: p.name,
+      sortOrder: i,
+    }));
+
+    // Discovery only — return pages for user to select
+    if (discoverOnly) {
+      return NextResponse.json({ pages: pageList, projectName });
+    }
+
+    // Step 2: Create project and queue selected pages
     const { data: project, error: pErr } = await supabase
       .from('structr_projects')
       .insert({ user_id: user.id, name: projectName })
@@ -40,8 +51,12 @@ export async function POST(request: Request) {
       .single();
     if (pErr) throw pErr;
 
-    // Insert all pages into the import queue
-    const allPages = discoveredPages.slice(0, 10).map((p, i) => ({
+    // Use selectedPages if provided, otherwise all discovered
+    const pagesToImport = selectedPages
+      ? pageList.filter((p: { name: string }) => selectedPages.includes(p.name))
+      : pageList;
+
+    const queueRows = pagesToImport.map((p: { name: string; url: string; sortOrder: number }, i: number) => ({
       project_id: project.id,
       user_id: user.id,
       job_type: 'website',
@@ -51,7 +66,7 @@ export async function POST(request: Request) {
       payload: { url: p.url },
     }));
 
-    await supabase.from('structr_import_queue').insert(allPages);
+    await supabase.from('structr_import_queue').insert(queueRows);
 
     // Trigger processing immediately (fire-and-forget)
     const apiBase = process.env.VERCEL_URL
@@ -66,7 +81,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       projectId: project.id,
       projectName,
-      pageCount: allPages.length,
+      pageCount: queueRows.length,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
