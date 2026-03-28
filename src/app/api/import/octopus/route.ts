@@ -62,8 +62,10 @@ export async function POST(request: Request) {
       pages: pageList,
     });
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : JSON.stringify(e);
-    console.error('Octopus import error:', msg);
+    const msg = e instanceof Error ? e.message : (typeof e === 'object' ? JSON.stringify(e) : String(e));
+    console.error('OCTOPUS_IMPORT_ERROR_START');
+    console.error(msg);
+    console.error('OCTOPUS_IMPORT_ERROR_END');
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
