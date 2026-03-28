@@ -331,7 +331,15 @@ export async function generateSectionsForPage(
       content: s.content || {},
       colorMode: s.colorMode || 'light',
     }));
-    return { sections, unmatchedSections: [] };
+    return {
+      sections,
+      unmatchedSections: [],
+      usage: {
+        inputTokens: message.usage?.input_tokens || 0,
+        outputTokens: message.usage?.output_tokens || 0,
+        model: message.model || 'claude-sonnet-4-20250514',
+      },
+    };
   } catch {
     console.error('Failed to parse AI generation response:', text.slice(0, 500));
     throw new Error(`AI returned invalid response for page "${pageName}"`);
