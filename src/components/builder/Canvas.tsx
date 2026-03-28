@@ -1,8 +1,33 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useBuilderStore } from '@/lib/store';
 import { getDefinition } from '@/lib/registry';
 import { componentRegistry } from '@/components/sections';
+
+// Error boundary to catch section rendering crashes
+class SectionErrorBoundary extends React.Component<
+  { children: React.ReactNode; sectionId: string; variantId: string },
+  { error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode; sectionId: string; variantId: string }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="bg-red-50 border border-red-200 rounded-[12px] p-6 text-center">
+          <p className="text-[13px] font-medium text-red-700 mb-1">Section render error</p>
+          <p className="text-[11px] text-red-500">{this.props.variantId}: {this.state.error.message}</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import { PlacedSection, SectionCategory } from '@/lib/types';
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -49,7 +74,9 @@ function SortableSection({ section, index, total }: { section: PlacedSection; in
       <div className={`bg-white rounded-[12px] overflow-hidden transition-all ${
         isSelected ? 'border-2 border-black border-dashed' : 'border-2 border-transparent hover:border-[#e6e6e6]'
       }`}>
-        <Component content={section.content} colorMode={section.colorMode || 'light'} sectionId={section.id} />
+        <SectionErrorBoundary sectionId={section.id} variantId={section.variantId}>
+          <Component content={section.content} colorMode={section.colorMode || 'light'} sectionId={section.id} />
+        </SectionErrorBoundary>
       </div>
     </div>
   );
