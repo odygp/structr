@@ -185,6 +185,55 @@ function BuilderLayoutInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
+  // Background: Wizard-generated pages (same pattern)
+  useEffect(() => {
+    if (!projectId) return;
+    const stored = sessionStorage.getItem(`structr-wizard-${projectId}`);
+    if (!stored) return;
+    sessionStorage.removeItem(`structr-wizard-${projectId}`);
+
+    let parsed: { pages: { name: string; sortOrder: number }[]; wizardData: unknown };
+    try { parsed = JSON.parse(stored); } catch { return; }
+    if (!parsed.pages?.length) return;
+
+    const initial = parsed.pages.map(p => ({ ...p, url: '', loading: false, done: false, error: false }));
+    setPendingPages(initial);
+
+    (async () => {
+      for (let i = 0; i < parsed.pages.length; i++) {
+        const page = parsed.pages[i];
+        setPendingPages(prev => prev.map((p, j) => j === i ? { ...p, loading: true } : p));
+
+        try {
+          const res = await fetch('/api/ai/generate-from-wizard/page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              projectId,
+              pageName: page.name,
+              sortOrder: page.sortOrder,
+              wizardData: parsed.wizardData,
+            }),
+          });
+          const data = await res.json();
+          const success = data.done;
+
+          setPendingPages(prev => prev.map((p, j) =>
+            j === i ? { ...p, loading: false, done: true, error: !success } : p
+          ));
+
+          if (success) await reloadProject();
+        } catch {
+          setPendingPages(prev => prev.map((p, j) =>
+            j === i ? { ...p, loading: false, done: true, error: true } : p
+          ));
+        }
+      }
+      setTimeout(() => setPendingPages([]), 3000);
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
+
   const resolveComment = async (commentId: string) => {
     try {
       const res = await fetch(`/api/comments?id=${commentId}&action=resolve`, { method: 'PATCH' });

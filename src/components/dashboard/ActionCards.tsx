@@ -31,19 +31,28 @@ export default function ActionCards() {
   };
 
   const handleWizardComplete = async (data: WizardData) => {
+    // Step 1: Create project + placeholder immediately (fast, no AI call)
     const res = await fetch('/api/ai/generate-from-wizard', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
 
-    if (res.ok) {
-      const { projectId } = await res.json();
-      router.push(`/builder?project=${projectId}`);
-    } else {
+    if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.error || 'Failed to generate');
+      throw new Error(err.error || 'Failed to create project');
     }
+
+    const { projectId, pages, wizardData } = await res.json();
+
+    // Step 2: Store pages in sessionStorage for background generation
+    sessionStorage.setItem(
+      `structr-wizard-${projectId}`,
+      JSON.stringify({ pages, wizardData })
+    );
+
+    // Step 3: Redirect immediately
+    router.push(`/builder?project=${projectId}`);
   };
 
   const cards = [
