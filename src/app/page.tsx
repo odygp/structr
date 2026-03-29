@@ -3,18 +3,12 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import Link from 'next/link';
+import MarketingNav from '@/components/marketing/MarketingNav';
+import MarketingFooter from '@/components/marketing/MarketingFooter';
 
 const StarIcon = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={`inline-block ${className}`}>
     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-  </svg>
-);
-
-const Logo = ({ size = 28 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-    <rect width="28" height="28" rx="6" fill="#1a1a1a" />
-    <path d="M7 7h14v14H7V7zm2 2v10h10V9H9z" fill="white" />
-    <path d="M7 7l14 14M21 7L7 21" stroke="white" strokeWidth="1.5" />
   </svg>
 );
 
@@ -37,21 +31,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-8 py-5 max-w-[1100px] mx-auto">
-        <div className="flex items-center gap-2.5">
-          <Logo />
-          <span className="text-[20px] font-bold text-[#1a1a1a]">Structr</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/login" className="text-[14px] font-medium text-[#808080] hover:text-[#1a1a1a] transition-colors">
-            Sign in
-          </Link>
-          <Link href="/signup" className="text-[14px] font-medium text-white bg-[#1a1a1a] hover:bg-[#333] px-5 py-2.5 rounded-xl transition-colors">
-            Get started free
-          </Link>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Hero */}
       <section className="text-center pt-24 pb-20 px-8 max-w-[850px] mx-auto">
@@ -264,6 +244,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Comparison */}
+      <section className="max-w-[900px] mx-auto px-8 py-20">
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Why Structr?</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-10 max-w-[500px] mx-auto">Purpose-built for wireframing. Not a general app builder.</p>
+        <div className="bg-white border border-[#ebebeb] rounded-2xl overflow-hidden">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="border-b border-[#ebebeb]">
+                <th className="text-left px-6 py-4 text-[#808080] font-medium" />
+                <th className="text-center px-4 py-4 text-[#1a1a1a] font-semibold bg-[#fafafa]">Structr</th>
+                <th className="text-center px-4 py-4 text-[#808080] font-medium">Lovable</th>
+                <th className="text-center px-4 py-4 text-[#808080] font-medium">v0</th>
+                <th className="text-center px-4 py-4 text-[#808080] font-medium">Bolt</th>
+              </tr>
+            </thead>
+            <tbody className="text-[13px]">
+              {[
+                ['Wireframe-first approach', 'Y', 'N', 'N', 'N'],
+                ['Section-based builder', 'Y', 'N', 'N', 'N'],
+                ['Website import/clone', 'Y', 'N', 'N', 'N'],
+                ['AI section editing', 'Y', 'Y', 'Y', 'Y'],
+                ['Multi-page projects', 'Y', 'Y', 'Y', 'Y'],
+                ['One-click publish', 'Y', 'Y', 'N', 'Y'],
+                ['Free tier', '50 stars', '30 credits', '$5', '1M tokens'],
+                ['Pro price', '$20/mo', '$25/mo', '$20/mo', '$25/mo'],
+              ].map(([feature, ...values], i) => (
+                <tr key={i} className="border-b border-[#f0f0f0] last:border-0">
+                  <td className="px-6 py-3 text-[#1a1a1a] font-medium">{feature}</td>
+                  {values.map((v, j) => (
+                    <td key={j} className={`text-center px-4 py-3 ${j === 0 ? 'bg-[#fafafa] font-medium text-[#1a1a1a]' : 'text-[#808080]'}`}>
+                      {v === 'Y' ? <span className="text-green-600">&#10003;</span> : v === 'N' ? <span className="text-[#d0d0d0]">-</span> : v}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Showcase */}
+      <section className="max-w-[900px] mx-auto px-8 pb-20">
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">See it in action</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-10">Real projects built with Structr, published in minutes.</p>
+        <div className="grid grid-cols-2 gap-5">
+          {[
+            { name: 'Stripe Import', desc: 'Full Stripe.com pricing page cloned via website import', slug: 'stripe-import' },
+            { name: 'Bean & Brew Coffee Shop', desc: 'Generated from a single prompt: "A coffee shop landing page"', slug: 'bean-brew-coffee-shop' },
+          ].map(p => (
+            <Link key={p.slug} href={`/p/${p.slug}`} className="group bg-white border border-[#ebebeb] rounded-2xl p-6 hover:shadow-md transition-all">
+              <div className="h-24 bg-[#f5f5f5] rounded-lg mb-4 flex items-center justify-center text-[#a0a0a0] text-[12px] group-hover:bg-[#f0f0f0] transition-colors">
+                Live preview &rarr;
+              </div>
+              <h3 className="text-[16px] font-semibold text-[#1a1a1a] mb-1">{p.name}</h3>
+              <p className="text-[13px] text-[#808080]">{p.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="bg-[#1a1a1a] py-20">
         <div className="max-w-[600px] mx-auto px-8 text-center">
@@ -280,26 +320,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-[#ebebeb] py-10 px-8 bg-white">
-        <div className="max-w-[900px] mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-2.5">
-              <Logo size={22} />
-              <span className="text-[16px] font-semibold text-[#1a1a1a]">Structr</span>
-            </div>
-            <div className="flex items-center gap-6 text-[13px] text-[#808080]">
-              <Link href="/p/stripe-import" className="hover:text-[#1a1a1a] transition-colors">Example</Link>
-              <Link href="/login" className="hover:text-[#1a1a1a] transition-colors">Sign in</Link>
-              <Link href="/signup" className="hover:text-[#1a1a1a] transition-colors">Get started</Link>
-            </div>
-          </div>
-          <div className="border-t border-[#f0f0f0] pt-6 flex items-center justify-between">
-            <p className="text-[12px] text-[#a0a0a0]">Built with AI, for builders.</p>
-            <p className="text-[12px] text-[#a0a0a0]">&copy; 2026 Structr. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

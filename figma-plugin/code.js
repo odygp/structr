@@ -555,9 +555,9 @@ function createMolecules(page, atoms) {
   var fcTitle = txt("title", "Feature Title", 'lg', FS, 'text');
   fcTextBlock.appendChild(fcTitle); linkText(fcTitle, fcTk);
   var fcDk = featureCard.addComponentProperty("Description", "TEXT", "A brief description of this feature.");
-  var fcDesc = txt("description", "A brief description of this feature.", 'sm', FR, 'textSecondary', { w: 316 });
-  fcTextBlock.appendChild(fcDesc); linkText(fcDesc, fcDk);
-  featureCard.appendChild(fcTextBlock);
+  var fcDesc = txt("description", "A brief description of this feature.", 'sm', FR, 'textSecondary');
+  fcTextBlock.appendChild(fcDesc); linkText(fcDesc, fcDk); fillH(fcDesc);
+  featureCard.appendChild(fcTextBlock); fillH(fcTextBlock);
   page.appendChild(featureCard); featureCard.x = 0; featureCard.y = 60;
   molecules.FeatureCard = featureCard;
 
@@ -577,8 +577,8 @@ function createMolecules(page, atoms) {
   testCard.strokeWeight = 1; testCard.strokeAlign = "INSIDE";
 
   var tcQk = testCard.addComponentProperty("Quote", "TEXT", "This product has completely transformed how we work.");
-  var tcQuote = txt("quote", "This product has completely transformed how we work.", 'base', FR, 'textSecondary', { w: 316 });
-  testCard.appendChild(tcQuote); linkText(tcQuote, tcQk);
+  var tcQuote = txt("quote", "\u201CThis product has completely transformed how we work.\u201D", 'base', FR, 'textSecondary');
+  testCard.appendChild(tcQuote); linkText(tcQuote, tcQk); fillH(tcQuote);
 
   var tcAuth = frame("author", { dir: "HORIZONTAL", g: 12, ca: "CENTER" });
   var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.name = "avatar";
@@ -858,23 +858,21 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
 
-  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'] });
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'], ca: "CENTER" });
 
-
-  // Header: text-center max-w-2xl mx-auto
-  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  // Header: text-center max-w-2xl mx-auto (672px centered within 1280px inner)
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['2xl'], ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Everything you need");
-  var tn = txt("title", content.title || "Everything you need", '3xl', FB, 'text', { w: MAX_W['2xl'], align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Everything you need", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
   if (content.subtitle) {
     var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
     var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
-    sub.appendChild(sn); linkText(sn, stk);
-    header.appendChild(sub);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+    header.appendChild(sub); fillH(sub);
   }
-  inner.appendChild(header); fillH(header);
-  fillH(header);
+  inner.appendChild(header);
 
   // mt-16 = 64px, grid gap-8 = 32px, 3 cols
   var gridWrap = frame("grid_wrap", { dir: "VERTICAL", pt: 64 });
@@ -910,22 +908,21 @@ function buildFeaturesAlternating(comp, content, atoms) {
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
 
-  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'] });
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'], ca: "CENTER" });
 
-
-  // Header
-  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  // Header: text-center max-w-2xl mx-auto
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['2xl'], ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
   var tn = txt("title", content.title || "Features", '3xl', FB, 'text', { align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
   if (content.subtitle) {
     var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
     var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
-    sub.appendChild(sn); linkText(sn, stk);
-    header.appendChild(sub);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+    header.appendChild(sub); fillH(sub);
   }
-  inner.appendChild(header); fillH(header);
+  inner.appendChild(header);
 
   // mt-20=80px, gap-24=96px between rows
   var rows = frame("features", { dir: "VERTICAL", g: 96, pt: 80 });
@@ -964,22 +961,21 @@ function buildFeaturesWithImage(comp, content, atoms) {
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
 
-  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'] });
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'], ca: "CENTER" });
 
-
-  // Header
-  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  // Header: text-center max-w-2xl mx-auto
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['2xl'], ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
   var tn = txt("title", content.title || "Features", '3xl', FB, 'text', { align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
   if (content.subtitle) {
     var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
     var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
-    sub.appendChild(sn); linkText(sn, stk);
-    header.appendChild(sub);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+    header.appendChild(sub); fillH(sub);
   }
-  inner.appendChild(header); fillH(header);
+  inner.appendChild(header);
 
   // grid-cols-2 gap-12=48px items-center
   var grid = frame("grid", { dir: "HORIZONTAL", g: 48, pt: 64, ca: "CENTER" });
@@ -1018,20 +1014,20 @@ function buildPricing3Col(comp, content, atoms) {
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
 
-  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'] });
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'], ca: "CENTER" });
 
 
-  // Header
-  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  // Header: text-center max-w-2xl mx-auto
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['2xl'], ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Simple, transparent pricing");
   var tn = txt("title", content.title || "Simple, transparent pricing", '3xl', FB, 'text', { align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
   var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
   var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Choose the plan that works best for you.");
-  var sn = txt("subtitle", content.subtitle || "Choose the plan that works best for you.", 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
-  sub.appendChild(sn); linkText(sn, stk);
-  header.appendChild(sub);
-  inner.appendChild(header); fillH(header);
+  var sn = txt("subtitle", content.subtitle || "Choose the plan that works best for you.", 'lg', FR, 'textSecondary', { align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+  header.appendChild(sub); fillH(sub);
+  inner.appendChild(header);
 
   // grid gap-8=32px, mt-16=64px
   var grid = frame("plans", { dir: "HORIZONTAL", g: 32, pt: 64 });
@@ -1103,14 +1099,15 @@ function buildTestimonialsCards(comp, content, atoms, molecules) {
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
 
-  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'] });
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'], ca: "CENTER" });
 
 
-  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  // Header: text-center (no narrow constraint here, single line)
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['2xl'], ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "What our customers say");
   var tn = txt("title", content.title || "What our customers say", '3xl', FB, 'text', { align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
-  inner.appendChild(header); fillH(header);
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
+  inner.appendChild(header);
 
   var grid = frame("testimonials", { dir: "HORIZONTAL", g: 32, pt: 64 });
   setFixedW(grid, MAX_W['6xl']);
@@ -1232,14 +1229,15 @@ function buildStatsRow(comp, content, atoms, molecules) {
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
 
-  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'] });
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'], ca: "CENTER" });
 
 
-  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  // Header: text-center (narrow for stats)
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['2xl'], ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Trusted by thousands");
   var tn = txt("title", content.title || "Trusted by thousands", '3xl', FB, 'text', { align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
-  inner.appendChild(header); fillH(header);
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
+  inner.appendChild(header);
 
   var row = frame("stats", { dir: "HORIZONTAL", g: 32, pt: 64 });
   setFixedW(row, MAX_W['6xl']);
@@ -1265,8 +1263,8 @@ function buildStatsRow(comp, content, atoms, molecules) {
 function buildLogosSimple(comp, content, atoms) {
   comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
   comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 24; comp.paddingRight = 24;
-  comp.paddingTop = 64; comp.paddingBottom = 64;
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
 
@@ -1314,7 +1312,7 @@ function buildBannerSimple(comp, content) {
 function buildContactSplit(comp, content, atoms) {
   comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
   comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 24; comp.paddingRight = 24;
+  comp.paddingLeft = 32; comp.paddingRight = 32;
   comp.paddingTop = 80; comp.paddingBottom = 80;
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
@@ -1400,8 +1398,8 @@ function buildFooter4Col(comp, content, atoms, molecules) {
   logoCol.appendChild(ln); linkText(ln, lk);
   if (content.description) {
     var dk = comp.addComponentProperty("Description", "TEXT", content.description);
-    var dn = txt("description", content.description, 'sm', FR, 'textMuted', { w: 200 });
-    logoCol.appendChild(dn); linkText(dn, dk);
+    var dn = txt("description", content.description, 'sm', FR, 'textMuted');
+    logoCol.appendChild(dn); linkText(dn, dk); fillH(dn);
   }
   grid.appendChild(logoCol);
   fillH(logoCol);
@@ -1440,8 +1438,8 @@ function buildFooter4Col(comp, content, atoms, molecules) {
 function buildFooterSimple(comp, content) {
   comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
   comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 24; comp.paddingRight = 24;
-  comp.paddingTop = 48; comp.paddingBottom = 48;
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 64; comp.paddingBottom = 64;
   comp.counterAxisAlignItems = "CENTER";
   comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
 
