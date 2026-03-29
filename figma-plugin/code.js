@@ -548,6 +548,8 @@ function createMolecules(page, atoms) {
 
   var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon";
   featureCard.appendChild(fcIcon); hug(fcIcon);
+  var fcShowIconKey = featureCard.addComponentProperty("Show Icon", "BOOLEAN", true);
+  linkVis(fcIcon, fcShowIconKey);
 
   // Title section with mt-5=20px gap from icon
   var fcTextBlock = frame("textBlock", { dir: "VERTICAL", g: 8, pt: 20 });
@@ -557,6 +559,8 @@ function createMolecules(page, atoms) {
   var fcDk = featureCard.addComponentProperty("Description", "TEXT", "A brief description of this feature.");
   var fcDesc = txt("description", "A brief description of this feature.", 'sm', FR, 'textSecondary');
   fcTextBlock.appendChild(fcDesc); linkText(fcDesc, fcDk); fillH(fcDesc);
+  var fcShowDescKey = featureCard.addComponentProperty("Show Description", "BOOLEAN", true);
+  linkVis(fcDesc, fcShowDescKey);
   featureCard.appendChild(fcTextBlock); fillH(fcTextBlock);
   page.appendChild(featureCard); featureCard.x = 0; featureCard.y = 60;
   molecules.FeatureCard = featureCard;
@@ -583,6 +587,8 @@ function createMolecules(page, atoms) {
   var tcAuth = frame("author", { dir: "HORIZONTAL", g: 12, ca: "CENTER" });
   var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.name = "avatar";
   tcAuth.appendChild(tcAvatar); hug(tcAvatar);
+  var tcShowAvatarKey = testCard.addComponentProperty("Show Avatar", "BOOLEAN", true);
+  linkVis(tcAvatar, tcShowAvatarKey);
   var tcInfo = frame("info", { dir: "VERTICAL", g: 2 });
   var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Cooper");
   var tcName = txt("author", "Jane Cooper", 'sm', FS, 'text');
@@ -738,15 +744,15 @@ function buildHeroCentered(comp, content, atoms) {
 
 
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing today");
-  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
-  inner.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk); fillH(tn);
 
   // mt-6 = 24px gap
   var sub = frame("subtitle_wrap", { dir: "VERTICAL", pt: 24 });
   var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product or service.");
-  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { w: MAX_W['3xl'], align: "CENTER" });
-  sub.appendChild(sn); linkText(sn, stk);
-  inner.appendChild(sub);
+  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+  inner.appendChild(sub); fillH(sub);
 
   // mt-10 = 40px, buttons row
   var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 40, ca: "CENTER" });
@@ -777,14 +783,14 @@ function buildHeroSplit(comp, content, atoms) {
   var textCol = frame("textContent", { dir: "VERTICAL", w: textColW });
 
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing today");
-  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { w: textColW });
-  textCol.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text');
+  textCol.appendChild(tn); linkText(tn, tk); fillH(tn);
 
   var sub = frame("subtitle_wrap", { dir: "VERTICAL", pt: 24 });
   var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product or service.");
-  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { w: textColW });
-  sub.appendChild(sn); linkText(sn, stk);
-  textCol.appendChild(sub);
+  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary');
+  sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+  textCol.appendChild(sub); fillH(sub);
 
   var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 40 });
   var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
@@ -819,14 +825,14 @@ function buildHeroWithImage(comp, content, atoms) {
 
 
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing today");
-  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { w: MAX_W['5xl'], align: "CENTER" });
-  inner.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk); fillH(tn);
 
   var sub = frame("subtitle_wrap", { dir: "VERTICAL", pt: 24, ca: "CENTER" });
   var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product or service.");
   var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
   sub.appendChild(sn); linkText(sn, stk);
-  inner.appendChild(sub);
+  inner.appendChild(sub); fillH(sub);
 
   var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 40, ca: "CENTER" });
   var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
@@ -880,19 +886,26 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
   grid.counterAxisSpacing = 32;
 
   var features = Array.isArray(content.features) ? content.features : [];
+  var maxCards = 6;
   var colW = Math.floor((MAX_W['7xl'] - 64) / 3);
-  for (var i = 0; i < features.length; i++) {
+  for (var i = 0; i < maxCards; i++) {
+    var feat = features[i] || { title: 'Feature ' + (i + 1), description: 'Description for feature ' + (i + 1) + '.' };
     var card = molecules.FeatureCard.createInstance(); card.name = "feature_" + i;
     card.resize(colW, card.height);
     try {
       var props = card.componentProperties;
       for (var k in props) {
-        if (k.indexOf("Title") === 0) card.setProperties(makeObj(k, features[i].title || ''));
-        if (k.indexOf("Description") === 0) card.setProperties(makeObj(k, features[i].description || ''));
+        if (k.indexOf("Title") === 0) card.setProperties(makeObj(k, feat.title || ''));
+        if (k.indexOf("Description") === 0) card.setProperties(makeObj(k, feat.description || ''));
       }
     } catch (e) {}
     grid.appendChild(card);
     fillH(card);
+    // Cards beyond 3 get boolean toggles (default hidden)
+    if (i >= 3) {
+      var showKey = comp.addComponentProperty("Show Card " + (i + 1), "BOOLEAN", i < features.length);
+      linkVis(card, showKey);
+    }
   }
   gridWrap.appendChild(grid); fillH(grid);
   inner.appendChild(gridWrap); fillH(gridWrap);
@@ -1146,14 +1159,14 @@ function buildCtaCentered(comp, content, atoms) {
 
 
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Ready to get started?");
-  var tn = txt("title", content.title || "Ready to get started?", '3xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
-  inner.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Ready to get started?", '3xl', FB, 'text', { align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk); fillH(tn);
 
   var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
   var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Join thousands of satisfied customers today.");
-  var sn = txt("subtitle", content.subtitle || "Join thousands of satisfied customers today.", 'lg', FR, 'textSecondary', { w: MAX_W['3xl'], align: "CENTER" });
-  sub.appendChild(sn); linkText(sn, stk);
-  inner.appendChild(sub);
+  var sn = txt("subtitle", content.subtitle || "Join thousands of satisfied customers today.", 'lg', FR, 'textSecondary', { align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+  inner.appendChild(sub); fillH(sub);
 
   var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 32, ca: "CENTER" });
   var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
@@ -1182,16 +1195,16 @@ function buildFaqAccordion(comp, content, atoms, molecules) {
   var inner = frame("content", { dir: "VERTICAL", w: MAX_W['3xl'] });
 
   // Header: text-center mb-12
-  var header = frame("header", { dir: "VERTICAL", w: MAX_W['3xl'], ca: "CENTER" });
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Frequently asked questions");
-  var tn = txt("title", content.title || "Frequently asked questions", '3xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
-  header.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Frequently asked questions", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk); fillH(tn);
   if (content.subtitle) {
     var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
     var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['3xl'], align: "CENTER" });
-    sub.appendChild(sn); linkText(sn, stk);
-    header.appendChild(sub);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+    header.appendChild(sub); fillH(sub);
   }
   inner.appendChild(header); fillH(header);
 
@@ -1277,8 +1290,8 @@ function buildLogosSimple(comp, content, atoms) {
 
 
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Trusted by leading companies");
-  var tn = txt("title", content.title || "Trusted by leading companies", 'lg', FM, 'textSecondary', { w: MAX_W['5xl'], align: "CENTER" });
-  inner.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || "Trusted by leading companies", 'lg', FM, 'textSecondary', { align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk); fillH(tn);
 
   var row = frame("logos", { dir: "HORIZONTAL", g: 32, pt: 40, ca: "CENTER", ma: "CENTER", wrap: true });
   setFixedW(row, MAX_W['5xl']);
@@ -1499,15 +1512,15 @@ function buildGenericOrganism(comp, content, category) {
 
 
   var tk = comp.addComponentProperty("Title", "TEXT", content.title || getCategoryLabel(category));
-  var tn = txt("title", content.title || getCategoryLabel(category), '3xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
-  inner.appendChild(tn); linkText(tn, tk);
+  var tn = txt("title", content.title || getCategoryLabel(category), '3xl', FB, 'text', { align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk); fillH(tn);
 
   if (content.subtitle) {
     var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
     var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
-    sub.appendChild(sn); linkText(sn, stk);
-    inner.appendChild(sub);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk); fillH(sn);
+    inner.appendChild(sub); fillH(sub);
   }
 
   comp.appendChild(inner);

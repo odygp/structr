@@ -6,6 +6,7 @@ export const STAR_COSTS: Record<string, number> = {
   'import/wizard/page': 5,
   'import/octopus/page': 3,
   'ai/generate-from-wizard/page': 5,
+  'ai/resolve-comments': 5,
 };
 
 /** Star costs per import job type (used by /api/import/process) */
@@ -35,4 +36,5 @@ export const ENDPOINT_LABELS: Record<string, string> = {
   'ai/generate-from-wizard/page': 'Wizard',
   'import/wizard/page': 'Wizard',
   'import/process': 'Import',
+  'ai/resolve-comments': 'AI Resolve Comments',
 };

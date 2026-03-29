@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, MoreHorizontal, CheckSquare, RotateCcw, MessageCircle } from 'lucide-react';
+import { Check, MoreHorizontal, CheckSquare, RotateCcw, MessageCircle, Sparkles, Loader2 } from 'lucide-react';
 
 interface Comment {
   id: string;
@@ -119,10 +119,12 @@ function CommentItem({ comment, onResolve, onUnresolve, onReply, isNew, replies 
 }
 
 /* ── Comments Sidebar ── */
-export function CommentsSidebar({ comments, onResolve, onUnresolve }: {
+export function CommentsSidebar({ comments, onResolve, onUnresolve, onResolveWithAI, aiResolving }: {
   comments: Comment[];
   onResolve: (id: string) => void;
   onUnresolve: (id: string) => void;
+  onResolveWithAI?: () => void;
+  aiResolving?: boolean;
 }) {
   const [filter, setFilter] = useState<'open' | 'resolved'>('open');
 
@@ -185,17 +187,32 @@ export function CommentsSidebar({ comments, onResolve, onUnresolve }: {
         </div>
       </div>
 
-      {/* Bottom action */}
+      {/* Bottom actions */}
       {filter === 'open' && filtered.length > 0 && (
-        <div className="p-[12px] flex-shrink-0">
+        <div className="p-[12px] flex-shrink-0 space-y-[6px]">
+          {/* Resolve with AI */}
+          {onResolveWithAI && (
+            <button
+              onClick={onResolveWithAI}
+              disabled={aiResolving}
+              className="bg-[#1c1c1c] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#333] transition-colors disabled:opacity-50"
+            >
+              <span className="text-[13px] font-medium text-white flex items-center gap-[6px]">
+                {aiResolving ? <Loader2 className="w-[14px] h-[14px] animate-spin" /> : <Sparkles className="w-[14px] h-[14px]" />}
+                {aiResolving ? 'Analyzing comments...' : 'Resolve with AI'}
+              </span>
+              {!aiResolving && <span className="text-[11px] text-white/60">5 ★</span>}
+            </button>
+          )}
+          {/* Mark all manually */}
           <button
             onClick={resolveAll}
             className="bg-[#f5f4f2] flex items-center justify-between px-[10px] py-[8px] rounded-[8px] w-full hover:bg-[#edece9] transition-colors"
           >
-            <span className="text-[14px] font-normal leading-[14px] tracking-[-0.14px] text-[#1c1c1c]">
+            <span className="text-[13px] font-normal text-[#1c1c1c]">
               Mark all as resolved
             </span>
-            <CheckSquare className="w-[16px] h-[16px] text-[#1c1c1c]" />
+            <CheckSquare className="w-[14px] h-[14px] text-[#1c1c1c]" />
           </button>
         </div>
       )}

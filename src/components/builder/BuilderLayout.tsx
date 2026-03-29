@@ -12,6 +12,8 @@ import ResizeHandle from './ResizeHandle';
 import { CommentsSidebar } from './CommentsOverlay';
 import ActivityPanel from './ActivityPanel';
 import VersionHistory from './VersionHistory';
+import AIResolvePlan from './AIResolvePlan';
+import { showToast } from '@/lib/hooks/useToast';
 
 interface Comment {
   id: string;
@@ -54,6 +56,9 @@ function BuilderLayoutInner() {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
   const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
+  const [aiResolvePlan, setAiResolvePlan] = useState<{ plan: unknown[]; summary: string; commentCount: number; starCost: number; _usage?: { inputTokens: number; outputTokens: number } } | null>(null);
+  const [aiResolving, setAiResolving] = useState(false);
+  const [aiApplying, setAiApplying] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [starBalance, setCreditBalance] = useState<number | null>(null);
   const [projectSlug, setProjectSlug] = useState<string | null>(null);
@@ -256,6 +261,67 @@ function BuilderLayoutInner() {
     } catch {}
   };
 
+  const handleResolveWithAI = async () => {
+    if (!projectId || aiResolving) return;
+    setAiResolving(true);
+    try {
+      const res = await fetch('/api/ai/resolve-comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId }),
+      });
+      if (res.status === 402) {
+        showToast('Not enough stars for AI resolve (5 ★ required)', 'error');
+        return;
+      }
+      const data = await res.json();
+      if (data.error) {
+        showToast(data.error, 'error');
+        return;
+      }
+      setAiResolvePlan(data);
+      setCommentsOpen(false); // Switch to plan view
+    } catch {
+      showToast('Failed to generate resolve plan', 'error');
+    } finally {
+      setAiResolving(false);
+    }
+  };
+
+  const handleApplyPlan = async (mode: 'current' | 'new_version') => {
+    if (!projectId || !aiResolvePlan || aiApplying) return;
+    setAiApplying(true);
+    try {
+      const res = await fetch('/api/ai/apply-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          plan: aiResolvePlan.plan,
+          mode,
+          _usage: aiResolvePlan._usage,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast(data.error, 'error');
+        return;
+      }
+      showToast(`AI resolved ${data.commentsResolved} comments with ${data.actionsApplied} changes`, 'success');
+      setAiResolvePlan(null);
+      // Reload everything
+      await reloadProject();
+      refreshCredits();
+      // Refresh comments
+      const commentsRes = await fetch(`/api/comments?project=${projectId}`);
+      if (commentsRes.ok) setComments(await commentsRes.json());
+    } catch {
+      showToast('Failed to apply changes', 'error');
+    } finally {
+      setAiApplying(false);
+    }
+  };
+
   const handleToggleComments = () => {
     setCommentsOpen(!commentsOpen);
     setAiChatOpen(false);
@@ -350,9 +416,10 @@ function BuilderLayoutInner() {
   const getCategoryLabel = (category: string) => category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
 
   const renderRightSidebar = () => {
+    if (aiResolvePlan) return <AIResolvePlan plan={aiResolvePlan.plan as Parameters<typeof AIResolvePlan>[0]['plan']} summary={aiResolvePlan.summary} commentCount={aiResolvePlan.commentCount} starCost={aiResolvePlan.starCost} onApply={handleApplyPlan} onCancel={() => setAiResolvePlan(null)} applying={aiApplying} />;
     if (versionHistoryOpen && projectId) return <VersionHistory projectId={projectId} onRestore={() => { reloadProject(); setVersionHistoryOpen(false); }} />;
     if (activityOpen && projectId) return <ActivityPanel projectId={projectId} />;
-    if (commentsOpen) return <CommentsSidebar comments={comments} onResolve={resolveComment} onUnresolve={unresolveComment} />;
+    if (commentsOpen) return <CommentsSidebar comments={comments} onResolve={resolveComment} onUnresolve={unresolveComment} onResolveWithAI={projectId ? handleResolveWithAI : undefined} aiResolving={aiResolving} />;
     if (aiChatOpen && selectedSection) {
       return (
         <AiSectionChat
