@@ -100,7 +100,7 @@ export default function AiPromptCard() {
         throw new Error(res.ok ? 'Invalid server response' : `Server error (${res.status}): ${text.slice(0, 200)}`);
       }
 
-      if (res.status === 402) throw new Error('You\'ve used all your free credits. Go to Settings > Usage to check your balance.');
+      if (res.status === 402) throw new Error('You\'ve run out of stars! Go to Settings > Usage to check your balance.');
       if (!res.ok) throw new Error(data.error || 'Generation failed');
       router.push(`/builder?project=${data.projectId}`);
     } catch (e) {

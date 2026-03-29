@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { generateSectionsForPage } from '@/lib/import/ai-analyzer';
 import { trackUsage } from '@/lib/ai/track-usage';
-import { hasEnoughCredits } from '@/lib/db/credits';
+import { hasEnoughStars } from '@/lib/db/credits';
 
 export const maxDuration = 60;
 
@@ -17,11 +17,11 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Credit check
+    // Star check
     if (user) {
-      const creditCheck = await hasEnoughCredits(user.id);
-      if (!creditCheck.ok) {
-        return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+      const starCheck = await hasEnoughStars(user.id, 3);
+      if (!starCheck.ok) {
+        return NextResponse.json({ error: 'Insufficient stars', balance: starCheck.balance, required: 3 }, { status: 402 });
       }
     }
 

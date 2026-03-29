@@ -18,10 +18,9 @@ interface CreditTransaction {
 
 interface UsageData {
   totalCalls: number;
-  totalCost: number;
-  daily: { date: string; cost: number }[];
-  byEndpoint: { endpoint: string; calls: number; cost: number }[];
-  byModel: { model: string; calls: number; cost: number }[];
+  totalStars: number;
+  daily: { date: string; stars: number }[];
+  byEndpoint: { endpoint: string; label: string; calls: number; stars: number; starCostPerCall: number }[];
 }
 
 export default function SettingsPage() {
@@ -43,7 +42,7 @@ export default function SettingsPage() {
   });
 
   // Usage state
-  const [creditBalance, setCreditBalance] = useState<number>(0);
+  const [starBalance, setStarBalance] = useState<number>(0);
   const [lifetimeUsed, setLifetimeUsed] = useState<number>(0);
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
@@ -71,7 +70,7 @@ export default function SettingsPage() {
       fetch('/api/credits/usage').then(r => r.ok ? r.json() : null),
     ]).then(([credits, usage]) => {
       if (credits) {
-        setCreditBalance(credits.balance);
+        setStarBalance(credits.stars);
         setLifetimeUsed(credits.lifetime_used);
         setTransactions(credits.transactions || []);
       }
@@ -100,18 +99,13 @@ export default function SettingsPage() {
     );
   }
 
-  const maxDailyCost = usageData?.daily.length ? Math.max(...usageData.daily.map(d => d.cost)) : 0;
+  const maxDailyStars = usageData?.daily.length ? Math.max(...usageData.daily.map(d => d.stars)) : 0;
 
-  const endpointLabels: Record<string, string> = {
-    'ai/generate': 'Generate',
-    '/api/ai/generate': 'Generate',
-    'ai/edit-section': 'Edit Section',
-    'import/website/page': 'Website Import',
-    'import/octopus/page': 'Octopus Import',
-    'ai/generate-from-wizard/page': 'Wizard',
-    'import/wizard/page': 'Wizard',
-    'import/process': 'Import Process',
-  };
+  const StarIcon = ({ size = 14, className = '' }: { size?: number; className?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={`inline-block ${className}`}>
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    </svg>
+  );
 
   return (
     <div className="min-h-screen bg-[#f8f8f8]">
@@ -223,48 +217,68 @@ export default function SettingsPage() {
               </div>
             ) : (
               <>
-                {/* Credit Balance Card */}
+                {/* Star Balance Card */}
                 <div className={`rounded-[12px] border p-[20px] ${
-                  creditBalance > 1 ? 'border-green-200 bg-green-50' :
-                  creditBalance > 0 ? 'border-amber-200 bg-amber-50' :
+                  starBalance > 20 ? 'border-green-200 bg-green-50' :
+                  starBalance > 5 ? 'border-amber-200 bg-amber-50' :
                   'border-red-200 bg-red-50'
                 }`}>
                   <div className="flex items-center justify-between mb-[12px]">
-                    <span className="text-[13px] text-[#808080] font-medium">Credit Balance</span>
-                    <span className={`text-[24px] font-semibold ${
-                      creditBalance > 1 ? 'text-green-700' :
-                      creditBalance > 0 ? 'text-amber-700' :
-                      'text-red-700'
-                    }`}>
-                      ${creditBalance.toFixed(2)}
-                    </span>
+                    <span className="text-[13px] text-[#808080] font-medium">Star Balance</span>
+                    <div className="flex items-center gap-[6px]">
+                      <StarIcon size={22} className={
+                        starBalance > 20 ? 'text-green-500' :
+                        starBalance > 5 ? 'text-amber-500' :
+                        'text-red-500'
+                      } />
+                      <span className={`text-[24px] font-semibold ${
+                        starBalance > 20 ? 'text-green-700' :
+                        starBalance > 5 ? 'text-amber-700' :
+                        'text-red-700'
+                      }`}>
+                        {starBalance}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[12px] text-[#808080]">
-                      Lifetime used: ${lifetimeUsed.toFixed(2)}
+                      {lifetimeUsed} stars used lifetime
                     </span>
                     <button
                       disabled
                       className="text-[12px] font-medium text-[#808080] bg-white border border-[#ebebeb] px-[12px] py-[6px] rounded-[6px] opacity-60 cursor-not-allowed"
                     >
-                      Get more credits (coming soon)
+                      Get more stars (coming soon)
                     </button>
+                  </div>
+                </div>
+
+                {/* Star Cost Reference */}
+                <div className="bg-[#f5f5f5] rounded-[8px] p-[16px]">
+                  <h3 className="text-[13px] font-medium text-[#1c1c1c] mb-[10px]">Star Costs</h3>
+                  <div className="grid grid-cols-2 gap-x-[24px] gap-y-[6px] text-[12px]">
+                    <div className="flex justify-between"><span className="text-[#808080]">Generate project</span><span className="text-[#1c1c1c] font-medium">10 <StarIcon size={10} /></span></div>
+                    <div className="flex justify-between"><span className="text-[#808080]">Import page (website)</span><span className="text-[#1c1c1c] font-medium">5 <StarIcon size={10} /></span></div>
+                    <div className="flex justify-between"><span className="text-[#808080]">Wizard page</span><span className="text-[#1c1c1c] font-medium">5 <StarIcon size={10} /></span></div>
+                    <div className="flex justify-between"><span className="text-[#808080]">Import page (Octopus)</span><span className="text-[#1c1c1c] font-medium">3 <StarIcon size={10} /></span></div>
+                    <div className="flex justify-between"><span className="text-[#808080]">Edit section (AI)</span><span className="text-[#1c1c1c] font-medium">1 <StarIcon size={10} /></span></div>
+                    <div className="flex justify-between"><span className="text-[#808080]">Suggest pages</span><span className="text-[#1c1c1c] font-medium">Free</span></div>
                   </div>
                 </div>
 
                 {/* Usage Chart - last 30 days */}
                 {usageData && usageData.daily.length > 0 && (
                   <div>
-                    <h3 className="text-[14px] font-medium text-[#1c1c1c] mb-[12px]">Daily AI Usage (last 30 days)</h3>
+                    <h3 className="text-[14px] font-medium text-[#1c1c1c] mb-[12px]">Daily Star Usage (last 30 days)</h3>
                     <div className="flex items-end gap-[2px] h-[80px] bg-[#f5f5f5] rounded-[8px] p-[8px]">
                       {usageData.daily.map(d => {
-                        const height = maxDailyCost > 0 ? (d.cost / maxDailyCost) * 100 : 0;
+                        const height = maxDailyStars > 0 ? (d.stars / maxDailyStars) * 100 : 0;
                         return (
                           <div
                             key={d.date}
                             className="flex-1 bg-[#1c1c1c] rounded-t-[2px] min-w-[4px] transition-all hover:bg-[#444]"
                             style={{ height: `${Math.max(2, height)}%` }}
-                            title={`${d.date}: $${d.cost.toFixed(4)}`}
+                            title={`${d.date}: ${d.stars} stars`}
                           />
                         );
                       })}
@@ -282,16 +296,16 @@ export default function SettingsPage() {
                     <h3 className="text-[14px] font-medium text-[#1c1c1c] mb-[12px]">Usage by Feature</h3>
                     <div className="flex flex-col gap-[8px]">
                       {usageData.byEndpoint.map(ep => {
-                        const maxCost = Math.max(...usageData.byEndpoint.map(e => e.cost));
-                        const pct = maxCost > 0 ? (ep.cost / maxCost) * 100 : 0;
+                        const maxStars = Math.max(...usageData.byEndpoint.map(e => e.stars));
+                        const pct = maxStars > 0 ? (ep.stars / maxStars) * 100 : 0;
                         return (
                           <div key={ep.endpoint}>
                             <div className="flex items-center justify-between mb-[4px]">
                               <span className="text-[13px] text-[#1c1c1c]">
-                                {endpointLabels[ep.endpoint] || ep.endpoint}
+                                {ep.label}
                               </span>
                               <span className="text-[12px] text-[#808080]">
-                                {ep.calls} calls / ${ep.cost.toFixed(4)}
+                                {ep.calls} {ep.calls === 1 ? 'call' : 'calls'} / {ep.stars} <StarIcon size={10} /> ({ep.starCostPerCall}/call)
                               </span>
                             </div>
                             <div className="h-[6px] bg-[#f0f0f0] rounded-full overflow-hidden">
@@ -315,8 +329,8 @@ export default function SettingsPage() {
                       <span className="text-[20px] font-semibold text-[#1c1c1c]">{usageData.totalCalls}</span>
                     </div>
                     <div className="flex-1 bg-[#f5f5f5] rounded-[8px] p-[16px]">
-                      <span className="text-[11px] text-[#808080] block mb-[4px]">Total Cost (30d)</span>
-                      <span className="text-[20px] font-semibold text-[#1c1c1c]">${usageData.totalCost.toFixed(4)}</span>
+                      <span className="text-[11px] text-[#808080] block mb-[4px]">Stars Used (30d)</span>
+                      <span className="text-[20px] font-semibold text-[#1c1c1c] flex items-center gap-1">{usageData.totalStars} <StarIcon size={16} /></span>
                     </div>
                   </div>
                 )}
@@ -330,7 +344,7 @@ export default function SettingsPage() {
                         <thead>
                           <tr className="bg-[#f5f5f5] text-[#808080] text-left">
                             <th className="px-[12px] py-[8px] font-medium">Type</th>
-                            <th className="px-[12px] py-[8px] font-medium">Amount</th>
+                            <th className="px-[12px] py-[8px] font-medium">Stars</th>
                             <th className="px-[12px] py-[8px] font-medium">Balance</th>
                             <th className="px-[12px] py-[8px] font-medium">Description</th>
                             <th className="px-[12px] py-[8px] font-medium">Date</th>
@@ -351,9 +365,9 @@ export default function SettingsPage() {
                               <td className={`px-[12px] py-[8px] font-medium ${
                                 Number(tx.amount) >= 0 ? 'text-green-600' : 'text-red-600'
                               }`}>
-                                {Number(tx.amount) >= 0 ? '+' : ''}${Math.abs(Number(tx.amount)).toFixed(4)}
+                                {Number(tx.amount) >= 0 ? '+' : ''}{Math.abs(Number(tx.amount))} <StarIcon size={10} />
                               </td>
-                              <td className="px-[12px] py-[8px] text-[#808080]">${Number(tx.balance_after).toFixed(2)}</td>
+                              <td className="px-[12px] py-[8px] text-[#808080]">{Number(tx.balance_after)} <StarIcon size={10} /></td>
                               <td className="px-[12px] py-[8px] text-[#808080] max-w-[200px] truncate">{tx.description}</td>
                               <td className="px-[12px] py-[8px] text-[#808080]">{new Date(tx.created_at).toLocaleDateString()}</td>
                             </tr>

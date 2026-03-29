@@ -69,10 +69,10 @@ interface ToolbarProps {
   onToggleVersionHistory?: () => void;
   projectSlug?: string | null;
   projectStatus?: string;
-  creditBalance?: number | null;
+  starBalance?: number | null;
 }
 
-export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, onToggleVersionHistory, projectSlug, projectStatus, creditBalance }: ToolbarProps) {
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, onToggleVersionHistory, projectSlug, projectStatus, starBalance }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -485,17 +485,18 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
             )}
           </div>
 
-          {/* Credit balance */}
-          {creditBalance !== null && creditBalance !== undefined && (
+          {/* Star balance */}
+          {starBalance !== null && starBalance !== undefined && (
             <span
-              className={`text-[11px] font-medium px-2 py-1 rounded-md ${
-                creditBalance > 1 ? 'text-[#808080] bg-[#f5f5f5]' :
-                creditBalance > 0 ? 'text-amber-600 bg-amber-50' :
+              className={`text-[11px] font-medium px-2 py-1 rounded-md flex items-center gap-1 ${
+                starBalance > 20 ? 'text-[#808080] bg-[#f5f5f5]' :
+                starBalance > 5 ? 'text-amber-600 bg-amber-50' :
                 'text-red-600 bg-red-50'
               }`}
-              title="AI credit balance"
+              title="AI star balance"
             >
-              ${creditBalance.toFixed(2)}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              {starBalance}
             </span>
           )}
 

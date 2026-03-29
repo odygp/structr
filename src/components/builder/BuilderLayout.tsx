@@ -55,7 +55,7 @@ function BuilderLayoutInner() {
   const [activityOpen, setActivityOpen] = useState(false);
   const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
-  const [creditBalance, setCreditBalance] = useState<number | null>(null);
+  const [starBalance, setCreditBalance] = useState<number | null>(null);
   const [projectSlug, setProjectSlug] = useState<string | null>(null);
   const [projectStatus, setProjectStatus] = useState<string>('draft');
   const [aiGenerating, setAiGenerating] = useState(false);
@@ -92,7 +92,7 @@ function BuilderLayoutInner() {
   useEffect(() => {
     fetch('/api/credits')
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setCreditBalance(data.balance); })
+      .then(data => { if (data) setCreditBalance(data.stars); })
       .catch(() => {});
   }, []);
 
@@ -264,7 +264,7 @@ function BuilderLayoutInner() {
   const refreshCredits = useCallback(() => {
     fetch('/api/credits')
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setCreditBalance(data.balance); })
+      .then(data => { if (data) setCreditBalance(data.stars); })
       .catch(() => {});
   }, []);
 
@@ -373,7 +373,7 @@ function BuilderLayoutInner() {
         onToggleVersionHistory={handleToggleVersionHistory}
         projectSlug={projectSlug}
         projectStatus={projectStatus}
-        creditBalance={creditBalance}
+        starBalance={starBalance}
       />
 
       <div className="flex flex-1 overflow-hidden">

@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchCleanContent } from '@/lib/import/html-analyzer';
 import { analyzePageWithAI, generateSectionsForPage } from '@/lib/import/ai-analyzer';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
-import { hasEnoughCredits } from '@/lib/db/credits';
+import { hasEnoughStars } from '@/lib/db/credits';
+import { getStarCost } from '@/lib/credits/star-config';
 import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
@@ -22,13 +23,8 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Credit check
-    if (user) {
-      const creditCheck = await hasEnoughCredits(user.id);
-      if (!creditCheck.ok) {
-        return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
-      }
-    }
+    // Star check — cost depends on job type, determined after fetching job
+    // Defer check until we know the job type
 
     // Find oldest pending job for this project
     const { data: job, error: fetchErr } = await supabase
@@ -42,6 +38,15 @@ export async function POST(request: Request) {
 
     if (fetchErr || !job) {
       return NextResponse.json({ done: true, message: 'No pending jobs' });
+    }
+
+    // Star check based on job type
+    if (user) {
+      const starCost = getStarCost('', job.job_type);
+      const starCheck = await hasEnoughStars(user.id, starCost);
+      if (!starCheck.ok) {
+        return NextResponse.json({ error: 'Insufficient stars', balance: starCheck.balance, required: starCost }, { status: 402 });
+      }
     }
 
     // Mark as processing
@@ -133,6 +138,7 @@ export async function POST(request: Request) {
           endpoint,
           model: usageData.model,
           inputTokens: usageData.inputTokens,
+          jobType: job.job_type,
           outputTokens: usageData.outputTokens,
           durationMs,
         });

@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getOrCreateCredits } from '@/lib/db/credits';
+import { getOrCreateStarBalance } from '@/lib/db/credits';
 
-// GET /api/credits — returns user's credit balance + recent transactions
+// GET /api/credits — returns user's star balance + recent transactions
 export async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const credits = await getOrCreateCredits(user.id);
+    const { balance, lifetime_used } = await getOrCreateStarBalance(user.id);
 
     // Fetch recent transactions
     const { data: transactions } = await supabase
@@ -20,8 +20,8 @@ export async function GET() {
       .limit(30);
 
     return NextResponse.json({
-      balance: credits.balance,
-      lifetime_used: credits.lifetime_used,
+      stars: balance,
+      lifetime_used,
       transactions: transactions || [],
     });
   } catch (e) {

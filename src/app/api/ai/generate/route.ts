@@ -4,7 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
-import { hasEnoughCredits } from '@/lib/db/credits';
+import { hasEnoughStars } from '@/lib/db/credits';
 
 export const maxDuration = 60;
 
@@ -14,10 +14,10 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Credit check
-    const creditCheck = await hasEnoughCredits(user.id);
-    if (!creditCheck.ok) {
-      return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+    // Star check
+    const starCheck = await hasEnoughStars(user.id, 10);
+    if (!starCheck.ok) {
+      return NextResponse.json({ error: 'Insufficient stars', balance: starCheck.balance, required: 10 }, { status: 402 });
     }
 
     const { prompt, selectedPages } = await request.json();

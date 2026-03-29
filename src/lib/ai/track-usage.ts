@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-import { debitCredits } from '@/lib/db/credits';
+import { debitStars } from '@/lib/db/credits';
+import { getStarCost } from '@/lib/credits/star-config';
 
 // Pricing per 1M tokens (as of 2026)
 const PRICING: Record<string, { input: number; output: number }> = {
@@ -12,13 +13,9 @@ const PRICING: Record<string, { input: number; output: number }> = {
 
 // Recommended models per use case
 export const MODELS = {
-  // Full page generation from prompt — needs good reasoning
   generate: 'claude-sonnet-4-20250514',
-  // Page analysis from website import — needs understanding
   analyze: 'claude-sonnet-4-20250514',
-  // Section generation from page name only — simpler task, haiku is fine
   generateFromName: 'claude-haiku-4-5-20251001',
-  // Wizard page generation — needs quality content
   wizard: 'claude-sonnet-4-20250514',
 } as const;
 
@@ -35,6 +32,7 @@ export async function trackUsage({
   inputTokens,
   outputTokens,
   durationMs,
+  jobType,
 }: {
   userId: string;
   projectId?: string;
@@ -43,6 +41,7 @@ export async function trackUsage({
   inputTokens: number;
   outputTokens: number;
   durationMs?: number;
+  jobType?: string;
 }) {
   try {
     const cost = calculateCost(model, inputTokens, outputTokens);
@@ -58,8 +57,11 @@ export async function trackUsage({
       duration_ms: durationMs || null,
     });
 
-    // Debit credits for the AI usage cost
-    await debitCredits(userId, cost, `${endpoint} (${model.split('-').slice(0, 2).join('-')})`);
+    // Debit stars for this action
+    const stars = getStarCost(endpoint, jobType);
+    if (stars > 0) {
+      await debitStars(userId, stars, `${endpoint} (${stars} stars)`);
+    }
   } catch (e) {
     console.error('Failed to track AI usage:', e);
   }
