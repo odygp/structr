@@ -12,8 +12,47 @@ function formatDate(dateStr: string): string {
 
 interface ContextMenuPos { x: number; y: number; }
 
+// Category colors for mini wireframe thumbnail
+const CATEGORY_COLORS: Record<string, string> = {
+  header: '#1c1c1c',
+  hero: '#2d2d2d',
+  features: '#6b7280',
+  pricing: '#4b5563',
+  testimonials: '#9ca3af',
+  faq: '#d1d5db',
+  cta: '#374151',
+  footer: '#e5e7eb',
+  contact: '#9ca3af',
+  stats: '#6b7280',
+  team: '#9ca3af',
+  gallery: '#d1d5db',
+  blog: '#9ca3af',
+  about: '#6b7280',
+  banner: '#4b5563',
+  showcase: '#6b7280',
+};
+
+function MiniWireframe({ sections }: { sections?: { category: string }[] }) {
+  if (!sections || sections.length === 0) return null;
+  return (
+    <div className="absolute inset-0 flex flex-col gap-[2px] p-[12px] opacity-60">
+      {sections.slice(0, 8).map((s, i) => {
+        const color = CATEGORY_COLORS[s.category] || '#d1d5db';
+        const height = s.category === 'hero' ? '28%' : s.category === 'header' || s.category === 'footer' ? '8%' : '14%';
+        return (
+          <div
+            key={i}
+            className="rounded-[3px] w-full flex-shrink-0"
+            style={{ backgroundColor: color, height, minHeight: 4, maxHeight: 40 }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ProjectCard({ project, onDelete, onDuplicate, onRename, onToggleFavorite, onChangeStatus, isShared }: {
-  project: DbProject;
+  project: DbProject & { first_page_sections?: { category: string }[] };
   onDelete?: (id: string) => void;
   onDuplicate?: (id: string) => void;
   onRename?: (id: string, name: string) => void;
@@ -79,10 +118,12 @@ export default function ProjectCard({ project, onDelete, onDuplicate, onRename, 
       onContextMenu={handleContextMenu}
     >
       {/* Thumbnail */}
-      <div className="bg-[#efefef] h-[140px] rounded-[16px] overflow-hidden w-full relative">
+      <div className="bg-[#efefef] h-[140px] rounded-[16px] overflow-hidden w-full relative transition-transform duration-200 group-hover:scale-[1.02] group-hover:shadow-md">
         {project.thumbnail_url ? (
           <img src={project.thumbnail_url} alt="" className="w-full h-full object-cover" />
-        ) : null}
+        ) : (
+          <MiniWireframe sections={project.first_page_sections} />
+        )}
 
         {/* Favorite star — visible on hover or when favorited */}
         <button

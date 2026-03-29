@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { MoreHorizontal, X, ChevronDown, Loader2, Plus } from 'lucide-react';
+import { showToast } from '@/lib/hooks/useToast';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -84,6 +85,7 @@ export default function AiSectionChat({
       } else {
         onApply(data.content);
         updateMessages([...updated, { role: 'assistant', content: 'Changes applied.', type: 'applied' }]);
+        showToast('1 ★ used for edit', 'success');
       }
     } catch (e) {
       updateMessages([...updated, { role: 'assistant', content: e instanceof Error ? e.message : 'Something went wrong', type: 'error' }]);
@@ -191,9 +193,12 @@ export default function AiSectionChat({
 
             {/* Bottom controls */}
             <div className="flex items-center justify-between mt-[8px]">
-              <button className="w-[24px] h-[24px] flex items-center justify-center text-[#808080] hover:text-[#1c1c1c]">
-                <Plus size={16} />
-              </button>
+              <div className="flex items-center gap-[6px]">
+                <button className="w-[24px] h-[24px] flex items-center justify-center text-[#808080] hover:text-[#1c1c1c]">
+                  <Plus size={16} />
+                </button>
+                <span className="text-[10px] text-[#a0a0a0]">1 ★ per edit</span>
+              </div>
 
               <div className="flex items-center gap-[8px]">
                 {/* Mode selector */}

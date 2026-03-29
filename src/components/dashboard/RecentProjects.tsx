@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ProjectCard from './ProjectCard';
 import type { DbProject } from '@/lib/db/types';
+import { Star, Archive, Users, FolderOpen, Search } from 'lucide-react';
 
 type Tab = 'all' | 'favorites' | 'drafts' | 'archived' | 'shared';
 
@@ -29,6 +30,20 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
   const [activeTab, setActiveTab] = useState<Tab>('all');
   const [sharedProjects, setSharedProjects] = useState<DbProject[]>([]);
   const [sharedLoading, setSharedLoading] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Cmd+K to focus search
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowSearch(true);
+        setTimeout(() => searchInputRef.current?.focus(), 50);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   // Load shared projects when tab is selected
   useEffect(() => {
@@ -41,18 +56,28 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
       .finally(() => setSharedLoading(false));
   }, [activeTab]);
 
+  // Auto-clean: filter out "Untitled Project" older than 24h with no sections
+  const oneDayAgo = Date.now() - 86400000;
+  const cleanedProjects = projects.filter(p => {
+    if (/^untitled/i.test(p.name) && new Date(p.created_at).getTime() < oneDayAgo) {
+      const sections = (p as unknown as Record<string, unknown>).first_page_sections as unknown[];
+      if (!sections || sections.length === 0) return false;
+    }
+    return true;
+  });
+
   // Filter by tab
   let tabFiltered: DbProject[] = [];
   if (activeTab === 'shared') {
     tabFiltered = sharedProjects;
   } else if (activeTab === 'favorites') {
-    tabFiltered = projects.filter(p => p.is_favorite);
+    tabFiltered = cleanedProjects.filter(p => p.is_favorite);
   } else if (activeTab === 'drafts') {
-    tabFiltered = projects.filter(p => p.status === 'draft');
+    tabFiltered = cleanedProjects.filter(p => p.status === 'draft');
   } else if (activeTab === 'archived') {
-    tabFiltered = projects.filter(p => p.status === 'archived');
+    tabFiltered = cleanedProjects.filter(p => p.status === 'archived');
   } else {
-    tabFiltered = projects.filter(p => p.status !== 'archived');
+    tabFiltered = cleanedProjects.filter(p => p.status !== 'archived');
   }
 
   // Filter by search
@@ -61,10 +86,10 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
     : tabFiltered;
 
   const counts: Record<Tab, number> = {
-    all: projects.filter(p => p.status !== 'archived').length,
-    favorites: projects.filter(p => p.is_favorite).length,
-    drafts: projects.filter(p => p.status === 'draft').length,
-    archived: projects.filter(p => p.status === 'archived').length,
+    all: cleanedProjects.filter(p => p.status !== 'archived').length,
+    favorites: cleanedProjects.filter(p => p.is_favorite).length,
+    drafts: cleanedProjects.filter(p => p.status === 'draft').length,
+    archived: cleanedProjects.filter(p => p.status === 'archived').length,
     shared: sharedProjects.length,
   };
 
@@ -101,10 +126,12 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
         <div className="flex items-center gap-[4px]">
           {showSearch && (
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="Search..."
+              placeholder="Search... (Cmd+K)"
               value={search}
               onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Escape') { setShowSearch(false); setSearch(''); } }}
               className="px-[12px] py-[8px] text-[13px] border border-[#ebebeb] rounded-[8px] bg-white text-[#34322d] focus:outline-none focus:border-[#34322d] w-[200px]"
               autoFocus
             />
@@ -132,12 +159,18 @@ export default function RecentProjects({ projects, loading, onDelete, onDuplicat
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-[48px] text-[#34322d] opacity-40 text-[14px]">
-          {activeTab === 'favorites' ? 'No favorite projects yet. Star a project to see it here.'
-            : activeTab === 'archived' ? 'No archived projects.'
-            : activeTab === 'shared' ? 'No projects have been shared with you yet.'
-            : projects.length === 0 ? 'No projects yet. Create one above!'
-            : 'No projects match your search.'}
+        <div className="text-center py-[48px] flex flex-col items-center gap-3">
+          {activeTab === 'favorites' ? (
+            <><Star size={28} className="text-[#d0d0d0]" /><p className="text-[14px] text-[#808080]">No favorite projects yet</p><p className="text-[12px] text-[#a0a0a0]">Click the star on any project card to save it here</p></>
+          ) : activeTab === 'archived' ? (
+            <><Archive size={28} className="text-[#d0d0d0]" /><p className="text-[14px] text-[#808080]">No archived projects</p><p className="text-[12px] text-[#a0a0a0]">Right-click a project to archive it</p></>
+          ) : activeTab === 'shared' ? (
+            <><Users size={28} className="text-[#d0d0d0]" /><p className="text-[14px] text-[#808080]">No projects shared with you yet</p><p className="text-[12px] text-[#a0a0a0]">When someone shares a project, it will appear here</p></>
+          ) : search ? (
+            <><Search size={28} className="text-[#d0d0d0]" /><p className="text-[14px] text-[#808080]">No projects match &ldquo;{search}&rdquo;</p></>
+          ) : (
+            <><FolderOpen size={28} className="text-[#d0d0d0]" /><p className="text-[14px] text-[#808080]">No projects yet</p><p className="text-[12px] text-[#a0a0a0]">Create your first project above to get started</p></>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-x-[12px] gap-y-[24px]">

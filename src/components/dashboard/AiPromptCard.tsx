@@ -155,7 +155,7 @@ export default function AiPromptCard() {
           {generating ? (
             <><Loader2 size={14} className="animate-spin" /> Generating...</>
           ) : (
-            `Generate ${selectedCount} Pages`
+            `Generate ${selectedCount} ${selectedCount === 1 ? 'Page' : 'Pages'} (${selectedCount * 10} ★)`
           )}
         </button>
       </div>

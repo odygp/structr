@@ -58,7 +58,43 @@ export async function GET(request: Request) {
     const { data, error } = await query;
     if (error) throw error;
 
-    return NextResponse.json(data || []);
+    // Fetch first page section categories for thumbnails
+    const projects = data || [];
+    if (projects.length > 0) {
+      const projectIds = projects.map(p => p.id);
+      // Get first page per project with sections
+      const { data: pages } = await supabase
+        .from('structr_pages')
+        .select('project_id, id')
+        .in('project_id', projectIds)
+        .eq('sort_order', 0);
+
+      if (pages && pages.length > 0) {
+        const pageIds = pages.map(p => p.id);
+        const { data: sections } = await supabase
+          .from('structr_sections')
+          .select('page_id, category')
+          .in('page_id', pageIds)
+          .order('sort_order', { ascending: true });
+
+        // Map page_id → project_id
+        const pageToProject = new Map(pages.map(p => [p.id, p.project_id]));
+        const projectSections = new Map<string, { category: string }[]>();
+
+        for (const s of sections || []) {
+          const pid = pageToProject.get(s.page_id);
+          if (!pid) continue;
+          if (!projectSections.has(pid)) projectSections.set(pid, []);
+          projectSections.get(pid)!.push({ category: s.category });
+        }
+
+        for (const p of projects) {
+          (p as Record<string, unknown>).first_page_sections = projectSections.get(p.id) || [];
+        }
+      }
+    }
+
+    return NextResponse.json(projects);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }

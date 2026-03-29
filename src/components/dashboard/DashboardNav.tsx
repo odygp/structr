@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { useAuth } from '@/lib/hooks/useAuth';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 
 export default function DashboardNav({ user }: { user: User }) {
   const { signOut } = useAuth();
@@ -22,7 +23,7 @@ export default function DashboardNav({ user }: { user: User }) {
   const avatarUrl = user.user_metadata?.avatar_url;
 
   return (
-    <nav className="flex items-center justify-between p-[16px] border-b border-[#efefef]">
+    <nav className="flex items-center justify-between p-[16px] border-b border-[#efefef] dark:border-[#333] dark:bg-[#0a0a0a]">
       {/* Logo */}
       <div className="flex items-center gap-[10px]">
         <img src="/structr-logo.svg" alt="Structr" width={20} height={20} />
@@ -31,6 +32,9 @@ export default function DashboardNav({ user }: { user: User }) {
 
       {/* Right side */}
       <div className="flex items-center gap-[12px]">
+        {/* Theme toggle */}
+        <ThemeToggle />
+
         {/* Notifications */}
         <button className="bg-[#efefef] flex items-center p-[8px] rounded-[8px] hover:bg-[#e6e6e6] transition-colors">
           <img src="/Notification.svg" alt="Notifications" width={16} height={16} />

@@ -58,6 +58,8 @@ function BuilderLayoutInner() {
   const [starBalance, setCreditBalance] = useState<number | null>(null);
   const [projectSlug, setProjectSlug] = useState<string | null>(null);
   const [projectStatus, setProjectStatus] = useState<string>('draft');
+  const [projectPublishedAt, setProjectPublishedAt] = useState<string | null>(null);
+  const [projectUpdatedAt, setProjectUpdatedAt] = useState<string | null>(null);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#F2F2F2');
   const [pendingPages, setPendingPages] = useState<{ name: string; url: string; sortOrder: number; loading: boolean; done: boolean; error?: boolean }[]>([]);
@@ -169,6 +171,8 @@ function BuilderLayoutInner() {
         loadRemoteProject(data);
         if (data.slug !== undefined) setProjectSlug(data.slug);
         if (data.status) setProjectStatus(data.status);
+        if (data.published_at) setProjectPublishedAt(data.published_at);
+        if (data.updated_at) setProjectUpdatedAt(data.updated_at);
       }
     } catch {}
   };
@@ -374,6 +378,7 @@ function BuilderLayoutInner() {
         projectSlug={projectSlug}
         projectStatus={projectStatus}
         starBalance={starBalance}
+        hasUnpublishedChanges={!!(projectPublishedAt && projectUpdatedAt && new Date(projectUpdatedAt) > new Date(projectPublishedAt))}
       />
 
       <div className="flex flex-1 overflow-hidden">

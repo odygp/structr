@@ -70,9 +70,10 @@ interface ToolbarProps {
   projectSlug?: string | null;
   projectStatus?: string;
   starBalance?: number | null;
+  hasUnpublishedChanges?: boolean;
 }
 
-export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, onToggleVersionHistory, projectSlug, projectStatus, starBalance }: ToolbarProps) {
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, onToggleVersionHistory, projectSlug, projectStatus, starBalance, hasUnpublishedChanges }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -408,11 +409,11 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
             <div className="relative">
               <Pill
                 onClick={() => setShowPublishPopover(!showPublishPopover)}
-                aria-label={isPublished ? 'Published' : 'Publish'}
-                className={isPublished ? 'bg-green-50 hover:bg-green-100' : ''}
+                aria-label={isPublished ? (hasUnpublishedChanges ? 'Unpublished changes' : 'Published') : 'Publish'}
+                className={isPublished ? (hasUnpublishedChanges ? 'bg-amber-50 hover:bg-amber-100' : 'bg-green-50 hover:bg-green-100') : ''}
               >
-                {isPublished && <div className="w-[6px] h-[6px] bg-green-500 rounded-full" />}
-                {isPublished ? 'Published' : 'Publish'}
+                {isPublished && <div className={`w-[6px] h-[6px] rounded-full ${hasUnpublishedChanges ? 'bg-amber-500' : 'bg-green-500'}`} />}
+                {isPublished ? (hasUnpublishedChanges ? 'Unpublished changes' : 'Published') : 'Publish'}
                 <Globe className="w-[16px] h-[16px]" />
               </Pill>
 
