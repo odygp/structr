@@ -3,6 +3,14 @@
 import { useState } from 'react';
 import { Loader2, MoveVertical, Pencil, Plus, Trash2, X } from 'lucide-react';
 
+const ACTION_STAR_COSTS: Record<string, number> = {
+  reorder: 0,
+  remove_section: 0,
+  edit_content: 1,
+  add_section: 2,
+  add_page: 3,
+};
+
 interface PlanAction {
   type: 'edit_content' | 'reorder' | 'add_section' | 'remove_section' | 'add_page';
   pageIndex: number;
@@ -74,6 +82,8 @@ export default function AIResolvePlan({ plan, summary, commentCount, starCost, o
             const Icon = ACTION_ICONS[action.type] || Pencil;
             const colorClass = ACTION_COLORS[action.type] || 'bg-gray-50 text-gray-600';
 
+            const actionCost = ACTION_STAR_COSTS[action.type] ?? 1;
+
             return (
               <div key={i} className="bg-[#fafafa] border border-[#f0f0f0] rounded-lg p-3">
                 <div className="flex items-start gap-2 mb-1.5">
@@ -89,6 +99,8 @@ export default function AIResolvePlan({ plan, summary, commentCount, starCost, o
                       {action.sectionIndex !== undefined && ` / Section ${action.sectionIndex + 1}`}
                       {' '}&middot;{' '}
                       {action.resolvesComments.length} comment{action.resolvesComments.length !== 1 ? 's' : ''}
+                      {' '}&middot;{' '}
+                      {actionCost === 0 ? <span className="text-green-600">Free</span> : <>{actionCost} <StarIcon size={9} /></>}
                     </div>
                   </div>
                 </div>

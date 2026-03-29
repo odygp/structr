@@ -547,9 +547,11 @@ function createMolecules(page, atoms) {
   bindFill(featureCard, 'bgAlt');
 
   var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon";
-  featureCard.appendChild(fcIcon); hug(fcIcon);
+  var fcIconWrap = frame("icon_wrapper", { dir: "HORIZONTAL" });
+  fcIconWrap.appendChild(fcIcon); hug(fcIcon);
+  featureCard.appendChild(fcIconWrap); hug(fcIconWrap);
   var fcShowIconKey = featureCard.addComponentProperty("Show Icon", "BOOLEAN", true);
-  linkVis(fcIcon, fcShowIconKey);
+  linkVis(fcIconWrap, fcShowIconKey);
 
   // Title section with mt-5=20px gap from icon
   var fcTextBlock = frame("textBlock", { dir: "VERTICAL", g: 8, pt: 20 });
@@ -761,9 +763,11 @@ function buildHeroCentered(comp, content, atoms) {
   btns.appendChild(pb); hug(pb);
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
-  btns.appendChild(sb); hug(sb);
+  var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
+  sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
-  linkVis(sb, showSecKey);
+  linkVis(sbWrap, showSecKey);
+  btns.appendChild(sbWrap); hug(sbWrap);
   inner.appendChild(btns);
 
   comp.appendChild(inner);
@@ -800,9 +804,11 @@ function buildHeroSplit(comp, content, atoms) {
   btns.appendChild(pb); hug(pb);
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
-  btns.appendChild(sb); hug(sb);
+  var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
+  sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
-  linkVis(sb, showSecKey);
+  linkVis(sbWrap, showSecKey);
+  btns.appendChild(sbWrap); hug(sbWrap);
   textCol.appendChild(btns);
 
   inner.appendChild(textCol);
@@ -844,9 +850,11 @@ function buildHeroWithImage(comp, content, atoms) {
   btns.appendChild(pb); hug(pb);
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
-  btns.appendChild(sb); hug(sb);
+  var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
+  sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
-  linkVis(sb, showSecKey);
+  linkVis(sbWrap, showSecKey);
+  btns.appendChild(sbWrap); hug(sbWrap);
   inner.appendChild(btns);
 
   // mt-16 = 64px, image placeholder (w-full h-80 = 320px)
@@ -905,12 +913,17 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
         if (k.indexOf("Description") === 0) card.setProperties(makeObj(k, feat.description || ''));
       }
     } catch (e) {}
-    grid.appendChild(card);
-    fillH(card);
-    // Cards beyond 3 get boolean toggles (default hidden)
+    // Cards beyond 3: wrap in a frame with boolean visibility toggle
     if (i >= 3) {
+      var wrapper = frame("card_" + i + "_wrapper", { dir: "VERTICAL" });
+      wrapper.appendChild(card); fillH(card);
       var showKey = comp.addComponentProperty("Show Card " + (i + 1), "BOOLEAN", i < features.length);
-      linkVis(card, showKey);
+      linkVis(wrapper, showKey);
+      grid.appendChild(wrapper);
+      fillH(wrapper);
+    } else {
+      grid.appendChild(card);
+      fillH(card);
     }
   }
   gridWrap.appendChild(grid); fillH(grid);
@@ -1105,11 +1118,16 @@ function buildPricing3Col(comp, content, atoms) {
     }
     card.appendChild(btnWrap);
 
-    grid.appendChild(card);
-    fillH(card);
     if (i >= 3) {
+      var wrapper = frame("plan_" + i + "_wrapper", { dir: "VERTICAL" });
+      wrapper.appendChild(card); fillH(card);
       var showKey = comp.addComponentProperty("Show Plan " + (i + 1), "BOOLEAN", i < plans.length);
-      linkVis(card, showKey);
+      linkVis(wrapper, showKey);
+      grid.appendChild(wrapper);
+      fillH(wrapper);
+    } else {
+      grid.appendChild(card);
+      fillH(card);
     }
   }
   inner.appendChild(grid);
@@ -1151,11 +1169,16 @@ function buildTestimonialsCards(comp, content, atoms, molecules) {
         if (k.indexOf("Role") === 0) card.setProperties(makeObj(k, t.role || ''));
       }
     } catch (e) {}
-    grid.appendChild(card);
-    fillH(card);
     if (i >= 3) {
+      var wrapper = frame("testimonial_" + i + "_wrapper", { dir: "VERTICAL" });
+      wrapper.appendChild(card); fillH(card);
       var showKey = comp.addComponentProperty("Show Card " + (i + 1), "BOOLEAN", i < items.length);
-      linkVis(card, showKey);
+      linkVis(wrapper, showKey);
+      grid.appendChild(wrapper);
+      fillH(wrapper);
+    } else {
+      grid.appendChild(card);
+      fillH(card);
     }
   }
   inner.appendChild(grid);
@@ -1191,9 +1214,11 @@ function buildCtaCentered(comp, content, atoms) {
   btns.appendChild(pb); hug(pb);
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
-  btns.appendChild(sb); hug(sb);
+  var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
+  sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", !!content.ctaSecondaryText);
-  linkVis(sb, showSecKey);
+  linkVis(sbWrap, showSecKey);
+  btns.appendChild(sbWrap); hug(sbWrap);
   inner.appendChild(btns);
 
   comp.appendChild(inner);
@@ -1288,11 +1313,16 @@ function buildStatsRow(comp, content, atoms, molecules) {
         if (k.indexOf("Label") === 0) item.setProperties(makeObj(k, st.label || ''));
       }
     } catch (e) {}
-    row.appendChild(item);
-    fillH(item);
     if (i >= 3) {
+      var wrapper = frame("stat_" + i + "_wrapper", { dir: "VERTICAL", ca: "CENTER" });
+      wrapper.appendChild(item); fillH(item);
       var showKey = comp.addComponentProperty("Show Stat " + (i + 1), "BOOLEAN", i < stats.length);
-      linkVis(item, showKey);
+      linkVis(wrapper, showKey);
+      row.appendChild(wrapper);
+      fillH(wrapper);
+    } else {
+      row.appendChild(item);
+      fillH(item);
     }
   }
   inner.appendChild(row);

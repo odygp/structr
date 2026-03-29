@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getProject } from '@/lib/db/projects';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
 import { logActivity } from '@/lib/db/activity';
+import { calculateResolveCost } from '@/lib/credits/star-config';
+import { hasEnoughStars, debitStars } from '@/lib/db/credits';
 
 export const maxDuration = 30;
 
@@ -37,6 +39,15 @@ export async function POST(request: Request) {
 
     if (!projectId || !plan?.length) {
       return NextResponse.json({ error: 'projectId and plan required' }, { status: 400 });
+    }
+
+    // Calculate and check star cost
+    const starCost = calculateResolveCost(plan);
+    if (starCost > 0) {
+      const starCheck = await hasEnoughStars(user.id, starCost);
+      if (!starCheck.ok) {
+        return NextResponse.json({ error: 'Insufficient stars', balance: starCheck.balance, required: starCost }, { status: 402 });
+      }
     }
 
     // Fetch full project
@@ -188,6 +199,7 @@ export async function POST(request: Request) {
     }
 
     // Track AI usage (debit stars)
+    // Track AI usage (for analytics) — stars deducted separately
     await trackUsage({
       userId: user.id,
       projectId,
@@ -196,6 +208,11 @@ export async function POST(request: Request) {
       inputTokens: _usage?.inputTokens || 0,
       outputTokens: _usage?.outputTokens || 0,
     });
+
+    // Debit dynamic star cost based on action types
+    if (starCost > 0) {
+      await debitStars(user.id, starCost, `AI resolve: ${actionsApplied} changes (${starCost} stars)`);
+    }
 
     await logActivity(projectId, user.id, 'ai_resolved_comments', {
       actionsApplied,

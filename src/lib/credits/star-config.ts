@@ -6,7 +6,7 @@ export const STAR_COSTS: Record<string, number> = {
   'import/wizard/page': 5,
   'import/octopus/page': 3,
   'ai/generate-from-wizard/page': 5,
-  'ai/resolve-comments': 5,
+  'ai/resolve-comments': 0, // Dynamic — calculated per action type
 };
 
 /** Star costs per import job type (used by /api/import/process) */
@@ -25,6 +25,20 @@ export function getStarCost(endpoint: string, jobType?: string): number {
     return STAR_COSTS_BY_JOB_TYPE[jobType];
   }
   return STAR_COSTS[endpoint] ?? 1;
+}
+
+/** Star cost per resolve action type */
+export const RESOLVE_ACTION_COSTS: Record<string, number> = {
+  reorder: 0,
+  remove_section: 0,
+  edit_content: 1,
+  add_section: 2,
+  add_page: 3,
+};
+
+/** Calculate total star cost for a resolve plan */
+export function calculateResolveCost(plan: { type: string }[]): number {
+  return plan.reduce((total, action) => total + (RESOLVE_ACTION_COSTS[action.type] ?? 1), 0);
 }
 
 /** Friendly labels for endpoints */

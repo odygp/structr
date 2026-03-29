@@ -4,6 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { hasEnoughStars } from '@/lib/db/credits';
 import { getProject } from '@/lib/db/projects';
 import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
+import { calculateResolveCost } from '@/lib/credits/star-config';
 
 export const maxDuration = 60;
 
@@ -17,10 +18,10 @@ export async function POST(request: Request) {
     const { projectId } = await request.json();
     if (!projectId) return NextResponse.json({ error: 'projectId required' }, { status: 400 });
 
-    // Star check
-    const starCheck = await hasEnoughStars(user.id, 5);
+    // Star check — minimum 1 star to generate plan (actual cost calculated after)
+    const starCheck = await hasEnoughStars(user.id, 1);
     if (!starCheck.ok) {
-      return NextResponse.json({ error: 'Insufficient stars', balance: starCheck.balance, required: 5 }, { status: 402 });
+      return NextResponse.json({ error: 'Insufficient stars', balance: starCheck.balance, required: 1 }, { status: 402 });
     }
 
     // Fetch unresolved comments
@@ -142,11 +143,14 @@ For "remove_section", include: sectionIndex`;
       }, { status: 500 });
     }
 
+    const actions = plan.plan || [];
+    const starCost = calculateResolveCost(actions);
+
     return NextResponse.json({
-      plan: plan.plan || [],
-      summary: plan.summary || `${(plan.plan || []).length} changes proposed`,
+      plan: actions,
+      summary: plan.summary || `${actions.length} changes proposed`,
       commentCount: comments.length,
-      starCost: 5,
+      starCost,
       // Include tokens for tracking (tracked on apply, not here)
       _usage: {
         inputTokens: message.usage.input_tokens,
