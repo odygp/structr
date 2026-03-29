@@ -111,6 +111,50 @@ export default function Home() {
         </div>
       </section>
 
+      {/* The Pre-Design Layer */}
+      <section className="max-w-[900px] mx-auto px-8 py-20">
+        <div className="bg-[#1a1a1a] rounded-3xl p-10 md:p-14">
+          <div className="max-w-[700px] mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white/70 text-[12px] font-medium mb-6">
+              The missing layer
+            </div>
+            <h2 className="text-[32px] font-bold text-white leading-[1.15] mb-5">
+              The pre-design layer<br />your workflow is missing
+            </h2>
+            <p className="text-[16px] text-[#999] leading-relaxed mb-8">
+              Design tools are for pixels. Code builders are for production. But before either — you need to decide <strong className="text-white">what pages, what sections, what content, and in what order</strong>. That&apos;s the hard part. That&apos;s what Structr does.
+            </p>
+
+            {/* Workflow diagram */}
+            <div className="flex items-center gap-3 mb-8 flex-wrap">
+              <div className="bg-white/10 border border-white/20 rounded-xl px-5 py-3 text-center">
+                <div className="text-[11px] text-white/50 mb-1">Step 1</div>
+                <div className="text-[14px] font-semibold text-white">Structr</div>
+                <div className="text-[11px] text-white/50 mt-1">Structure + Content</div>
+              </div>
+              <div className="text-white/30 text-[20px]">&rarr;</div>
+              <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-center">
+                <div className="text-[11px] text-white/30 mb-1">Step 2</div>
+                <div className="text-[14px] font-medium text-white/60">Design tool</div>
+                <div className="text-[11px] text-white/30 mt-1">Visual design</div>
+              </div>
+              <div className="text-white/30 text-[20px]">&rarr;</div>
+              <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-center">
+                <div className="text-[11px] text-white/30 mb-1">Step 3</div>
+                <div className="text-[14px] font-medium text-white/60">Code builder</div>
+                <div className="text-[11px] text-white/30 mt-1">Production site</div>
+              </div>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+              <div className="text-[13px] text-white/80 leading-relaxed">
+                <strong className="text-white">Why this saves you money:</strong> Iterating on structure and content in Structr costs 1 star per edit. Doing the same exploration in Lovable, v0, or with a designer costs 10-30x more. Decide <em>what</em> to build here, then use expensive tools only for <em>how</em> it looks.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Who uses Structr */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
         <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Built for every team that plans websites</h2>
@@ -165,6 +209,65 @@ export default function Home() {
             <div className="text-[12px] text-[#666] mb-3">AI Support — Hero Section</div>
             <div className="bg-[#333] rounded-lg px-3 py-2 text-[13px] text-[#ccc] mb-2">Make the subtitle shorter</div>
             <div className="text-[12px] text-green-400">Changes applied. <span className="text-[#666]">1 ★</span></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feedback loop — coming soon */}
+      <section className="max-w-[900px] mx-auto px-8 py-20">
+        <div className="grid grid-cols-2 gap-8 items-center">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[12px] font-medium mb-5">
+              Coming soon
+            </div>
+            <h2 className="text-[32px] font-bold text-[#1a1a1a] leading-[1.15] mb-4">
+              Client feedback,<br />auto-applied
+            </h2>
+            <p className="text-[15px] text-[#808080] leading-relaxed mb-6">
+              Share your wireframe with clients. They leave comments like &ldquo;move pricing above testimonials&rdquo; or &ldquo;add a team section.&rdquo; Click one button and AI reads every comment, creates a plan, and applies the changes — reordering sections, editing content, even adding new ones.
+            </p>
+            <div className="space-y-3">
+              {[
+                'Clients comment directly on the published wireframe',
+                'AI reads all unresolved feedback and creates a change plan',
+                'You review and approve — changes auto-apply instantly',
+                'New version created automatically for rollback safety',
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-2.5 text-[13px] text-[#666]">
+                  <span className="text-green-500 mt-0.5">&#10003;</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Visual mockup of the feedback flow */}
+          <div className="bg-[#f5f5f5] rounded-2xl p-6">
+            <div className="space-y-3">
+              <div className="bg-white rounded-lg p-3 border border-[#ebebeb]">
+                <div className="text-[11px] text-[#a0a0a0] mb-1">Client comment</div>
+                <div className="text-[13px] text-[#1a1a1a]">&ldquo;Move the pricing section above testimonials&rdquo;</div>
+              </div>
+              <div className="bg-white rounded-lg p-3 border border-[#ebebeb]">
+                <div className="text-[11px] text-[#a0a0a0] mb-1">Client comment</div>
+                <div className="text-[13px] text-[#1a1a1a]">&ldquo;Add a section about our team&rdquo;</div>
+              </div>
+              <div className="bg-white rounded-lg p-3 border border-[#ebebeb]">
+                <div className="text-[11px] text-[#a0a0a0] mb-1">Client comment</div>
+                <div className="text-[13px] text-[#1a1a1a]">&ldquo;Hero should mention the free trial&rdquo;</div>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mt-4">
+                <div className="text-[12px] font-semibold text-purple-700 mb-2">AI Plan (3 changes)</div>
+                <div className="text-[11px] text-purple-600 space-y-1">
+                  <div>1. Reorder: pricing &rarr; position 3 (was 5)</div>
+                  <div>2. Add: team section after about</div>
+                  <div>3. Edit: hero subtitle to mention free trial</div>
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <div className="bg-purple-600 text-white text-[11px] font-medium px-3 py-1.5 rounded-md">Apply all</div>
+                  <div className="bg-white text-purple-600 text-[11px] font-medium px-3 py-1.5 rounded-md border border-purple-200">Review each</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

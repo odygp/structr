@@ -79,6 +79,32 @@ export default function PersonaPage({ role, headline, subtitle, benefits, workfl
         </div>
       </section>
 
+      {/* Pre-design layer callout */}
+      <section className="max-w-[800px] mx-auto px-8 py-16">
+        <div className="bg-[#1a1a1a] rounded-2xl p-8 md:p-10">
+          <h3 className="text-[22px] font-bold text-white mb-3">The pre-design layer your workflow is missing</h3>
+          <p className="text-[14px] text-[#999] leading-relaxed mb-5">
+            Before you open Figma, before you prompt Lovable — you need to decide what pages, what sections, and what content. That exploration is expensive in design tools and code builders. In Structr, it costs 1 star per edit.
+          </p>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-center">
+              <div className="text-[13px] font-semibold text-white">Structr</div>
+              <div className="text-[10px] text-white/50">Structure + Content</div>
+            </div>
+            <span className="text-white/30">&rarr;</span>
+            <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-center">
+              <div className="text-[13px] font-medium text-white/60">Design tool</div>
+              <div className="text-[10px] text-white/30">Visual design</div>
+            </div>
+            <span className="text-white/30">&rarr;</span>
+            <div className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-center">
+              <div className="text-[13px] font-medium text-white/60">Code builder</div>
+              <div className="text-[10px] text-white/30">Production</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Quote placeholder */}
       {quote && (
         <section className="max-w-[600px] mx-auto px-8 py-16 text-center">
