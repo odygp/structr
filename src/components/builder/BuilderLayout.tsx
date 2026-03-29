@@ -202,8 +202,19 @@ function BuilderLayoutInner() {
           error: j.status === 'failed' || j.status === 'skipped',
         }));
         setPendingPages(mapped);
-        if (data.summary.completed > completedSoFar) { completedSoFar = data.summary.completed; await reloadProject(); }
+        if (data.summary.completed > completedSoFar) { completedSoFar = data.summary.completed; await reloadProject(); refreshCredits(); }
         if (data.allDone) { setTimeout(() => { if (active) setPendingPages([]); }, 3000); return; }
+        // If there are pending jobs, trigger processing (client has auth cookies)
+        if (data.summary.pending > 0 || data.summary.processing > 0) {
+          const hasPending = jobs.some((j: { status: string }) => j.status === 'pending');
+          if (hasPending) {
+            fetch('/api/import/process', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ projectId }),
+            }).catch(() => {});
+          }
+        }
         setTimeout(poll, 3000);
       } catch { setTimeout(poll, 5000); }
     };
