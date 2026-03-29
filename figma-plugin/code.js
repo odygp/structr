@@ -762,6 +762,8 @@ function buildHeroCentered(comp, content, atoms) {
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
   btns.appendChild(sb); hug(sb);
+  var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
+  linkVis(sb, showSecKey);
   inner.appendChild(btns);
 
   comp.appendChild(inner);
@@ -799,6 +801,8 @@ function buildHeroSplit(comp, content, atoms) {
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
   btns.appendChild(sb); hug(sb);
+  var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
+  linkVis(sb, showSecKey);
   textCol.appendChild(btns);
 
   inner.appendChild(textCol);
@@ -841,6 +845,8 @@ function buildHeroWithImage(comp, content, atoms) {
   var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
   try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
   btns.appendChild(sb); hug(sb);
+  var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
+  linkVis(sb, showSecKey);
   inner.appendChild(btns);
 
   // mt-16 = 64px, image placeholder (w-full h-80 = 320px)
@@ -1050,8 +1056,9 @@ function buildPricing3Col(comp, content, atoms) {
   setFixedW(grid, MAX_W['6xl']);
 
   var plans = Array.isArray(content.plans) ? content.plans : [];
-  for (var i = 0; i < plans.length; i++) {
-    var p = plans[i];
+  var maxPlans = 4;
+  for (var i = 0; i < maxPlans; i++) {
+    var p = plans[i] || { name: 'Plan ' + (i + 1), price: '$0', period: '/mo', description: '', features: '', ctaText: 'Get Started' };
     var hl = p.highlighted;
     var cardBg = hl ? 'hlBg' : 'bg';
     var cardText = hl ? 'hlText' : 'text';
@@ -1100,6 +1107,10 @@ function buildPricing3Col(comp, content, atoms) {
 
     grid.appendChild(card);
     fillH(card);
+    if (i >= 3) {
+      var showKey = comp.addComponentProperty("Show Plan " + (i + 1), "BOOLEAN", i < plans.length);
+      linkVis(card, showKey);
+    }
   }
   inner.appendChild(grid);
   comp.appendChild(inner);
@@ -1128,18 +1139,24 @@ function buildTestimonialsCards(comp, content, atoms, molecules) {
   var grid = frame("testimonials", { dir: "HORIZONTAL", g: 32, pt: 64 });
   setFixedW(grid, MAX_W['6xl']);
   var items = Array.isArray(content.testimonials) ? content.testimonials : [];
-  for (var i = 0; i < items.length; i++) {
+  var maxTestimonials = 4;
+  for (var i = 0; i < maxTestimonials; i++) {
+    var t = items[i] || { quote: 'Great product!', author: 'User ' + (i + 1), role: 'Customer' };
     var card = molecules.TestimonialCard.createInstance(); card.name = "testimonial_" + i;
     try {
       var props = card.componentProperties;
       for (var k in props) {
-        if (k.indexOf("Quote") === 0) card.setProperties(makeObj(k, items[i].quote || ''));
-        if (k.indexOf("Author") === 0) card.setProperties(makeObj(k, items[i].author || ''));
-        if (k.indexOf("Role") === 0) card.setProperties(makeObj(k, items[i].role || ''));
+        if (k.indexOf("Quote") === 0) card.setProperties(makeObj(k, t.quote || ''));
+        if (k.indexOf("Author") === 0) card.setProperties(makeObj(k, t.author || ''));
+        if (k.indexOf("Role") === 0) card.setProperties(makeObj(k, t.role || ''));
       }
     } catch (e) {}
     grid.appendChild(card);
     fillH(card);
+    if (i >= 3) {
+      var showKey = comp.addComponentProperty("Show Card " + (i + 1), "BOOLEAN", i < items.length);
+      linkVis(card, showKey);
+    }
   }
   inner.appendChild(grid);
   comp.appendChild(inner);
@@ -1172,11 +1189,11 @@ function buildCtaCentered(comp, content, atoms) {
   var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
   try { var props = pb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) pb.setProperties(makeObj(k, content.ctaText || "Start Free Trial")); } } catch (e) {}
   btns.appendChild(pb); hug(pb);
-  if (content.ctaSecondaryText) {
-    var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
-    try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText)); } } catch (e) {}
-    btns.appendChild(sb); hug(sb);
-  }
+  var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
+  try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
+  btns.appendChild(sb); hug(sb);
+  var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", !!content.ctaSecondaryText);
+  linkVis(sb, showSecKey);
   inner.appendChild(btns);
 
   comp.appendChild(inner);
@@ -1260,17 +1277,23 @@ function buildStatsRow(comp, content, atoms, molecules) {
   var row = frame("stats", { dir: "HORIZONTAL", g: 32, pt: 64 });
   setFixedW(row, MAX_W['6xl']);
   var stats = Array.isArray(content.stats) ? content.stats : [];
-  for (var i = 0; i < stats.length; i++) {
+  var maxStats = 6;
+  for (var i = 0; i < maxStats; i++) {
+    var st = stats[i] || { value: '0', label: 'Stat ' + (i + 1) };
     var item = molecules.StatItem.createInstance(); item.name = "stat_" + i;
     try {
       var props = item.componentProperties;
       for (var k in props) {
-        if (k.indexOf("Value") === 0) item.setProperties(makeObj(k, stats[i].value || ''));
-        if (k.indexOf("Label") === 0) item.setProperties(makeObj(k, stats[i].label || ''));
+        if (k.indexOf("Value") === 0) item.setProperties(makeObj(k, st.value || ''));
+        if (k.indexOf("Label") === 0) item.setProperties(makeObj(k, st.label || ''));
       }
     } catch (e) {}
     row.appendChild(item);
     fillH(item);
+    if (i >= 3) {
+      var showKey = comp.addComponentProperty("Show Stat " + (i + 1), "BOOLEAN", i < stats.length);
+      linkVis(item, showKey);
+    }
   }
   inner.appendChild(row);
   comp.appendChild(inner);

@@ -93,21 +93,16 @@ export default function AIResolvePlan({ plan, summary, commentCount, starCost, o
                   </div>
                 </div>
 
-                {/* Show changes preview for edit_content */}
+                {/* Show action type hint — no content details to prevent copy */}
                 {action.type === 'edit_content' && action.changes && (
-                  <div className="mt-2 bg-white border border-[#ebebeb] rounded-md p-2">
-                    {Object.entries(action.changes).slice(0, 3).map(([key, value]) => (
-                      <div key={key} className="text-[10px] text-[#666] truncate">
-                        <span className="text-[#a0a0a0]">{key}:</span> {String(value).slice(0, 60)}
-                      </div>
-                    ))}
+                  <div className="mt-2 text-[10px] text-[#a0a0a0]">
+                    {Object.keys(action.changes).length} field{Object.keys(action.changes).length !== 1 ? 's' : ''} will be updated
                   </div>
                 )}
 
-                {/* Show new section info */}
                 {action.type === 'add_section' && action.category && (
-                  <div className="mt-2 text-[10px] text-[#808080]">
-                    New: {action.category} ({action.variantId})
+                  <div className="mt-2 text-[10px] text-[#a0a0a0]">
+                    New section: {action.category}
                   </div>
                 )}
               </div>
