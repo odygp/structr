@@ -632,10 +632,10 @@ function createMolecules(page, atoms) {
   faqItem.itemSpacing = 8;
   var fqQk = faqItem.addComponentProperty("Question", "TEXT", "How does it work?");
   var fqQ = txt("question", "How does it work?", 'lg', FS, 'text');
-  faqItem.appendChild(fqQ); linkText(fqQ, fqQk);
+  faqItem.appendChild(fqQ); linkText(fqQ, fqQk); fillH(fqQ);
   var fqAk = faqItem.addComponentProperty("Answer", "TEXT", "It works like magic.");
   var fqA = txt("answer", "It works like magic.", 'base', FR, 'textSecondary');
-  faqItem.appendChild(fqA); linkText(fqA, fqAk);
+  faqItem.appendChild(fqA); linkText(fqA, fqAk); fillH(fqA);
   page.appendChild(faqItem); faqItem.x = 1060; faqItem.y = 60;
   molecules.FaqItem = faqItem;
 
@@ -894,8 +894,8 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
     grid.appendChild(card);
     fillH(card);
   }
-  gridWrap.appendChild(grid);
-  inner.appendChild(gridWrap);
+  gridWrap.appendChild(grid); fillH(grid);
+  inner.appendChild(gridWrap); fillH(gridWrap);
   comp.appendChild(inner);
 }
 
@@ -950,7 +950,7 @@ function buildFeaturesAlternating(comp, content, atoms) {
 
     rows.appendChild(row);
   }
-  inner.appendChild(rows);
+  inner.appendChild(rows); fillH(rows);
   comp.appendChild(inner);
 }
 

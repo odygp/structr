@@ -58,7 +58,7 @@ export default function Home() {
             See a live example
           </Link>
         </div>
-        <p className="text-[12px] text-[#a0a0a0]">For UX designers, product teams, and founders planning their next site</p>
+        <p className="text-[12px] text-[#a0a0a0]">For designers, product managers, marketers, founders, and agencies</p>
       </section>
 
       {/* Mock wireframe preview */}
@@ -107,6 +107,27 @@ export default function Home() {
               <div className="text-[28px] font-bold text-[#1a1a1a]">{s.number}</div>
               <div className="text-[13px] text-[#808080]">{s.label}</div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Who uses Structr */}
+      <section className="max-w-[900px] mx-auto px-8 py-20">
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Built for every team that plans websites</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-12 max-w-[500px] mx-auto">From first idea to design handoff — Structr fits into your workflow.</p>
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            { role: 'UX Designers', desc: 'Plan information architecture and page structure before opening Figma. Export wireframes directly to your design tool.', href: '/for/designers' },
+            { role: 'Product Managers', desc: 'Spec out features visually instead of writing long docs. Share interactive wireframes with engineering to align faster.', href: '/for/product-managers' },
+            { role: 'Marketing Teams', desc: 'Plan landing pages and campaign sites in minutes. Brief agencies with actual wireframes instead of vague descriptions.', href: '/for/marketers' },
+            { role: 'Founders', desc: 'Go from idea to visual plan instantly. Show investors and cofounders what you\'re building before hiring a designer.', href: '/for/founders' },
+            { role: 'Agencies', desc: 'Win more pitches with rapid wireframe proposals. Import competitor sites for analysis. Iterate in client meetings.', href: '/for/agencies' },
+            { role: 'Content Strategists', desc: 'Map out content architecture across pages. Plan what copy goes where before writing a single word.', href: '/for/content-strategists' },
+          ].map(p => (
+            <Link key={p.role} href={p.href} className="bg-white border border-[#ebebeb] rounded-2xl p-6 hover:shadow-md hover:border-[#d0d0d0] transition-all group">
+              <h3 className="text-[15px] font-semibold text-[#1a1a1a] mb-2 group-hover:underline">{p.role}</h3>
+              <p className="text-[13px] text-[#808080] leading-relaxed">{p.desc}</p>
+            </Link>
           ))}
         </div>
       </section>
