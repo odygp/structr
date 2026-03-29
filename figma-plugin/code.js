@@ -568,8 +568,8 @@ function createMolecules(page, atoms) {
   var fcDesc = txt("description", "A brief description of this feature.", 'sm', FR, 'textSecondary');
   fcTextBlock.appendChild(fcDesc); linkText(fcDesc, fcDk); fillH(fcDesc);
   var fcShowDescKey = featureCard.addComponentProperty("Show Description", "BOOLEAN", true);
-  linkVis(fcDesc, fcShowDescKey);
   featureCard.appendChild(fcTextBlock); fillH(fcTextBlock);
+  linkVis(fcDesc, fcShowDescKey);
   page.appendChild(featureCard); featureCard.x = 0; featureCard.y = 60;
   molecules.FeatureCard = featureCard;
 
@@ -598,7 +598,6 @@ function createMolecules(page, atoms) {
   tcAvatarWrap.appendChild(tcAvatar); hug(tcAvatar);
   tcAuth.appendChild(tcAvatarWrap); hug(tcAvatarWrap);
   var tcShowAvatarKey = testCard.addComponentProperty("Show Avatar", "BOOLEAN", true);
-  linkVis(tcAvatarWrap, tcShowAvatarKey);
   var tcInfo = frame("info", { dir: "VERTICAL", g: 2 });
   var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Cooper");
   var tcName = txt("author", "Jane Cooper", 'sm', FS, 'text');
@@ -609,6 +608,7 @@ function createMolecules(page, atoms) {
   tcAuth.appendChild(tcInfo);
   testCard.appendChild(tcAuth);
   linkText(tcName, tcNk); linkText(tcRole, tcRk);
+  linkVis(tcAvatarWrap, tcShowAvatarKey);
   page.appendChild(testCard); testCard.x = 420; testCard.y = 60;
   molecules.TestimonialCard = testCard;
 
@@ -774,11 +774,11 @@ function buildHeroCentered(comp, content, atoms) {
   var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
   sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
-  linkVis(sbWrap, showSecKey);
   btns.appendChild(sbWrap); hug(sbWrap);
   inner.appendChild(btns);
 
   comp.appendChild(inner);
+  linkVis(sbWrap, showSecKey);
 }
 
 function buildHeroSplit(comp, content, atoms) {
@@ -815,19 +815,18 @@ function buildHeroSplit(comp, content, atoms) {
   var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
   sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
-  linkVis(sbWrap, showSecKey);
   btns.appendChild(sbWrap); hug(sbWrap);
   textCol.appendChild(btns);
 
   inner.appendChild(textCol);
   fillH(textCol);
 
-  // Image placeholder (aspect-[4/3]) — same width as text col
   var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage";
   img.resize(textColW, Math.round(textColW * 0.75));
   inner.appendChild(img);
 
   comp.appendChild(inner);
+  linkVis(sbWrap, showSecKey);
 }
 
 function buildHeroWithImage(comp, content, atoms) {
@@ -861,11 +860,9 @@ function buildHeroWithImage(comp, content, atoms) {
   var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
   sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", true);
-  linkVis(sbWrap, showSecKey);
   btns.appendChild(sbWrap); hug(sbWrap);
   inner.appendChild(btns);
 
-  // mt-16 = 64px, image placeholder (w-full h-80 = 320px)
   var imgWrap = frame("image_wrap", { dir: "VERTICAL", pt: 64 });
   var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage";
   img.resize(MAX_W['5xl'], 320);
@@ -873,6 +870,7 @@ function buildHeroWithImage(comp, content, atoms) {
   inner.appendChild(imgWrap);
 
   comp.appendChild(inner);
+  linkVis(sbWrap, showSecKey);
 }
 
 // ── FEATURES BUILDERS ──
@@ -1082,6 +1080,7 @@ function buildPricing3Col(comp, content, atoms) {
 
   var plans = Array.isArray(content.plans) ? content.plans : [];
   var maxPlans = 4;
+  var deferredVis = [];
   for (var i = 0; i < maxPlans; i++) {
     var p = plans[i] || { name: 'Plan ' + (i + 1), price: '$0', period: '/mo', description: '', features: '', ctaText: 'Get Started' };
     var hl = p.highlighted;
@@ -1097,7 +1096,6 @@ function buildPricing3Col(comp, content, atoms) {
 
     card.appendChild(txt("planName_" + i, p.name || 'Plan', 'xl', FS, cardText));
 
-    // Price row
     var priceRow = frame("priceRow", { dir: "HORIZONTAL", g: 4, ca: "MAX", pt: 8 });
     priceRow.appendChild(txt("planPrice_" + i, p.price || '$9', '4xl', FB, cardText));
     priceRow.appendChild(txt("planPeriod_" + i, p.period || '/mo', 'sm', FR, cardTextSec));
@@ -1107,7 +1105,6 @@ function buildPricing3Col(comp, content, atoms) {
     descWrap.appendChild(txt("planDesc_" + i, p.description || '', 'sm', FR, cardTextSec));
     card.appendChild(descWrap);
 
-    // Features list
     var feats = String(p.features || '').split(',');
     var featList = frame("features", { dir: "VERTICAL", g: 12, pt: 24 });
     for (var j = 0; j < feats.length && j < 6; j++) {
@@ -1116,7 +1113,6 @@ function buildPricing3Col(comp, content, atoms) {
     }
     card.appendChild(featList);
 
-    // CTA button
     var btnWrap = frame("btn_wrap", { dir: "VERTICAL", pt: 32 });
     if (hl) {
       var btn = frame("planCta_" + i, { dir: "HORIZONTAL", bg: 'hlBtnBg', px: 24, py: 12, r: 8, ca: "CENTER", ma: "CENTER" });
@@ -1134,7 +1130,7 @@ function buildPricing3Col(comp, content, atoms) {
       var wrapper = frame("plan_" + i + "_wrapper", { dir: "VERTICAL" });
       wrapper.appendChild(card); fillH(card);
       var showKey = comp.addComponentProperty("Show Plan " + (i + 1), "BOOLEAN", i < plans.length);
-      linkVis(wrapper, showKey);
+      deferredVis.push({ node: wrapper, key: showKey });
       grid.appendChild(wrapper);
       fillH(wrapper);
     } else {
@@ -1144,6 +1140,9 @@ function buildPricing3Col(comp, content, atoms) {
   }
   inner.appendChild(grid);
   comp.appendChild(inner);
+  for (var dv = 0; dv < deferredVis.length; dv++) {
+    linkVis(deferredVis[dv].node, deferredVis[dv].key);
+  }
 }
 
 // ── TESTIMONIALS BUILDER ──
@@ -1170,6 +1169,7 @@ function buildTestimonialsCards(comp, content, atoms, molecules) {
   setFixedW(grid, MAX_W['6xl']);
   var items = Array.isArray(content.testimonials) ? content.testimonials : [];
   var maxTestimonials = 4;
+  var deferredVis = [];
   for (var i = 0; i < maxTestimonials; i++) {
     var t = items[i] || { quote: 'Great product!', author: 'User ' + (i + 1), role: 'Customer' };
     var card = molecules.TestimonialCard.createInstance(); card.name = "testimonial_" + i;
@@ -1185,7 +1185,7 @@ function buildTestimonialsCards(comp, content, atoms, molecules) {
       var wrapper = frame("testimonial_" + i + "_wrapper", { dir: "VERTICAL" });
       wrapper.appendChild(card); fillH(card);
       var showKey = comp.addComponentProperty("Show Card " + (i + 1), "BOOLEAN", i < items.length);
-      linkVis(wrapper, showKey);
+      deferredVis.push({ node: wrapper, key: showKey });
       grid.appendChild(wrapper);
       fillH(wrapper);
     } else {
@@ -1195,6 +1195,9 @@ function buildTestimonialsCards(comp, content, atoms, molecules) {
   }
   inner.appendChild(grid);
   comp.appendChild(inner);
+  for (var dv = 0; dv < deferredVis.length; dv++) {
+    linkVis(deferredVis[dv].node, deferredVis[dv].key);
+  }
 }
 
 // ── CTA BUILDER ──
@@ -1229,11 +1232,11 @@ function buildCtaCentered(comp, content, atoms) {
   var sbWrap = frame("secondaryBtn_wrapper", { dir: "HORIZONTAL" });
   sbWrap.appendChild(sb); hug(sb);
   var showSecKey = comp.addComponentProperty("Show Secondary Button", "BOOLEAN", !!content.ctaSecondaryText);
-  linkVis(sbWrap, showSecKey);
   btns.appendChild(sbWrap); hug(sbWrap);
   inner.appendChild(btns);
 
   comp.appendChild(inner);
+  linkVis(sbWrap, showSecKey);
 }
 
 // ── FAQ BUILDER ──
@@ -1315,6 +1318,7 @@ function buildStatsRow(comp, content, atoms, molecules) {
   setFixedW(row, MAX_W['6xl']);
   var stats = Array.isArray(content.stats) ? content.stats : [];
   var maxStats = 6;
+  var deferredVis = [];
   for (var i = 0; i < maxStats; i++) {
     var st = stats[i] || { value: '0', label: 'Stat ' + (i + 1) };
     var item = molecules.StatItem.createInstance(); item.name = "stat_" + i;
@@ -1329,7 +1333,7 @@ function buildStatsRow(comp, content, atoms, molecules) {
       var wrapper = frame("stat_" + i + "_wrapper", { dir: "VERTICAL", ca: "CENTER" });
       wrapper.appendChild(item); fillH(item);
       var showKey = comp.addComponentProperty("Show Stat " + (i + 1), "BOOLEAN", i < stats.length);
-      linkVis(wrapper, showKey);
+      deferredVis.push({ node: wrapper, key: showKey });
       row.appendChild(wrapper);
       fillH(wrapper);
     } else {
@@ -1339,6 +1343,9 @@ function buildStatsRow(comp, content, atoms, molecules) {
   }
   inner.appendChild(row);
   comp.appendChild(inner);
+  for (var dv = 0; dv < deferredVis.length; dv++) {
+    linkVis(deferredVis[dv].node, deferredVis[dv].key);
+  }
 }
 
 // ── LOGOS BUILDER ──
