@@ -177,6 +177,21 @@ function BuilderLayoutInner() {
     } catch {}
   };
 
+  // Always fetch project metadata (status, slug, timestamps)
+  useEffect(() => {
+    if (!projectId) return;
+    fetch(`/api/projects/${projectId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        if (data.slug !== undefined) setProjectSlug(data.slug);
+        if (data.status) setProjectStatus(data.status);
+        if (data.published_at) setProjectPublishedAt(data.published_at);
+        if (data.updated_at) setProjectUpdatedAt(data.updated_at);
+      })
+      .catch(() => {});
+  }, [projectId]);
+
   useEffect(() => {
     if (!projectId) return;
     const existing = useBuilderStore.getState().projects.find(p => p.id === projectId);
