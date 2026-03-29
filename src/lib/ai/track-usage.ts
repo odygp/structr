@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { debitCredits } from '@/lib/db/credits';
 
 // Pricing per 1M tokens (as of 2026)
 const PRICING: Record<string, { input: number; output: number }> = {
@@ -56,6 +57,9 @@ export async function trackUsage({
       cost_usd: cost,
       duration_ms: durationMs || null,
     });
+
+    // Debit credits for the AI usage cost
+    await debitCredits(userId, cost, `${endpoint} (${model.split('-').slice(0, 2).join('-')})`);
   } catch (e) {
     console.error('Failed to track AI usage:', e);
   }

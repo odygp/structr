@@ -11,6 +11,7 @@ import AiSectionChat, { type ChatMessage } from './AiSectionChat';
 import ResizeHandle from './ResizeHandle';
 import { CommentsSidebar } from './CommentsOverlay';
 import ActivityPanel from './ActivityPanel';
+import VersionHistory from './VersionHistory';
 
 interface Comment {
   id: string;
@@ -52,7 +53,9 @@ function BuilderLayoutInner() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
+  const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [creditBalance, setCreditBalance] = useState<number | null>(null);
   const [projectSlug, setProjectSlug] = useState<string | null>(null);
   const [projectStatus, setProjectStatus] = useState<string>('draft');
   const [aiGenerating, setAiGenerating] = useState(false);
@@ -84,6 +87,14 @@ function BuilderLayoutInner() {
 
   const searchParams = useSearchParams();
   const projectId = searchParams.get('project');
+
+  // Load credit balance
+  useEffect(() => {
+    fetch('/api/credits')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setCreditBalance(data.balance); })
+      .catch(() => {});
+  }, []);
 
   // Load background color from project settings
   useEffect(() => {
@@ -226,8 +237,25 @@ function BuilderLayoutInner() {
     setActivityOpen(!activityOpen);
     setCommentsOpen(false);
     setAiChatOpen(false);
+    setVersionHistoryOpen(false);
     if (!activityOpen) selectSection(null);
   };
+
+  const handleToggleVersionHistory = () => {
+    setVersionHistoryOpen(!versionHistoryOpen);
+    setCommentsOpen(false);
+    setAiChatOpen(false);
+    setActivityOpen(false);
+    if (!versionHistoryOpen) selectSection(null);
+  };
+
+  // Refresh credits after AI actions
+  const refreshCredits = useCallback(() => {
+    fetch('/api/credits')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setCreditBalance(data.balance); })
+      .catch(() => {});
+  }, []);
 
   const handleOpenAiChat = useCallback(() => {
     setAiChatOpen(true);
@@ -248,7 +276,9 @@ function BuilderLayoutInner() {
     setAiChangedSectionId(selectedSectionId);
     if (aiChangedTimeoutRef.current) clearTimeout(aiChangedTimeoutRef.current);
     aiChangedTimeoutRef.current = setTimeout(() => setAiChangedSectionId(null), 2000);
-  }, [selectedSectionId, updateContent]);
+    // Refresh credit balance after AI usage
+    refreshCredits();
+  }, [selectedSectionId, updateContent, refreshCredits]);
 
   const handleChatMessagesChange = useCallback((sectionId: string, messages: ChatMessage[]) => {
     setChatHistory(prev => ({ ...prev, [sectionId]: messages }));
@@ -290,6 +320,7 @@ function BuilderLayoutInner() {
   const getCategoryLabel = (category: string) => category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
 
   const renderRightSidebar = () => {
+    if (versionHistoryOpen && projectId) return <VersionHistory projectId={projectId} onRestore={() => { reloadProject(); setVersionHistoryOpen(false); }} />;
     if (activityOpen && projectId) return <ActivityPanel projectId={projectId} />;
     if (commentsOpen) return <CommentsSidebar comments={comments} onResolve={resolveComment} onUnresolve={unresolveComment} />;
     if (aiChatOpen && selectedSection) {
@@ -328,8 +359,10 @@ function BuilderLayoutInner() {
         pendingPages={pendingPages}
         onOpenAiChat={handleOpenAiChat}
         onToggleActivity={handleToggleActivity}
+        onToggleVersionHistory={handleToggleVersionHistory}
         projectSlug={projectSlug}
         projectStatus={projectStatus}
+        creditBalance={creditBalance}
       />
 
       <div className="flex flex-1 overflow-hidden">

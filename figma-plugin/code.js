@@ -1,83 +1,309 @@
-// Structr Figma Plugin — Atomic Design System Import
+// Structr Figma Plugin — Pixel-Perfect Atomic Design System Import
 // Ions → Atoms → Molecules → Organisms → Templates
+// All colors bound to Figma Variables with Light/Dark modes
 figma.showUI(__html__, { width: 380, height: 480 });
 
-// ── Design Tokens ──
-const TOKENS = {
-  colors: {
-    'surface/default': { r: 1, g: 1, b: 1 },
-    'surface/subtle': { r: 0.98, g: 0.98, b: 0.98 },
-    'surface/muted': { r: 0.96, g: 0.96, b: 0.96 },
-    'surface/inverse': { r: 0.11, g: 0.11, b: 0.11 },
-    'border/default': { r: 0.9, g: 0.9, b: 0.9 },
-    'border/strong': { r: 0.83, g: 0.83, b: 0.83 },
-    'text/primary': { r: 0.11, g: 0.11, b: 0.11 },
-    'text/secondary': { r: 0.4, g: 0.4, b: 0.4 },
-    'text/muted': { r: 0.5, g: 0.5, b: 0.5 },
-    'text/inverse': { r: 1, g: 1, b: 1 },
-    'text/on-dark': { r: 0.83, g: 0.83, b: 0.83 },
-    'placeholder/default': { r: 0.9, g: 0.9, b: 0.9 },
-    'placeholder/avatar': { r: 0.83, g: 0.83, b: 0.83 },
-  },
-  spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, '2xl': 32, '3xl': 48, '4xl': 64, '5xl': 80 },
-  radius: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
-  fontSize: { xs: 11, sm: 13, md: 14, lg: 16, xl: 18, '2xl': 24, '3xl': 28, '4xl': 36, '5xl': 48 },
+// ══════════════════════════════════════════════════════════════
+// DESIGN TOKENS — Exact Tailwind CSS values
+// ══════════════════════════════════════════════════════════════
+
+// Primitive colors — exact Tailwind gray palette (0-1 RGB)
+var PRIMITIVES = {
+  'white':    { r: 1, g: 1, b: 1 },
+  'gray-50':  { r: 0.976, g: 0.980, b: 0.984 },
+  'gray-100': { r: 0.953, g: 0.957, b: 0.965 },
+  'gray-200': { r: 0.898, g: 0.906, b: 0.922 },
+  'gray-300': { r: 0.820, g: 0.835, b: 0.859 },
+  'gray-400': { r: 0.612, g: 0.639, b: 0.686 },
+  'gray-500': { r: 0.420, g: 0.447, b: 0.502 },
+  'gray-600': { r: 0.294, g: 0.333, b: 0.388 },
+  'gray-700': { r: 0.216, g: 0.255, b: 0.318 },
+  'gray-800': { r: 0.122, g: 0.161, b: 0.216 },
+  'gray-900': { r: 0.067, g: 0.094, b: 0.153 },
 };
 
-const C = TOKENS.colors;
-const FR = { family: "Inter", style: "Regular" };
-const FM = { family: "Inter", style: "Medium" };
-const FS = { family: "Inter", style: "Semi Bold" };
-const FB = { family: "Inter", style: "Bold" };
-const W = 1440;
+// Semantic tokens — mirrors src/lib/colors.ts getColors() exactly
+var SEMANTIC = {
+  'bg':            { light: 'white',    dark: 'gray-900' },
+  'bgAlt':         { light: 'gray-50',  dark: 'gray-800' },
+  'bgMuted':       { light: 'gray-100', dark: 'gray-700' },
+  'bgCard':        { light: 'white',    dark: 'gray-800' },
+  'bgCardAlt':     { light: 'gray-50',  dark: 'gray-700' },
+  'bgPlaceholder': { light: 'gray-200', dark: 'gray-700' },
+  'bgAvatar':      { light: 'gray-300', dark: 'gray-600' },
+  'text':          { light: 'gray-900', dark: 'white' },
+  'textSecondary': { light: 'gray-600', dark: 'gray-300' },
+  'textMuted':     { light: 'gray-500', dark: 'gray-400' },
+  'textLight':     { light: 'gray-500', dark: 'gray-500' },
+  'btnPrimaryBg':  { light: 'gray-900', dark: 'white' },
+  'btnPrimaryTxt': { light: 'white',    dark: 'gray-900' },
+  'btnSecBorder':  { light: 'gray-300', dark: 'gray-600' },
+  'btnSecText':    { light: 'gray-700', dark: 'gray-300' },
+  'border':        { light: 'gray-200', dark: 'gray-700' },
+  'borderLight':   { light: 'gray-100', dark: 'gray-800' },
+  'hlBg':          { light: 'gray-900', dark: 'white' },
+  'hlText':        { light: 'white',    dark: 'gray-900' },
+  'hlTextSec':     { light: 'gray-300', dark: 'gray-500' },
+  'hlBtnBg':       { light: 'white',    dark: 'gray-900' },
+  'hlBtnText':     { light: 'gray-900', dark: 'white' },
+};
+
+// Typography — exact Tailwind type scale {fontSize, lineHeight}
+var FONT_SIZE = {
+  'xs':  { s: 12, lh: 16 },
+  'sm':  { s: 14, lh: 20 },
+  'base':{ s: 16, lh: 24 },
+  'lg':  { s: 18, lh: 28 },
+  'xl':  { s: 20, lh: 28 },
+  '2xl': { s: 24, lh: 32 },
+  '3xl': { s: 30, lh: 36 },
+  '4xl': { s: 36, lh: 40 },
+  '5xl': { s: 48, lh: 48 },
+};
+
+// Tailwind max-width values in pixels
+var MAX_W = {
+  '2xl': 672,
+  '3xl': 768,
+  '4xl': 896,
+  '5xl': 1024,
+  '6xl': 1152,
+  '7xl': 1280,
+};
+
+// Canvas width
+var W = 1440;
+
+// Font references
+var FR = { family: "Inter", style: "Regular" };
+var FM = { family: "Inter", style: "Medium" };
+var FS = { family: "Inter", style: "Semi Bold" };
+var FB = { family: "Inter", style: "Bold" };
 
 async function loadFonts() {
-  await figma.loadFontAsync(FR); await figma.loadFontAsync(FM);
-  await figma.loadFontAsync(FS); await figma.loadFontAsync(FB);
+  await figma.loadFontAsync(FR);
+  await figma.loadFontAsync(FM);
+  await figma.loadFontAsync(FS);
+  await figma.loadFontAsync(FB);
 }
 
-// ── Primitives ──
-function txt(name, text, size, font, color, opts) {
+// ── Resolve semantic color to RGB ──
+function sc(token, mode) {
+  mode = mode || 'light';
+  var s = SEMANTIC[token];
+  if (!s) return PRIMITIVES['gray-500'];
+  return PRIMITIVES[s[mode]] || PRIMITIVES['gray-500'];
+}
+
+// ══════════════════════════════════════════════════════════════
+// FIGMA VARIABLES — Primitives + Semantic with Light/Dark modes
+// ══════════════════════════════════════════════════════════════
+
+var primVars = {};
+var semVars = {};
+var semCol = null;
+var lightModeId = null;
+var darkModeId = null;
+
+function createVariableCollections() {
+  try {
+    // Primitives collection — single mode, raw color values
+    var primCol = figma.variables.createVariableCollection("Primitives");
+    for (var name in PRIMITIVES) {
+      var v = figma.variables.createVariable(name, primCol, "COLOR");
+      v.setValueForMode(primCol.modes[0].modeId, PRIMITIVES[name]);
+      primVars[name] = v;
+    }
+
+    // Semantic collection — two modes (Light/Dark), aliases to primitives
+    semCol = figma.variables.createVariableCollection("Semantic Colors");
+    lightModeId = semCol.modes[0].modeId;
+    semCol.renameMode(lightModeId, "Light");
+    darkModeId = semCol.addMode("Dark");
+
+    for (var token in SEMANTIC) {
+      var v = figma.variables.createVariable(token, semCol, "COLOR");
+      var lightPrim = primVars[SEMANTIC[token].light];
+      var darkPrim = primVars[SEMANTIC[token].dark];
+      if (lightPrim) v.setValueForMode(lightModeId, figma.variables.createVariableAlias(lightPrim));
+      if (darkPrim) v.setValueForMode(darkModeId, figma.variables.createVariableAlias(darkPrim));
+      semVars[token] = v;
+    }
+  } catch (e) {
+    console.log("Variables creation error:", e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// HELPER FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+
+// Bind a semantic variable to a node's fill color
+function bindFill(node, semToken) {
+  if (!semVars[semToken]) return;
+  try {
+    var fills = JSON.parse(JSON.stringify(node.fills));
+    if (!fills.length) fills = [{ type: 'SOLID', color: sc(semToken) }];
+    fills[0] = figma.variables.setBoundVariableForPaint(fills[0], 'color', semVars[semToken]);
+    node.fills = fills;
+  } catch (e) { console.log('bindFill error:', e.message); }
+}
+
+// Bind a semantic variable to a node's stroke color
+function bindStroke(node, semToken) {
+  if (!semVars[semToken]) return;
+  try {
+    var strokes = JSON.parse(JSON.stringify(node.strokes));
+    if (!strokes.length) strokes = [{ type: 'SOLID', color: sc(semToken) }];
+    strokes[0] = figma.variables.setBoundVariableForPaint(strokes[0], 'color', semVars[semToken]);
+    node.strokes = strokes;
+  } catch (e) { console.log('bindStroke error:', e.message); }
+}
+
+// Create text node with Tailwind size key and semantic color binding
+function txt(name, text, twSize, font, semToken, opts) {
   opts = opts || {};
-  const t = figma.createText(); t.name = name;
-  t.characters = String(text || ' '); t.fontSize = size; t.fontName = font;
-  t.fills = [{ type: 'SOLID', color: color }];
+  var fs = FONT_SIZE[twSize] || FONT_SIZE['base'];
+  var t = figma.createText();
+  t.name = name;
+  t.characters = String(text || ' ');
+  t.fontSize = fs.s;
+  t.fontName = font;
+  t.lineHeight = { value: fs.lh, unit: 'PIXELS' };
+  // Set initial fill color, then bind to variable
+  t.fills = [{ type: 'SOLID', color: sc(semToken) }];
+  bindFill(t, semToken);
   if (opts.w) { t.resize(opts.w, t.height); t.textAutoResize = "HEIGHT"; }
   if (opts.align) t.textAlignHorizontal = opts.align;
   return t;
 }
-function rect(w, h, color, r) {
-  var rc = figma.createRectangle(); rc.resize(w, h);
-  rc.fills = [{ type: 'SOLID', color: color }]; if (r) rc.cornerRadius = r; return rc;
+
+// Create rectangle with semantic fill binding
+function rect(w, h, semToken, r) {
+  var rc = figma.createRectangle();
+  rc.resize(w, h);
+  rc.fills = [{ type: 'SOLID', color: sc(semToken) }];
+  bindFill(rc, semToken);
+  if (r) rc.cornerRadius = r;
+  return rc;
 }
+
+// Create auto-layout frame
 function frame(name, opts) {
   opts = opts || {};
-  var f = figma.createFrame(); f.name = name;
-  f.layoutMode = opts.dir || "VERTICAL";
-  if (opts.w) { f.resize(opts.w, opts.h || 100); f.counterAxisSizingMode = "FIXED"; }
-  f.primaryAxisSizingMode = opts.fh ? "FIXED" : "AUTO";
-  if (!opts.w) f.counterAxisSizingMode = opts.fw ? "FIXED" : "AUTO";
-  f.fills = opts.bg ? [{ type: 'SOLID', color: opts.bg }] : [];
-  if (opts.px) { f.paddingLeft = opts.px; f.paddingRight = opts.px; }
-  if (opts.py) { f.paddingTop = opts.py; f.paddingBottom = opts.py; }
+  var f = figma.createFrame();
+  f.name = name;
+  var dir = opts.dir || "VERTICAL";
+  f.layoutMode = dir;
+  if (opts.w) {
+    f.resize(opts.w, opts.h || 100);
+    if (dir === "HORIZONTAL") {
+      // For HORIZONTAL: width = primary axis, height = counter axis
+      f.primaryAxisSizingMode = opts.fh ? "FIXED" : "FIXED"; // width is fixed
+      f.counterAxisSizingMode = "AUTO"; // height hugs content
+    } else {
+      // For VERTICAL: width = counter axis, height = primary axis
+      f.counterAxisSizingMode = "FIXED"; // width is fixed
+      f.primaryAxisSizingMode = opts.fh ? "FIXED" : "AUTO"; // height auto
+    }
+  } else {
+    f.primaryAxisSizingMode = opts.fh ? "FIXED" : "AUTO";
+    f.counterAxisSizingMode = opts.fw ? "FIXED" : "AUTO";
+  }
+
+  // Background fill with variable binding
+  if (opts.bg) {
+    f.fills = [{ type: 'SOLID', color: sc(opts.bg) }];
+    bindFill(f, opts.bg);
+  } else {
+    f.fills = [];
+  }
+
+  // Individual padding
+  if (opts.pt !== undefined) f.paddingTop = opts.pt;
+  if (opts.pb !== undefined) f.paddingBottom = opts.pb;
+  if (opts.pl !== undefined) f.paddingLeft = opts.pl;
+  if (opts.pr !== undefined) f.paddingRight = opts.pr;
+  // Shorthand padding
+  if (opts.px !== undefined) { f.paddingLeft = opts.px; f.paddingRight = opts.px; }
+  if (opts.py !== undefined) { f.paddingTop = opts.py; f.paddingBottom = opts.py; }
+  if (opts.p !== undefined) { f.paddingTop = opts.p; f.paddingRight = opts.p; f.paddingBottom = opts.p; f.paddingLeft = opts.p; }
+
   if (opts.g !== undefined) f.itemSpacing = opts.g;
   if (opts.ca) f.counterAxisAlignItems = opts.ca;
   if (opts.ma) f.primaryAxisAlignItems = opts.ma;
   if (opts.r) f.cornerRadius = opts.r;
-  if (opts.stroke) { f.strokes = [{ type: 'SOLID', color: opts.stroke }]; f.strokeWeight = 1; f.strokeAlign = "INSIDE"; }
+  if (opts.wrap) f.layoutWrap = "WRAP";
+
+  if (opts.stroke) {
+    f.strokes = [{ type: 'SOLID', color: sc(opts.stroke) }];
+    bindStroke(f, opts.stroke);
+    f.strokeWeight = 1;
+    f.strokeAlign = "INSIDE";
+  }
+
+  if (opts.clip) f.clipsContent = true;
   return f;
+}
+
+// Create the standard outer-section + inner-container structure
+function sectionFrame(name, opts) {
+  opts = opts || {};
+  var bg = opts.bg || 'bg';
+  var outer = frame(name, {
+    dir: "VERTICAL", w: W, bg: bg,
+    pt: opts.py || 80, pb: opts.py || 80,
+    pl: opts.px || 32, pr: opts.px || 32,
+    ca: "CENTER"
+  });
+  var maxW = opts.maxW || MAX_W['7xl'];
+  var inner = frame(name + "_content", {
+    dir: opts.dir || "VERTICAL",
+    w: maxW,
+    g: opts.g !== undefined ? opts.g : 0,
+    ca: opts.ca,
+    ma: opts.ma,
+  });
+
+  outer.appendChild(inner);
+  return { outer: outer, inner: inner };
+}
+
+// Set a frame to have fixed width, auto height (regardless of layout direction)
+function setFixedW(node, w) {
+  node.resize(w, node.height || 100);
+  if (node.layoutMode === "HORIZONTAL") {
+    node.primaryAxisSizingMode = "FIXED";
+    node.counterAxisSizingMode = "AUTO";
+  } else {
+    node.counterAxisSizingMode = "FIXED";
+    node.primaryAxisSizingMode = "AUTO";
+  }
+}
+
+function hug(node) {
+  try { node.layoutSizingVertical = "HUG"; node.layoutSizingHorizontal = "HUG"; } catch (e) {}
+}
+function fillH(node) {
+  try { node.layoutSizingHorizontal = "FILL"; } catch (e) {}
+}
+function fillV(node) {
+  try { node.layoutSizingVertical = "FILL"; } catch (e) {}
 }
 
 function linkText(node, key) {
   try {
-    // Merge with existing references to avoid overwriting
     var refs = node.componentPropertyReferences || {};
     refs.characters = key;
     node.componentPropertyReferences = refs;
-  } catch(e) { console.log('linkText failed for ' + node.name + ': ' + e.message); }
+  } catch (e) {}
 }
-function hug(node) {
-  try { node.layoutSizingVertical = "HUG"; node.layoutSizingHorizontal = "HUG"; } catch(e) {}
+function linkVis(node, key) {
+  try {
+    var refs = node.componentPropertyReferences || {};
+    refs.visible = key;
+    node.componentPropertyReferences = refs;
+  } catch (e) {}
 }
 
 function resizeSection(section, padding) {
@@ -91,8 +317,8 @@ function resizeSection(section, padding) {
     if (c.y + c.height > maxY) maxY = c.y + c.height;
   }
   if (minX === Infinity) return;
-  // Offset all children to start at padding
-  var dx = padding - minX; var dy = padding - minY;
+  var dx = padding - minX;
+  var dy = padding - minY;
   for (var i = 0; i < section.children.length; i++) {
     section.children[i].x += dx;
     section.children[i].y += dy;
@@ -100,105 +326,84 @@ function resizeSection(section, padding) {
   section.resizeWithoutConstraints(maxX - minX + padding * 2, maxY - minY + padding * 2);
 }
 
+function makeObj(k, v) { var o = {}; o[k] = v; return o; }
 
-
-function linkVis(node, key) {
-  try {
-    var refs = node.componentPropertyReferences || {};
-    refs.visible = key;
-    node.componentPropertyReferences = refs;
-  } catch(e) { console.log('linkVis failed for ' + node.name + ': ' + e.message); }
-}
-
-// ══════════════════════════════════════
-// IONS — Design Token Variables
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// IONS — Design Token Reference Page
+// ══════════════════════════════════════════════════════════════
 
 function createIons(page) {
-  var y = 0;
-  page.appendChild(txt("_label", "🔬 Ions — Design Tokens", 32, FB, C['text/primary']));
+  page.appendChild(txt("_label", "🔬 Ions — Design Tokens", '2xl', FB, 'text'));
 
-  // Create variable collections
-  try {
-    var colorCollection = figma.variables.createVariableCollection("Colors");
-    for (var name in TOKENS.colors) {
-      var v = figma.variables.createVariable(name, colorCollection, "COLOR");
-      v.setValueForMode(colorCollection.modes[0].modeId, TOKENS.colors[name]);
-    }
-
-    var spacingCollection = figma.variables.createVariableCollection("Spacing");
-    for (var name in TOKENS.spacing) {
-      var v = figma.variables.createVariable(name, spacingCollection, "FLOAT");
-      v.setValueForMode(spacingCollection.modes[0].modeId, TOKENS.spacing[name]);
-    }
-
-    var radiusCollection = figma.variables.createVariableCollection("Radius");
-    for (var name in TOKENS.radius) {
-      var v = figma.variables.createVariable(name, radiusCollection, "FLOAT");
-      v.setValueForMode(radiusCollection.modes[0].modeId, TOKENS.radius[name]);
-    }
-  } catch(e) {
-    // Variables might already exist
-    console.log("Variables:", e.message);
-  }
-
-  // Visual token reference
-  var tokenFrame = frame("Token Reference", { dir: "VERTICAL", w: 800, g: 24, py: 40, px: 40, bg: C['surface/default'] });
+  var tokenFrame = frame("Token Reference", { dir: "VERTICAL", w: 900, g: 32, p: 40, bg: 'bg' });
 
   // Color swatches
-  var colorRow = frame("Colors", { dir: "HORIZONTAL", g: 12 });
-  for (var name in TOKENS.colors) {
+  var colorRow = frame("Colors", { dir: "HORIZONTAL", g: 12, wrap: true });
+  for (var name in PRIMITIVES) {
     var swatch = frame(name, { dir: "VERTICAL", g: 4, ca: "CENTER" });
-    swatch.appendChild(rect(48, 48, TOKENS.colors[name], 8));
-    swatch.appendChild(txt("name", name.split('/')[1] || name, 9, FR, C['text/muted']));
+    var r = figma.createRectangle();
+    r.resize(48, 48); r.fills = [{ type: 'SOLID', color: PRIMITIVES[name] }]; r.cornerRadius = 8;
+    swatch.appendChild(r);
+    swatch.appendChild(txt("name", name, 'xs', FR, 'textMuted'));
     colorRow.appendChild(swatch);
   }
   tokenFrame.appendChild(colorRow);
+
+  // Typography scale
+  var typeCol = frame("Typography", { dir: "VERTICAL", g: 8 });
+  for (var size in FONT_SIZE) {
+    typeCol.appendChild(txt("type_" + size, size + " — " + FONT_SIZE[size].s + "px/" + FONT_SIZE[size].lh + "px", size === 'xs' ? 'sm' : size, FR, 'text'));
+  }
+  tokenFrame.appendChild(typeCol);
+
   page.appendChild(tokenFrame);
   tokenFrame.x = 0; tokenFrame.y = 60;
 }
 
-// ══════════════════════════════════════
-// ATOMS — Base Components
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// ATOMS — Base Components (variable-bound)
+// ══════════════════════════════════════════════════════════════
 
 function createAtoms(page) {
   var atoms = {};
-  var x = 0;
 
-  page.appendChild(txt("_label", "⚛️ Atoms — Base Components", 32, FB, C['text/primary']));
+  page.appendChild(txt("_label", "⚛️ Atoms — Base Components", '2xl', FB, 'text'));
 
-  // ── Button Primary ──
+  // ── Button Primary ── (rounded-lg px-6 py-3 text-sm font-medium)
   var btnPrimary = figma.createComponent();
   btnPrimary.name = "Style=Primary";
   btnPrimary.layoutMode = "HORIZONTAL";
-  btnPrimary.primaryAxisSizingMode = "AUTO"; btnPrimary.counterAxisSizingMode = "AUTO";
+  btnPrimary.primaryAxisSizingMode = "AUTO";
+  btnPrimary.counterAxisSizingMode = "AUTO";
   btnPrimary.paddingLeft = 24; btnPrimary.paddingRight = 24;
   btnPrimary.paddingTop = 12; btnPrimary.paddingBottom = 12;
   btnPrimary.cornerRadius = 8;
   btnPrimary.counterAxisAlignItems = "CENTER";
   btnPrimary.primaryAxisAlignItems = "CENTER";
-  btnPrimary.fills = [{ type: 'SOLID', color: C['surface/inverse'] }];
+  btnPrimary.fills = [{ type: 'SOLID', color: sc('btnPrimaryBg') }];
+  bindFill(btnPrimary, 'btnPrimaryBg');
   var pk = btnPrimary.addComponentProperty("Label", "TEXT", "Get Started");
-  var pLabel = txt("label", "Get Started", 14, FM, C['text/inverse']);
+  var pLabel = txt("label", "Get Started", 'sm', FM, 'btnPrimaryTxt');
   btnPrimary.appendChild(pLabel);
   linkText(pLabel, pk);
 
-  // ── Button Secondary ──
+  // ── Button Secondary ── (border rounded-lg px-6 py-3 text-sm font-medium)
   var btnSecondary = figma.createComponent();
   btnSecondary.name = "Style=Secondary";
   btnSecondary.layoutMode = "HORIZONTAL";
-  btnSecondary.primaryAxisSizingMode = "AUTO"; btnSecondary.counterAxisSizingMode = "AUTO";
+  btnSecondary.primaryAxisSizingMode = "AUTO";
+  btnSecondary.counterAxisSizingMode = "AUTO";
   btnSecondary.paddingLeft = 24; btnSecondary.paddingRight = 24;
   btnSecondary.paddingTop = 12; btnSecondary.paddingBottom = 12;
   btnSecondary.cornerRadius = 8;
   btnSecondary.counterAxisAlignItems = "CENTER";
   btnSecondary.primaryAxisAlignItems = "CENTER";
   btnSecondary.fills = [];
-  btnSecondary.strokes = [{ type: 'SOLID', color: C['border/strong'] }];
+  btnSecondary.strokes = [{ type: 'SOLID', color: sc('btnSecBorder') }];
+  bindStroke(btnSecondary, 'btnSecBorder');
   btnSecondary.strokeWeight = 1; btnSecondary.strokeAlign = "INSIDE";
   var sk = btnSecondary.addComponentProperty("Label", "TEXT", "Learn More");
-  var sLabel = txt("label", "Learn More", 14, FM, C['text/primary']);
+  var sLabel = txt("label", "Learn More", 'sm', FM, 'btnSecText');
   btnSecondary.appendChild(sLabel);
   linkText(sLabel, sk);
 
@@ -206,1041 +411,241 @@ function createAtoms(page) {
   var btnTertiary = figma.createComponent();
   btnTertiary.name = "Style=Tertiary";
   btnTertiary.layoutMode = "HORIZONTAL";
-  btnTertiary.primaryAxisSizingMode = "AUTO"; btnTertiary.counterAxisSizingMode = "AUTO";
+  btnTertiary.primaryAxisSizingMode = "AUTO";
+  btnTertiary.counterAxisSizingMode = "AUTO";
   btnTertiary.paddingLeft = 4; btnTertiary.paddingRight = 4;
   btnTertiary.paddingTop = 12; btnTertiary.paddingBottom = 12;
   btnTertiary.counterAxisAlignItems = "CENTER";
   btnTertiary.fills = [];
   var tk = btnTertiary.addComponentProperty("Label", "TEXT", "Learn more");
-  var tLabel = txt("label", "Learn more", 14, FM, C['text/secondary']);
+  var tLabel = txt("label", "Learn more", 'sm', FM, 'textSecondary');
   btnTertiary.appendChild(tLabel);
   linkText(tLabel, tk);
 
-  // Combine buttons into set
+  // Combine buttons into variant set
   page.appendChild(btnPrimary); page.appendChild(btnSecondary); page.appendChild(btnTertiary);
   var btnSet = figma.combineAsVariants([btnPrimary, btnSecondary, btnTertiary], page);
-  btnSet.name = "Button"; btnSet.x = 0; btnSet.y = 60;
+  btnSet.name = "Button";
+  btnSet.layoutMode = "HORIZONTAL"; btnSet.itemSpacing = 24;
+  btnSet.paddingLeft = 24; btnSet.paddingRight = 24; btnSet.paddingTop = 24; btnSet.paddingBottom = 24;
+  btnSet.primaryAxisSizingMode = "AUTO"; btnSet.counterAxisSizingMode = "AUTO";
+  btnSet.x = 0; btnSet.y = 60;
   atoms.Button = btnSet;
 
-  // ── Avatar ──
+  // ── Avatar ── (w-10 h-10 rounded-full)
   var avatar = figma.createComponent();
   avatar.name = "Avatar";
   avatar.layoutMode = "HORIZONTAL";
-  avatar.primaryAxisSizingMode = "AUTO"; avatar.counterAxisSizingMode = "AUTO";
+  avatar.primaryAxisSizingMode = "AUTO";
+  avatar.counterAxisSizingMode = "AUTO";
   avatar.counterAxisAlignItems = "CENTER";
   avatar.primaryAxisAlignItems = "CENTER";
-  
   var avCircle = figma.createEllipse();
-  avCircle.resize(40, 40); avCircle.fills = [{ type: 'SOLID', color: C['placeholder/avatar'] }];
+  avCircle.resize(40, 40);
+  avCircle.fills = [{ type: 'SOLID', color: sc('bgPlaceholder') }];
+  bindFill(avCircle, 'bgPlaceholder');
   avCircle.name = "circle";
   avatar.appendChild(avCircle);
   page.appendChild(avatar); avatar.x = 300; avatar.y = 60;
   atoms.Avatar = avatar;
 
-  // ── Image Placeholder ──
+  // ── Image Placeholder ── (rounded-2xl = 16px, fill bound to bgPlaceholder)
   var imgPlaceholder = figma.createComponent();
   imgPlaceholder.name = "Image Placeholder";
   imgPlaceholder.resize(400, 240);
-  imgPlaceholder.cornerRadius = 12;
-  imgPlaceholder.fills = [{ type: 'SOLID', color: C['placeholder/default'] }];
+  imgPlaceholder.cornerRadius = 16;
+  imgPlaceholder.fills = [{ type: 'SOLID', color: sc('bgPlaceholder') }];
+  bindFill(imgPlaceholder, 'bgPlaceholder');
   page.appendChild(imgPlaceholder); imgPlaceholder.x = 400; imgPlaceholder.y = 60;
   atoms.ImagePlaceholder = imgPlaceholder;
 
-  // ── Icon Placeholder ──
+  // ── Icon Placeholder ── (w-10 h-10 rounded-lg = 8px)
   var iconPlaceholder = figma.createComponent();
   iconPlaceholder.name = "Icon Placeholder";
-  iconPlaceholder.resize(32, 32);
+  iconPlaceholder.resize(40, 40);
   iconPlaceholder.cornerRadius = 8;
-  iconPlaceholder.fills = [{ type: 'SOLID', color: C['placeholder/default'] }];
+  iconPlaceholder.fills = [{ type: 'SOLID', color: sc('bgPlaceholder') }];
+  bindFill(iconPlaceholder, 'bgPlaceholder');
   page.appendChild(iconPlaceholder); iconPlaceholder.x = 850; iconPlaceholder.y = 60;
   atoms.IconPlaceholder = iconPlaceholder;
 
-  // ── Badge ──
+  // ── Badge ── (px-2 py-1 text-xs font-medium rounded)
   var badge = figma.createComponent();
   badge.name = "Badge";
   badge.layoutMode = "HORIZONTAL";
-  badge.primaryAxisSizingMode = "AUTO"; badge.counterAxisSizingMode = "AUTO";
+  badge.primaryAxisSizingMode = "AUTO";
+  badge.counterAxisSizingMode = "AUTO";
   badge.paddingLeft = 8; badge.paddingRight = 8;
   badge.paddingTop = 4; badge.paddingBottom = 4;
   badge.cornerRadius = 4;
-  badge.fills = [{ type: 'SOLID', color: C['surface/muted'] }];
+  badge.fills = [{ type: 'SOLID', color: sc('bgMuted') }];
+  bindFill(badge, 'bgMuted');
   var bk = badge.addComponentProperty("Label", "TEXT", "Badge");
-  var bLabel = txt("label", "Badge", 11, FM, C['text/secondary']);
+  var bLabel = txt("label", "Badge", 'xs', FM, 'textSecondary');
   badge.appendChild(bLabel); linkText(bLabel, bk);
   page.appendChild(badge); badge.x = 930; badge.y = 60;
   atoms.Badge = badge;
 
+  // ── Small Button ── (text-sm px-4 py-2 rounded-lg — used in headers)
+  var btnSmall = figma.createComponent();
+  btnSmall.name = "Button Small";
+  btnSmall.layoutMode = "HORIZONTAL";
+  btnSmall.primaryAxisSizingMode = "AUTO";
+  btnSmall.counterAxisSizingMode = "AUTO";
+  btnSmall.paddingLeft = 16; btnSmall.paddingRight = 16;
+  btnSmall.paddingTop = 8; btnSmall.paddingBottom = 8;
+  btnSmall.cornerRadius = 8;
+  btnSmall.fills = [{ type: 'SOLID', color: sc('btnPrimaryBg') }];
+  bindFill(btnSmall, 'btnPrimaryBg');
+  var bsk = btnSmall.addComponentProperty("Label", "TEXT", "Get Started");
+  var bsLabel = txt("label", "Get Started", 'sm', FM, 'btnPrimaryTxt');
+  btnSmall.appendChild(bsLabel); linkText(bsLabel, bsk);
+  page.appendChild(btnSmall); btnSmall.x = 1020; btnSmall.y = 60;
+  atoms.ButtonSmall = btnSmall;
+
+  // ── Input Field ── (border rounded-lg px-4 py-3)
+  var inputField = figma.createComponent();
+  inputField.name = "Input Field";
+  inputField.layoutMode = "HORIZONTAL";
+  inputField.primaryAxisSizingMode = "AUTO";
+  inputField.counterAxisSizingMode = "AUTO";
+  inputField.paddingLeft = 16; inputField.paddingRight = 16;
+  inputField.paddingTop = 12; inputField.paddingBottom = 12;
+  inputField.cornerRadius = 8;
+  inputField.fills = [{ type: 'SOLID', color: sc('bg') }];
+  bindFill(inputField, 'bg');
+  inputField.strokes = [{ type: 'SOLID', color: sc('border') }];
+  bindStroke(inputField, 'border');
+  inputField.strokeWeight = 1; inputField.strokeAlign = "INSIDE";
+  var ifk = inputField.addComponentProperty("Placeholder", "TEXT", "Enter text...");
+  var ifLabel = txt("placeholder", "Enter text...", 'sm', FR, 'textMuted');
+  inputField.appendChild(ifLabel); linkText(ifLabel, ifk);
+  page.appendChild(inputField); inputField.x = 1150; inputField.y = 60;
+  atoms.InputField = inputField;
+
   return atoms;
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 // MOLECULES — Compound Components
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 
 function createMolecules(page, atoms) {
   var molecules = {};
+  page.appendChild(txt("_label", "🧬 Molecules — Compound Components", '2xl', FB, 'text'));
 
-  page.appendChild(txt("_label", "🧬 Molecules — Compound Components", 32, FB, C['text/primary']));
-
-  // ── Feature Card ──
+  // ── Feature Card ── (from FeaturesGrid: bgAlt rounded-xl p-8)
   var featureCard = figma.createComponent();
   featureCard.name = "Feature Card";
   featureCard.layoutMode = "VERTICAL";
   featureCard.resize(380, 100); featureCard.counterAxisSizingMode = "FIXED";
   featureCard.primaryAxisSizingMode = "AUTO";
-  featureCard.paddingLeft = 24; featureCard.paddingRight = 24;
-  featureCard.paddingTop = 24; featureCard.paddingBottom = 24;
-  featureCard.itemSpacing = 12; featureCard.cornerRadius = 12;
-  featureCard.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
+  featureCard.paddingLeft = 32; featureCard.paddingRight = 32;
+  featureCard.paddingTop = 32; featureCard.paddingBottom = 32;
+  featureCard.itemSpacing = 0; featureCard.cornerRadius = 12;
+  featureCard.fills = [{ type: 'SOLID', color: sc('bgAlt') }];
+  bindFill(featureCard, 'bgAlt');
 
   var fcIcon = atoms.IconPlaceholder.createInstance(); fcIcon.name = "icon";
   featureCard.appendChild(fcIcon); hug(fcIcon);
+
+  // Title section with mt-5=20px gap from icon
+  var fcTextBlock = frame("textBlock", { dir: "VERTICAL", g: 8, pt: 20 });
   var fcTk = featureCard.addComponentProperty("Title", "TEXT", "Feature Title");
-  var fcTitle = txt("title", "Feature Title", 15, FS, C['text/primary']);
-  featureCard.appendChild(fcTitle); linkText(fcTitle, fcTk);
+  var fcTitle = txt("title", "Feature Title", 'lg', FS, 'text');
+  fcTextBlock.appendChild(fcTitle); linkText(fcTitle, fcTk);
   var fcDk = featureCard.addComponentProperty("Description", "TEXT", "A brief description of this feature.");
-  var fcDesc = txt("description", "A brief description of this feature.", 13, FR, C['text/secondary'], { w: 332 });
-  featureCard.appendChild(fcDesc); linkText(fcDesc, fcDk);
+  var fcDesc = txt("description", "A brief description of this feature.", 'sm', FR, 'textSecondary', { w: 316 });
+  fcTextBlock.appendChild(fcDesc); linkText(fcDesc, fcDk);
+  featureCard.appendChild(fcTextBlock);
   page.appendChild(featureCard); featureCard.x = 0; featureCard.y = 60;
   molecules.FeatureCard = featureCard;
 
-  // ── Testimonial Card ──
+  // ── Testimonial Card ── (bg rounded-2xl p-8 border)
   var testCard = figma.createComponent();
   testCard.name = "Testimonial Card";
   testCard.layoutMode = "VERTICAL";
-  testCard.resize(360, 100); testCard.counterAxisSizingMode = "FIXED";
+  testCard.resize(380, 100); testCard.counterAxisSizingMode = "FIXED";
   testCard.primaryAxisSizingMode = "AUTO";
-  testCard.paddingLeft = 24; testCard.paddingRight = 24;
-  testCard.paddingTop = 24; testCard.paddingBottom = 24;
-  testCard.itemSpacing = 16; testCard.cornerRadius = 12;
-  testCard.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+  testCard.paddingLeft = 32; testCard.paddingRight = 32;
+  testCard.paddingTop = 32; testCard.paddingBottom = 32;
+  testCard.itemSpacing = 24; testCard.cornerRadius = 16;
+  testCard.fills = [{ type: 'SOLID', color: sc('bg') }];
+  bindFill(testCard, 'bg');
+  testCard.strokes = [{ type: 'SOLID', color: sc('border') }];
+  bindStroke(testCard, 'border');
+  testCard.strokeWeight = 1; testCard.strokeAlign = "INSIDE";
 
-  var tcQk = testCard.addComponentProperty("Quote", "TEXT", '"Great product!"');
-  var tcQuote = txt("quote", '"Great product!"', 13, FR, C['text/secondary'], { w: 312 });
+  var tcQk = testCard.addComponentProperty("Quote", "TEXT", "This product has completely transformed how we work.");
+  var tcQuote = txt("quote", "This product has completely transformed how we work.", 'base', FR, 'textSecondary', { w: 316 });
   testCard.appendChild(tcQuote); linkText(tcQuote, tcQk);
 
-  var tcAuth = frame("author", { dir: "HORIZONTAL", g: 10, ca: "CENTER" });
+  var tcAuth = frame("author", { dir: "HORIZONTAL", g: 12, ca: "CENTER" });
   var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.name = "avatar";
   tcAuth.appendChild(tcAvatar); hug(tcAvatar);
   var tcInfo = frame("info", { dir: "VERTICAL", g: 2 });
-  var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Doe");
-  var tcName = txt("author", "Jane Doe", 13, FM, C['text/primary']);
+  var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Cooper");
+  var tcName = txt("author", "Jane Cooper", 'sm', FS, 'text');
   tcInfo.appendChild(tcName);
-  var tcRk = testCard.addComponentProperty("Role", "TEXT", "CEO");
-  var tcRole = txt("role", "CEO", 11, FR, C['text/muted']);
+  var tcRk = testCard.addComponentProperty("Role", "TEXT", "CEO at TechCorp");
+  var tcRole = txt("role", "CEO at TechCorp", 'sm', FR, 'textMuted');
   tcInfo.appendChild(tcRole);
   tcAuth.appendChild(tcInfo);
   testCard.appendChild(tcAuth);
   linkText(tcName, tcNk); linkText(tcRole, tcRk);
-  page.appendChild(testCard); testCard.x = 320; testCard.y = 60;
+  page.appendChild(testCard); testCard.x = 420; testCard.y = 60;
   molecules.TestimonialCard = testCard;
 
-  // ── Stat Item ──
+  // ── Stat Item ── (text-center)
   var statItem = figma.createComponent();
   statItem.name = "Stat Item";
   statItem.layoutMode = "VERTICAL";
-  statItem.itemSpacing = 4; statItem.counterAxisAlignItems = "CENTER";
+  statItem.itemSpacing = 8; statItem.counterAxisAlignItems = "CENTER";
   statItem.primaryAxisSizingMode = "AUTO"; statItem.counterAxisSizingMode = "AUTO";
-
   var siVk = statItem.addComponentProperty("Value", "TEXT", "10K+");
-  var siValue = txt("value", "10K+", 36, FB, C['text/primary'], { align: "CENTER" });
+  var siValue = txt("value", "10K+", '4xl', FB, 'text', { align: "CENTER" });
   statItem.appendChild(siValue); linkText(siValue, siVk);
-  var siLk = statItem.addComponentProperty("Label", "TEXT", "Users");
-  var siLabel = txt("label", "Users", 13, FR, C['text/secondary'], { align: "CENTER" });
+  var siLk = statItem.addComponentProperty("Label", "TEXT", "Active Users");
+  var siLabel = txt("label", "Active Users", 'sm', FR, 'textSecondary', { align: "CENTER" });
   statItem.appendChild(siLabel); linkText(siLabel, siLk);
-  page.appendChild(statItem); statItem.x = 640; statItem.y = 60;
+  page.appendChild(statItem); statItem.x = 840; statItem.y = 60;
   molecules.StatItem = statItem;
 
-  // ── Nav Link ──
+  // ── Nav Link ── (text-sm textSecondary)
   var navLink = figma.createComponent();
   navLink.name = "Nav Link";
   navLink.layoutMode = "HORIZONTAL";
   navLink.primaryAxisSizingMode = "AUTO"; navLink.counterAxisSizingMode = "AUTO";
   navLink.counterAxisAlignItems = "CENTER";
   var nlk = navLink.addComponentProperty("Label", "TEXT", "Link");
-  var nlLabel = txt("label", "Link", 13, FR, C['text/secondary']);
+  var nlLabel = txt("label", "Link", 'sm', FR, 'textSecondary');
   navLink.appendChild(nlLabel); linkText(nlLabel, nlk);
-  page.appendChild(navLink); navLink.x = 760; navLink.y = 60;
+  page.appendChild(navLink); navLink.x = 960; navLink.y = 60;
   molecules.NavLink = navLink;
 
-  // ── FAQ Item ──
+  // ── FAQ Item ── (py-6, question text-lg font-semibold, answer textSecondary)
   var faqItem = figma.createComponent();
   faqItem.name = "FAQ Item";
   faqItem.layoutMode = "VERTICAL";
   faqItem.primaryAxisSizingMode = "AUTO";
-  faqItem.paddingTop = 20; faqItem.paddingBottom = 20;
+  faqItem.paddingTop = 24; faqItem.paddingBottom = 24;
   faqItem.itemSpacing = 8;
-
   var fqQk = faqItem.addComponentProperty("Question", "TEXT", "How does it work?");
-  var fqQ = txt("question", "How does it work?", 15, FM, C['text/primary']);
+  var fqQ = txt("question", "How does it work?", 'lg', FS, 'text');
   faqItem.appendChild(fqQ); linkText(fqQ, fqQk);
   var fqAk = faqItem.addComponentProperty("Answer", "TEXT", "It works like magic.");
-  var fqA = txt("answer", "It works like magic.", 13, FR, C['text/secondary'], { w: 600 });
+  var fqA = txt("answer", "It works like magic.", 'base', FR, 'textSecondary', { w: 650 });
   faqItem.appendChild(fqA); linkText(fqA, fqAk);
-  page.appendChild(faqItem); faqItem.x = 880; faqItem.y = 60;
+  page.appendChild(faqItem); faqItem.x = 1060; faqItem.y = 60;
   molecules.FaqItem = faqItem;
 
   return molecules;
 }
 
-// ══════════════════════════════════════
-// ORGANISMS — Section Components (using atoms + molecules)
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// ORGANISM BUILDERS — Pixel-perfect variant-specific
+// ══════════════════════════════════════════════════════════════
 
-// Variant-specific builders for categories that need different layouts per variant
-var VARIANT_SPECIFIC = {
-  'hero-split': function(comp, content, atoms, molecules) {
-    comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-    comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-    var textCol = frame("textContent", { dir: "VERTICAL", g: 20 });
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
-    var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary']);
-    textCol.appendChild(tn); linkText(tn, tk);
-    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
-    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 550 });
-    textCol.appendChild(sn); linkText(sn, sk);
-    var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
-    var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn"; btns.appendChild(pb);
-      var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn"; btns.appendChild(sb);
-      textCol.appendChild(btns);
-    comp.appendChild(textCol); try { textCol.layoutSizingHorizontal = "FILL"; } catch(e) {}
-    var img = atoms.ImagePlaceholder.createInstance(); img.name = "image"; img.resize(520, 400);
-    comp.appendChild(img);
-  },
-  'hero-minimal': function(comp, content, atoms) {
-    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 120; comp.paddingBottom = 120;
-    comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
-    var tn = txt("title", content.title || "Build something amazing", 56, FB, C['text/primary'], { w: 800, align: "CENTER" });
-    comp.appendChild(tn); linkText(tn, tk);
-    var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
-      comp.appendChild(pb);
-  },
-  'hero-with-image': function(comp, content, atoms) {
-    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-    comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
-    var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary'], { w: 700, align: "CENTER" });
-    comp.appendChild(tn); linkText(tn, tk);
-    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
-    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
-    comp.appendChild(sn); linkText(sn, sk);
-    var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
-    var hiBtnP = findVariant(atoms.Button, "Primary").createInstance(); btns.appendChild(hiBtnP); hug(hiBtnP);
-    var hiBtnS = findVariant(atoms.Button, "Secondary").createInstance(); btns.appendChild(hiBtnS); hug(hiBtnS);
-    comp.appendChild(btns);
-    var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage"; img.resize(1100, 500);
-    comp.appendChild(img);
-  },
-  'hero-with-form': function(comp, content, atoms) {
-    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-    comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
-    var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary'], { w: 700, align: "CENTER" });
-    comp.appendChild(tn); linkText(tn, tk);
-    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Description.");
-    var sn = txt("subtitle", content.subtitle || "Description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
-    comp.appendChild(sn); linkText(sn, sk);
-    var formRow = frame("form", { dir: "HORIZONTAL", g: 8 });
-    var input = frame("emailInput", { dir: "HORIZONTAL", bg: C['surface/default'], stroke: C['border/strong'], px: 16, py: 12, r: 8 });
-    input.resize(320, 100); input.counterAxisSizingMode = "FIXED";
-    input.appendChild(txt("placeholder", "Enter your email", 14, FR, C['text/muted']));
-    formRow.appendChild(input);
-    var btn = findVariant(atoms.Button, "Primary").createInstance(); btn.name = "submitBtn";
-      formRow.appendChild(btn); hug(btn);
-    comp.appendChild(formRow);
-  },
-  'features-alternating': function(comp, content, atoms) {
-    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-    comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
-    var tn = txt("title", content.title || "Features", 28, FB, C['text/primary'], { align: "CENTER" });
-    comp.appendChild(tn); linkText(tn, tk);
-    var features = Array.isArray(content.features) ? content.features : [];
-    for (var i = 0; i < features.length; i++) {
-      var row = frame("feature_" + i, { dir: "HORIZONTAL", g: 48, ca: "CENTER" });
-      row.resize(1280, 100); row.counterAxisSizingMode = "FIXED";
-      var textBlock = frame("text_" + i, { dir: "VERTICAL", g: 12 });
-      textBlock.resize(500, 100); textBlock.counterAxisSizingMode = "FIXED";
-      textBlock.appendChild(txt("featTitle_" + i, features[i].title || '', 22, FS, C['text/primary']));
-      textBlock.appendChild(txt("featDesc_" + i, features[i].description || '', 15, FR, C['text/secondary'], { w: 480 }));
-      var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 350);
-      if (i % 2 === 0) { row.appendChild(textBlock); row.appendChild(img); }
-      else { row.appendChild(img); row.appendChild(textBlock); }
-      try { textBlock.layoutSizingHorizontal = "FILL"; } catch(e) { textBlock.layoutGrow = 1; }
-      comp.appendChild(row);
-    }
-  },
-  'features-with-image': function(comp, content, atoms, molecules) {
-    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-    comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-    var header = frame("header", { dir: "HORIZONTAL", g: 48, ca: "CENTER" });
-    header.resize(1280, 100); header.counterAxisSizingMode = "FIXED";
-    var textCol = frame("text", { dir: "VERTICAL", g: 16 });
-    textCol.resize(500, 100); textCol.counterAxisSizingMode = "FIXED";
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
-    var tn = txt("title", content.title || "Features", 28, FB, C['text/primary']);
-    textCol.appendChild(tn); linkText(tn, tk);
-    var features = Array.isArray(content.features) ? content.features : [];
-    for (var i = 0; i < features.length; i++) {
-      var feat = frame("feat_" + i, { dir: "VERTICAL", g: 4 });
-      feat.appendChild(txt("featTitle_" + i, features[i].title || '', 16, FS, C['text/primary']));
-      feat.appendChild(txt("featDesc_" + i, features[i].description || '', 14, FR, C['text/secondary'], { w: 480 }));
-      textCol.appendChild(feat);
-    }
-    header.appendChild(textCol);
-    var img = atoms.ImagePlaceholder.createInstance(); img.resize(600, 400);
-    header.appendChild(img);
-    comp.appendChild(header);
-  },
-  'features-bento': function(comp, content, atoms) {
-    comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-    comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-    comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-    comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
-    comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-    var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
-    var tn = txt("title", content.title || "Features", 28, FB, C['text/primary'], { align: "CENTER" });
-    comp.appendChild(tn); linkText(tn, tk);
-    var grid = frame("grid", { dir: "HORIZONTAL", g: 16 });
-    grid.layoutWrap = "WRAP"; grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED";
-    var features = Array.isArray(content.features) ? content.features : [];
-    for (var i = 0; i < features.length; i++) {
-      var w = i === 0 ? 820 : 444;
-      var card = frame("bento_" + i, { dir: "VERTICAL", g: 12, px: 32, py: 32, r: 16, bg: C['surface/subtle'] });
-      card.resize(w, 100); card.counterAxisSizingMode = "FIXED";
-      card.appendChild(rect(40, 40, C['placeholder/default'], 8));
-      card.appendChild(txt("bentoTitle_" + i, features[i].title || '', 16, FS, C['text/primary']));
-      card.appendChild(txt("bentoDesc_" + i, features[i].description || '', 14, FR, C['text/secondary'], { w: w - 64 }));
-      grid.appendChild(card);
-      try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-    }
-    comp.appendChild(grid);
-  },
-};
-
-function buildOrganism(comp, category, variantId, content, atoms, molecules) {
-  // Check for variant-specific builder first
-  var variantBuilder = VARIANT_SPECIFIC[variantId];
-  if (variantBuilder) { variantBuilder(comp, content, atoms, molecules); return; }
-  // Then category builder
-  var builder = BUILDERS[category];
-  if (builder) builder(comp, content, atoms, molecules);
-  else buildGenericOrganism(comp, content, category);
-}
-
-function buildGenericOrganism(comp, content, category) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 64; comp.paddingBottom = 64;
-  comp.itemSpacing = 16; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || category);
-  var tn = txt("title", content.title || category, 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  if (content.subtitle) {
-    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 16, FR, C['text/secondary'], { w: 600, align: "CENTER" });
-    comp.appendChild(sn); linkText(sn, sk);
-  }
-}
-
-// ── Header ──
-function buildHeaderOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "FIXED"; comp.counterAxisSizingMode = "AUTO";
-  comp.paddingLeft = 32; comp.paddingRight = 32; comp.paddingTop = 16; comp.paddingBottom = 16;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-
-  var lk = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
-  var ln = txt("logo", content.logo || "Logo", 16, FS, C['text/primary']);
-  comp.appendChild(ln); linkText(ln, lk);
-
-  var nav = frame("nav", { dir: "HORIZONTAL", g: 24, ca: "CENTER" });
-  var links = Array.isArray(content.links) ? content.links : [];
-  for (var i = 0; i < links.length; i++) {
-    var link = molecules.NavLink.createInstance(); link.name = "link_" + i;
-    try { var props = link.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) link.setProperties(makeObj(k, links[i].label || '')); } } catch(e) {}
-    nav.appendChild(link);
-  }
-  comp.appendChild(nav); try { nav.layoutSizingHorizontal = "FILL"; } catch(e) {}
-
-  var ctaBtn = atoms.Button.defaultVariant.createInstance();
-  ctaBtn.name = "cta";
-  try { var props = ctaBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) ctaBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch(e) {}
-  comp.appendChild(ctaBtn); hug(ctaBtn);
-}
-
-// ── Hero ──
-function buildHeroOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
-
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing");
-  var tn = txt("title", content.title || "Build something amazing", 48, FB, C['text/primary'], { w: 700, align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-
-  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description.");
-  var sn = txt("subtitle", content.subtitle || "A short description.", 18, FR, C['text/secondary'], { w: 600, align: "CENTER" });
-  comp.appendChild(sn); linkText(sn, sk);
-
-  // Buttons using atom instances
-  var btns = frame("buttons", { dir: "HORIZONTAL", g: 12 });
-  var showPk = comp.addComponentProperty("Show Primary", "BOOLEAN", true);
-  var primaryBtn = findVariant(atoms.Button, "Primary").createInstance();
-  primaryBtn.name = "primaryBtn";
-  try { var props = primaryBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) primaryBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch(e) {}
-  btns.appendChild(primaryBtn); hug(primaryBtn);
-
-  var showSk = comp.addComponentProperty("Show Secondary", "BOOLEAN", true);
-  var secondaryBtn = findVariant(atoms.Button, "Secondary").createInstance();
-  secondaryBtn.name = "secondaryBtn";
-  try { var props = secondaryBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) secondaryBtn.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch(e) {}
-  btns.appendChild(secondaryBtn); hug(secondaryBtn);
-
-  comp.appendChild(btns);
-  hug(primaryBtn); hug(secondaryBtn);
-  linkVis(primaryBtn, showPk);
-  linkVis(secondaryBtn, showSk);
-}
-
-// ── Features ──
-function buildFeaturesOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-
-  var header = frame("header", { dir: "VERTICAL", g: 12, ca: "CENTER" });
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
-  var tn = txt("title", content.title || "Features", 28, FB, C['text/primary'], { align: "CENTER" });
-  header.appendChild(tn);
-  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Everything you need.");
-  var sn = txt("subtitle", content.subtitle || "Everything you need.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
-  header.appendChild(sn);
-  comp.appendChild(header);
-  linkText(tn, tk); linkText(sn, sk);
-
-  var grid = frame("grid", { dir: "HORIZONTAL", g: 24 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var features = Array.isArray(content.features) ? content.features : [];
-  for (var i = 0; i < features.length; i++) {
-    var card = molecules.FeatureCard.createInstance();
-    card.name = "feature_" + i;
-    try {
-      var props = card.componentProperties;
-      for (var k in props) {
-        if (k.indexOf("Title") === 0) card.setProperties(makeObj(k, features[i].title || ''));
-        if (k.indexOf("Description") === 0) card.setProperties(makeObj(k, features[i].description || ''));
-      }
-    } catch(e) {}
-    grid.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Stats ──
-function buildStatsOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 64; comp.paddingBottom = 64;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Stats");
-  var tn = txt("title", content.title || "Stats", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-
-  var row = frame("stats", { dir: "HORIZONTAL", g: 48 });
-  row.resize(1280, 100); row.counterAxisSizingMode = "FIXED"; row.primaryAxisSizingMode = "AUTO";
-  var stats = Array.isArray(content.stats) ? content.stats : [];
-  for (var i = 0; i < stats.length; i++) {
-    var item = molecules.StatItem.createInstance();
-    item.name = "stat_" + i;
-    try {
-      var props = item.componentProperties;
-      for (var k in props) {
-        if (k.indexOf("Value") === 0) item.setProperties(makeObj(k, stats[i].value || ''));
-        if (k.indexOf("Label") === 0) item.setProperties(makeObj(k, stats[i].label || ''));
-      }
-    } catch(e) {}
-    row.appendChild(item);
-    try { item.layoutSizingHorizontal = "FILL"; } catch(e) { item.layoutGrow = 1; }
-
-  }
-  comp.appendChild(row);
-}
-
-// ── Testimonials ──
-function buildTestimonialsOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/subtle'] }];
-
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Testimonials");
-  var tn = txt("title", content.title || "Testimonials", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-
-  var cards = frame("testimonials", { dir: "HORIZONTAL", g: 24 });
-  cards.resize(1280, 100); cards.counterAxisSizingMode = "FIXED"; cards.primaryAxisSizingMode = "AUTO";
-  var items = Array.isArray(content.testimonials) ? content.testimonials : [];
-  for (var i = 0; i < items.length; i++) {
-    var card = molecules.TestimonialCard.createInstance();
-    card.name = "testimonial_" + i;
-    try {
-      var props = card.componentProperties;
-      for (var k in props) {
-        if (k.indexOf("Quote") === 0) card.setProperties(makeObj(k, '"' + (items[i].quote || '') + '"'));
-        if (k.indexOf("Author") === 0) card.setProperties(makeObj(k, items[i].author || ''));
-        if (k.indexOf("Role") === 0) card.setProperties(makeObj(k, items[i].role || ''));
-      }
-    } catch(e) {}
-    cards.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(cards);
-}
-
-// ── CTA ──
-function buildCtaOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/inverse'] }];
-
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Ready to start?");
-  var tn = txt("title", content.title || "Ready to start?", 28, FB, C['text/inverse'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-
-  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Join thousands.");
-  var sn = txt("subtitle", content.subtitle || "Join thousands.", 16, FR, C['text/on-dark'], { w: 500, align: "CENTER" });
-  comp.appendChild(sn); linkText(sn, sk);
-
-  // White button on dark bg
-  var btn = frame("ctaButton", { dir: "HORIZONTAL", bg: C['surface/default'], px: 24, py: 12, r: 8, ca: "CENTER" });
-  var ck = comp.addComponentProperty("Button Text", "TEXT", content.ctaText || "Get Started");
-  var ct = txt("ctaText", content.ctaText || "Get Started", 14, FM, C['text/primary']);
-  btn.appendChild(ct); comp.appendChild(btn); linkText(ct, ck);
-}
-
-// ── Footer ──
-function buildFooterOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 48; comp.paddingBottom = 48;
-  comp.itemSpacing = 32;
-  comp.fills = [{ type: 'SOLID', color: C['surface/inverse'] }];
-
-  var top = frame("top", { dir: "HORIZONTAL", g: 48 });
-  top.resize(W - 160, 100); top.counterAxisSizingMode = "FIXED";
-  var logoCol = frame("logoCol", { dir: "VERTICAL", g: 8 });
-  var lk = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
-  var ln = txt("logo", content.logo || "Logo", 16, FS, C['text/inverse']);
-  logoCol.appendChild(ln);
-  var dk = comp.addComponentProperty("Description", "TEXT", content.description || "Description.");
-  var dn = txt("description", content.description || "Description.", 12, FR, C['text/on-dark'], { w: 200 });
-  logoCol.appendChild(dn);
-  top.appendChild(logoCol);
-
-  var columns = Array.isArray(content.columns) ? content.columns : [];
-  for (var i = 0; i < columns.length; i++) {
-    var colFrame = frame("column_" + i, { dir: "VERTICAL", g: 8 });
-    colFrame.appendChild(txt("columnTitle_" + i, columns[i].title || '', 13, FS, C['text/inverse']));
-    var links = String(columns[i].links || '').split(',');
-    for (var j = 0; j < links.length; j++) {
-      var l = links[j].trim();
-      if (l) colFrame.appendChild(txt("link_" + i + "_" + j, l, 12, FR, C['text/on-dark']));
-    }
-    top.appendChild(colFrame);
-  }
-  comp.appendChild(top);
-  linkText(ln, lk); linkText(dn, dk);
-
-  comp.appendChild(rect(W - 160, 1, C['border/default']));
-  var ck = comp.addComponentProperty("Copyright", "TEXT", content.copyright || "© 2024");
-  var cn = txt("copyright", content.copyright || "© 2024", 12, FR, C['text/muted']);
-  comp.appendChild(cn); linkText(cn, ck);
-}
-
-// ── FAQ ──
-function buildFaqOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "FAQ");
-  var tn = txt("title", content.title || "FAQ", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-
-  var list = frame("questions", { dir: "VERTICAL", g: 0, w: 700 });
-  var questions = Array.isArray(content.questions) ? content.questions : [];
-  for (var i = 0; i < questions.length; i++) {
-    var item = molecules.FaqItem.createInstance();
-    item.name = "qa_" + i;
-    try {
-      var props = item.componentProperties;
-      for (var k in props) {
-        if (k.indexOf("Question") === 0) item.setProperties(makeObj(k, questions[i].question || ''));
-        if (k.indexOf("Answer") === 0) item.setProperties(makeObj(k, questions[i].answer || ''));
-      }
-    } catch(e) {}
-    list.appendChild(item);
-    item.layoutSizingHorizontal = "FILL";
-  }
-  comp.appendChild(list);
-}
-
-// ── Logos ──
-function buildLogosOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 40; comp.paddingBottom = 40;
-  comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Trusted by leading companies");
-  var tn = txt("title", content.title || "Trusted by leading companies", 13, FR, C['text/muted'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var row = frame("logos", { dir: "HORIZONTAL", g: 40, ca: "CENTER" });
-  row.resize(1280, 100); row.counterAxisSizingMode = "FIXED"; row.primaryAxisSizingMode = "AUTO";
-  var logos = Array.isArray(content.logos) ? content.logos : [{},{},{},{},{}];
-  for (var i = 0; i < logos.length; i++) { var r = rect(80, 32, C['placeholder/default'], 6); r.name = "logo_" + i; row.appendChild(r); }
-  try { r.layoutSizingHorizontal = "FILL"; } catch(e) { r.layoutGrow = 1; }
-
-  comp.appendChild(row);
-}
-
-// ── Blog ──
-function buildBlogOrganism(comp, content, atoms, molecules) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Blog");
-  var tn = txt("title", content.title || "Blog", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var grid = frame("posts", { dir: "HORIZONTAL", g: 24 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var posts = Array.isArray(content.posts) ? content.posts : [{ title: 'Post 1', excerpt: 'Excerpt.' }, { title: 'Post 2', excerpt: 'Excerpt.' }, { title: 'Post 3', excerpt: 'Excerpt.' }];
-  for (var i = 0; i < posts.length; i++) {
-    var card = frame("post_" + i, { dir: "VERTICAL", g: 12 });
-    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
-    card.appendChild(rect(348, 160, C['placeholder/default'], 12));
-    card.appendChild(txt("postTitle_" + i, posts[i].title || '', 15, FS, C['text/primary']));
-    card.appendChild(txt("postExcerpt_" + i, posts[i].excerpt || '', 13, FR, C['text/secondary'], { w: 340 }));
-    grid.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Team ──
-function buildTeamOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Team");
-  var tn = txt("title", content.title || "Team", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var grid = frame("members", { dir: "HORIZONTAL", g: 32, ca: "CENTER" });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var members = Array.isArray(content.members) ? content.members : [{ name: 'Jane', role: 'CEO' }, { name: 'John', role: 'CTO' }];
-  for (var i = 0; i < members.length; i++) {
-    var member = frame("member_" + i, { dir: "VERTICAL", g: 8, ca: "CENTER" });
-    var av = atoms.Avatar.createInstance(); av.name = "avatar_" + i;
-    av.resize(80, 80); member.appendChild(av); hug(av);
-    member.appendChild(txt("memberName_" + i, members[i].name || '', 14, FM, C['text/primary'], { align: "CENTER" }));
-    member.appendChild(txt("memberRole_" + i, members[i].role || '', 12, FR, C['text/secondary'], { align: "CENTER" }));
-    grid.appendChild(member);
-    try { member.layoutSizingHorizontal = "FILL"; } catch(e) { member.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── About ──
-function buildAboutOrganism(comp, content, atoms) {
-  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 48; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var textCol = frame("text", { dir: "VERTICAL", g: 16 });
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "About");
-  var tn = txt("title", content.title || "About", 28, FB, C['text/primary']);
-  textCol.appendChild(tn); linkText(tn, tk);
-  var dk = comp.addComponentProperty("Description", "TEXT", content.description || "Description.");
-  var dn = txt("description", content.description || "Description.", 16, FR, C['text/secondary'], { w: 500 });
-  textCol.appendChild(dn); linkText(dn, dk);
-  comp.appendChild(textCol); try { textCol.layoutSizingHorizontal = "FILL"; } catch(e) {}
-  var img = atoms.ImagePlaceholder.createInstance(); img.name = "image";
-  img.resize(480, 320); comp.appendChild(img);
-}
-
-// ── Contact ──
-function buildContactOrganism(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 24; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Contact");
-  var tn = txt("title", content.title || "Contact", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  if (content.subtitle) {
-    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
-    comp.appendChild(sn); linkText(sn, sk);
-  }
-  var info = frame("info", { dir: "HORIZONTAL", g: 32 });
-  if (content.email) info.appendChild(txt("email", content.email, 13, FR, C['text/secondary']));
-  if (content.phone) info.appendChild(txt("phone", content.phone, 13, FR, C['text/secondary']));
-  comp.appendChild(info);
-  // Form placeholder
-  var formFrame = frame("form", { dir: "VERTICAL", g: 12, w: 500 });
-  formFrame.appendChild(rect(500, 44, C['surface/subtle'], 8));
-  formFrame.appendChild(rect(500, 44, C['surface/subtle'], 8));
-  formFrame.appendChild(rect(500, 100, C['surface/subtle'], 8));
-  var btn = frame("submitBtn", { dir: "HORIZONTAL", bg: C['surface/inverse'], px: 24, py: 12, r: 8, ca: "CENTER", ma: "CENTER" });
-  btn.resize(500, 44); btn.counterAxisSizingMode = "FIXED";
-  btn.appendChild(txt("submitText", "Send Message", 14, FM, C['text/inverse'], { align: "CENTER" }));
-  formFrame.appendChild(btn);
-  comp.appendChild(formFrame);
-}
-
-// ── Banner ──
-function buildBannerOrganism(comp, content) {
-  comp.layoutMode = "HORIZONTAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "FIXED"; comp.counterAxisSizingMode = "AUTO";
-  comp.paddingLeft = 32; comp.paddingRight = 32; comp.paddingTop = 12; comp.paddingBottom = 12;
-  comp.itemSpacing = 16; comp.counterAxisAlignItems = "CENTER"; comp.primaryAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/inverse'] }];
-  var tk = comp.addComponentProperty("Text", "TEXT", content.text || "Announcement");
-  var tn = txt("text", content.text || "Announcement", 13, FR, C['text/inverse']);
-  comp.appendChild(tn); linkText(tn, tk);
-  if (content.ctaText) {
-    var ck = comp.addComponentProperty("CTA", "TEXT", content.ctaText);
-    var cn = txt("ctaText", content.ctaText, 13, FM, C['text/on-dark']);
-    comp.appendChild(cn); linkText(cn, ck);
-  }
-}
-
-// ── Process / How It Works ──
-function buildProcessOrganism(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "How it works");
-  var tn = txt("title", content.title || "How it works", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var grid = frame("steps", { dir: "HORIZONTAL", g: 32 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var steps = Array.isArray(content.steps) ? content.steps : [{ title: 'Step 1', description: 'Desc' }, { title: 'Step 2', description: 'Desc' }, { title: 'Step 3', description: 'Desc' }];
-  for (var i = 0; i < steps.length; i++) {
-    var step = frame("step_" + i, { dir: "VERTICAL", g: 12, ca: "CENTER" });
-    var circle = frame("number", { dir: "HORIZONTAL", bg: C['surface/inverse'], r: 9999, ca: "CENTER", ma: "CENTER" });
-    circle.resize(48, 48); circle.counterAxisSizingMode = "FIXED"; circle.primaryAxisSizingMode = "FIXED";
-    circle.appendChild(txt("num", String(i + 1), 18, FB, C['text/inverse'], { align: "CENTER" }));
-    step.appendChild(circle);
-    step.appendChild(txt("stepTitle_" + i, steps[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
-    step.appendChild(txt("stepDesc_" + i, steps[i].description || '', 13, FR, C['text/secondary'], { w: 200, align: "CENTER" }));
-    grid.appendChild(step);
-    try { step.layoutSizingHorizontal = "FILL"; } catch(e) { step.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Error ──
-function buildErrorOrganism(comp, content) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 100; comp.paddingBottom = 100;
-  comp.itemSpacing = 16; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  comp.appendChild(txt("errorCode", "404", 96, FB, C['placeholder/default'], { align: "CENTER" }));
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Page not found");
-  var tn = txt("title", content.title || "Page not found", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  if (content.subtitle) {
-    var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
-    var sn = txt("subtitle", content.subtitle, 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
-    comp.appendChild(sn); linkText(sn, sk);
-  }
-  var btn = frame("ctaBtn", { dir: "HORIZONTAL", bg: C['surface/inverse'], px: 24, py: 12, r: 8, ca: "CENTER" });
-  btn.appendChild(txt("ctaText", content.ctaText || "Go Home", 14, FM, C['text/inverse']));
-  comp.appendChild(btn);
-}
-
-// ── Store ──
-function buildStoreOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Products");
-  var tn = txt("title", content.title || "Products", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var grid = frame("products", { dir: "HORIZONTAL", g: 24 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var products = Array.isArray(content.products) ? content.products : [{ title: 'Product 1', price: '$29' }, { title: 'Product 2', price: '$49' }, { title: 'Product 3', price: '$39' }];
-  for (var i = 0; i < products.length; i++) {
-    var card = frame("product_" + i, { dir: "VERTICAL", g: 12, stroke: C['border/default'], r: 12 });
-    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
-    card.appendChild(rect(348, 180, C['placeholder/default'], 0));
-    var info = frame("info", { dir: "VERTICAL", g: 8, px: 16, py: 16 });
-    info.appendChild(txt("productTitle_" + i, products[i].title || '', 15, FS, C['text/primary']));
-    info.appendChild(txt("productPrice_" + i, products[i].price || '', 16, FB, C['text/primary']));
-    card.appendChild(info);
-    grid.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Pricing ──
-function buildPricingOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 40; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Simple, transparent pricing");
-  var tn = txt("title", content.title || "Simple, transparent pricing", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Choose the plan that works best for you.");
-  var sn = txt("subtitle", content.subtitle || "Choose the plan that works best for you.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
-  comp.appendChild(sn); linkText(sn, sk);
-  var grid = frame("plans", { dir: "HORIZONTAL", g: 24 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var plans = Array.isArray(content.plans) ? content.plans : [{ name: 'Starter', price: '$9', description: 'For individuals', ctaText: 'Get Started' }, { name: 'Pro', price: '$29', description: 'For teams', ctaText: 'Get Started', highlighted: true }, { name: 'Enterprise', price: '$99', description: 'For orgs', ctaText: 'Contact Sales' }];
-  for (var i = 0; i < plans.length; i++) {
-    var p = plans[i];
-    var hl = p.highlighted;
-    var card = frame("plan_" + i, { dir: "VERTICAL", g: 16, px: 32, py: 32, r: 16, bg: hl ? C['surface/inverse'] : C['surface/default'], stroke: hl ? null : C['border/default'] });
-    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
-    card.appendChild(txt("planName_" + i, p.name || '', 20, FS, hl ? C['text/inverse'] : C['text/primary']));
-    var priceRow = frame("priceRow", { dir: "HORIZONTAL", g: 4, ca: "MAX" });
-    priceRow.appendChild(txt("planPrice_" + i, p.price || '', 36, FB, hl ? C['text/inverse'] : C['text/primary']));
-    priceRow.appendChild(txt("planPeriod_" + i, p.period || '/mo', 14, FR, hl ? C['text/on-dark'] : C['text/muted']));
-    card.appendChild(priceRow);
-    card.appendChild(txt("planDesc_" + i, p.description || '', 14, FR, hl ? C['text/on-dark'] : C['text/secondary']));
-    // Features list
-    var feats = String(p.features || '').split(',');
-    for (var j = 0; j < feats.length && j < 4; j++) {
-      card.appendChild(txt("planFeat_" + i + "_" + j, "✓  " + feats[j].trim(), 13, FR, hl ? C['text/on-dark'] : C['text/secondary']));
-    }
-    var btn = findVariant(atoms.Button, hl ? "Secondary" : "Primary").createInstance();
-      btn.name = "planCta_" + i;
-    card.appendChild(btn); hug(btn);
-    grid.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Gallery ──
-function buildGalleryOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 64; comp.paddingBottom = 64;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Our Work");
-  var tn = txt("title", content.title || "Our Work", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var grid = frame("images", { dir: "HORIZONTAL", g: 16 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  grid.layoutWrap = "WRAP";
-  var images = Array.isArray(content.images) ? content.images : [{ caption: 'Project 1' }, { caption: 'Project 2' }, { caption: 'Project 3' }];
-  for (var i = 0; i < images.length; i++) {
-    var item = frame("image_" + i, { dir: "VERTICAL", g: 8 });
-    item.appendChild(rect(400, 260, C['placeholder/default'], 12));
-    item.appendChild(txt("caption_" + i, images[i].caption || '', 13, FR, C['text/muted']));
-    grid.appendChild(item);
-    try { item.layoutSizingHorizontal = "FILL"; } catch(e) { item.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Comparison ──
-function buildComparisonOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Compare plans");
-  var tn = txt("title", content.title || "Compare plans", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  // Table header
-  var headerRow = frame("tableHeader", { dir: "HORIZONTAL", g: 0 });
-  headerRow.resize(1280, 100); headerRow.counterAxisSizingMode = "FIXED";
-  headerRow.appendChild(txt("colFeature", "Feature", 14, FS, C['text/primary'], { w: 320 }));
-  headerRow.appendChild(txt("colBasic", "Basic", 14, FS, C['text/primary'], { w: 320, align: "CENTER" }));
-  headerRow.appendChild(txt("colPro", "Pro", 14, FS, C['text/primary'], { w: 320, align: "CENTER" }));
-  headerRow.appendChild(txt("colEnterprise", "Enterprise", 14, FS, C['text/primary'], { w: 320, align: "CENTER" }));
-  comp.appendChild(headerRow);
-  // Table rows
-  var items = Array.isArray(content.items) ? content.items : [{ feature: 'Feature 1' }, { feature: 'Feature 2' }, { feature: 'Feature 3' }];
-  for (var i = 0; i < items.length; i++) {
-    var row = frame("row_" + i, { dir: "HORIZONTAL", g: 0, stroke: C['border/default'] });
-    row.resize(1280, 100); row.counterAxisSizingMode = "FIXED";
-    row.paddingTop = 12; row.paddingBottom = 12;
-    row.strokesIncludedInLayout = false;
-    row.appendChild(txt("feat_" + i, items[i].feature || 'Feature ' + (i+1), 14, FR, C['text/primary'], { w: 320 }));
-    row.appendChild(txt("basic_" + i, "✓", 14, FR, C['text/secondary'], { w: 320, align: "CENTER" }));
-    row.appendChild(txt("pro_" + i, "✓", 14, FR, C['text/secondary'], { w: 320, align: "CENTER" }));
-    row.appendChild(txt("ent_" + i, "✓", 14, FR, C['text/secondary'], { w: 320, align: "CENTER" }));
-    comp.appendChild(row);
-  }
-}
-
-// ── Showcase ──
-function buildShowcaseOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32;
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var headerRow = frame("header", { dir: "HORIZONTAL", g: 16 });
-  headerRow.resize(1280, 100); headerRow.counterAxisSizingMode = "FIXED"; headerRow.counterAxisAlignItems = "CENTER";
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Our Collection");
-  var tn = txt("title", content.title || "Our Collection", 28, FB, C['text/primary']);
-  headerRow.appendChild(tn); try { tn.layoutSizingHorizontal = "FILL"; } catch(e) {} linkText(tn, tk);
-  var viewBtn = findVariant(atoms.Button, "Secondary").createInstance();
-  headerRow.appendChild(viewBtn); hug(viewBtn);
-  comp.appendChild(headerRow);
-  // Categories
-  var cats = frame("categories", { dir: "HORIZONTAL", g: 8 });
-  var categories = Array.isArray(content.categories) ? content.categories : [{ label: 'All' }, { label: 'Design' }, { label: 'Development' }];
-  for (var i = 0; i < categories.length; i++) {
-    var pill = frame("cat_" + i, { dir: "HORIZONTAL", px: 16, py: 6, r: 9999, bg: i === 0 ? C['surface/inverse'] : C['surface/muted'] });
-    pill.appendChild(txt("catLabel_" + i, categories[i].label || '', 13, FM, i === 0 ? C['text/inverse'] : C['text/secondary']));
-    cats.appendChild(pill);
-  }
-  comp.appendChild(cats);
-  // Items grid
-  var grid = frame("items", { dir: "HORIZONTAL", g: 24 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var items = Array.isArray(content.items) ? content.items : [{ title: 'Item One', description: 'Description' }, { title: 'Item Two', description: 'Description' }, { title: 'Item Three', description: 'Description' }];
-  for (var i = 0; i < items.length; i++) {
-    var card = frame("item_" + i, { dir: "VERTICAL", g: 0, stroke: C['border/default'], r: 12 });
-    card.resize(380, 100); card.counterAxisSizingMode = "FIXED"; card.clipsContent = true;
-    card.appendChild(rect(380, 220, C['placeholder/default'], 0));
-    var info = frame("info", { dir: "VERTICAL", g: 4, px: 16, py: 16 });
-    info.appendChild(txt("itemTitle_" + i, items[i].title || '', 15, FS, C['text/primary']));
-    info.appendChild(txt("itemDesc_" + i, items[i].description || '', 13, FR, C['text/secondary']));
-    card.appendChild(info);
-    grid.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// ── Downloads ──
-function buildDownloadsOrganism(comp, content, atoms) {
-  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
-  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
-  comp.paddingLeft = 80; comp.paddingRight = 80; comp.paddingTop = 80; comp.paddingBottom = 80;
-  comp.itemSpacing = 32; comp.counterAxisAlignItems = "CENTER";
-  comp.fills = [{ type: 'SOLID', color: C['surface/default'] }];
-  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Download our app");
-  var tn = txt("title", content.title || "Download our app", 28, FB, C['text/primary'], { align: "CENTER" });
-  comp.appendChild(tn); linkText(tn, tk);
-  var sk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Available on all platforms.");
-  var sn = txt("subtitle", content.subtitle || "Available on all platforms.", 16, FR, C['text/secondary'], { w: 500, align: "CENTER" });
-  comp.appendChild(sn); linkText(sn, sk);
-  var grid = frame("downloads", { dir: "HORIZONTAL", g: 24 });
-  grid.resize(1280, 100); grid.counterAxisSizingMode = "FIXED"; grid.primaryAxisSizingMode = "AUTO";
-  var items = Array.isArray(content.items) ? content.items : [{ title: 'Desktop App', description: 'For Mac and Windows' }, { title: 'Mobile App', description: 'iOS and Android' }, { title: 'Browser Extension', description: 'Chrome and Firefox' }];
-  for (var i = 0; i < items.length; i++) {
-    var card = frame("download_" + i, { dir: "VERTICAL", g: 12, px: 32, py: 32, stroke: C['border/default'], r: 16, ca: "CENTER" });
-    card.resize(380, 100); card.counterAxisSizingMode = "FIXED";
-    card.appendChild(rect(64, 64, C['placeholder/default'], 16));
-    card.appendChild(txt("dlTitle_" + i, items[i].title || '', 16, FS, C['text/primary'], { align: "CENTER" }));
-    card.appendChild(txt("dlDesc_" + i, items[i].description || '', 13, FR, C['text/secondary'], { align: "CENTER" }));
-    var btn = findVariant(atoms.Button, "Primary").createInstance();
-      card.appendChild(btn); hug(btn);
-    grid.appendChild(card);
-    try { card.layoutSizingHorizontal = "FILL"; } catch(e) { card.layoutGrow = 1; }
-
-  }
-  comp.appendChild(grid);
-}
-
-// Builder map
-var BUILDERS = {
-  header: buildHeaderOrganism,
-  hero: buildHeroOrganism,
-  features: buildFeaturesOrganism,
-  stats: buildStatsOrganism,
-  testimonials: buildTestimonialsOrganism,
-  cta: buildCtaOrganism,
-  footer: buildFooterOrganism,
-  faq: buildFaqOrganism,
-  logos: buildLogosOrganism,
-  blog: buildBlogOrganism,
-  team: buildTeamOrganism,
-  about: buildAboutOrganism,
-  contact: buildContactOrganism,
-  banner: buildBannerOrganism,
-  process: buildProcessOrganism,
-  error: buildErrorOrganism,
-  store: buildStoreOrganism,
-  pricing: buildPricingOrganism,
-  gallery: buildGalleryOrganism,
-  comparison: buildComparisonOrganism,
-  showcase: buildShowcaseOrganism,
-  downloads: buildDownloadsOrganism,
-};
-
-// Helper to make a single-key object
-function makeObj(k, v) { var o = {}; o[k] = v; return o; }
-
-// Find a variant component inside a component set
 function findVariant(set, styleName) {
   if (set.type === "COMPONENT") return set;
   var children = set.children || [];
@@ -1250,7 +655,910 @@ function findVariant(set, styleName) {
   return children[0] || set;
 }
 
-// Default content — used for component definitions
+// ── HEADER BUILDERS ──
+
+function buildHeaderSimple(comp, content, atoms, molecules) {
+  // header: bg py-4 px-8 → max-w-7xl flex items-center justify-between
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 16; comp.paddingBottom = 16;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "HORIZONTAL", w: MAX_W['7xl'], ca: "CENTER", ma: "SPACE_BETWEEN" });
+
+
+  // Logo
+  var lk = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
+  var ln = txt("logo", content.logo || "Logo", 'xl', FB, 'text');
+  inner.appendChild(ln); linkText(ln, lk);
+
+  // Nav links
+  var nav = frame("nav", { dir: "HORIZONTAL", g: 32, ca: "CENTER" });
+  var links = Array.isArray(content.links) ? content.links : [];
+  for (var i = 0; i < links.length; i++) {
+    var link = molecules.NavLink.createInstance(); link.name = "link_" + i;
+    try { var props = link.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) link.setProperties(makeObj(k, links[i].label || '')); } } catch (e) {}
+    nav.appendChild(link);
+  }
+  inner.appendChild(nav);
+
+  // CTA button
+  var ctaBtn = atoms.ButtonSmall.createInstance(); ctaBtn.name = "cta";
+  try { var props = ctaBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) ctaBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch (e) {}
+  inner.appendChild(ctaBtn); hug(ctaBtn);
+
+  comp.appendChild(inner);
+}
+
+function buildHeaderCentered(comp, content, atoms, molecules) {
+  // header: bg px-8 py-5 → flex-col items-center gap-4
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 20; comp.paddingBottom = 20;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'], g: 16, ca: "CENTER" });
+
+
+  var lk = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
+  var ln = txt("logo", content.logo || "Logo", 'xl', FB, 'text');
+  inner.appendChild(ln); linkText(ln, lk);
+
+  var nav = frame("nav", { dir: "HORIZONTAL", g: 32, ca: "CENTER" });
+  var links = Array.isArray(content.links) ? content.links : [];
+  for (var i = 0; i < links.length; i++) {
+    var link = molecules.NavLink.createInstance(); link.name = "link_" + i;
+    try { var props = link.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) link.setProperties(makeObj(k, links[i].label || '')); } } catch (e) {}
+    nav.appendChild(link);
+  }
+  var ctaBtn = atoms.ButtonSmall.createInstance(); ctaBtn.name = "cta";
+  try { var props = ctaBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) ctaBtn.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch (e) {}
+  nav.appendChild(ctaBtn); hug(ctaBtn);
+  inner.appendChild(nav);
+
+  comp.appendChild(inner);
+}
+
+// ── HERO BUILDERS ──
+
+function buildHeroCentered(comp, content, atoms) {
+  // section: bgAlt py-20 px-8 → max-w-3xl text-center
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['3xl'], ca: "CENTER" });
+
+
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing today");
+  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk);
+
+  // mt-6 = 24px gap
+  var sub = frame("subtitle_wrap", { dir: "VERTICAL", pt: 24 });
+  var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product or service.");
+  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { w: MAX_W['3xl'], align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk);
+  inner.appendChild(sub);
+
+  // mt-10 = 40px, buttons row
+  var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 40, ca: "CENTER" });
+  var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
+  try { var props = pb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) pb.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch (e) {}
+  btns.appendChild(pb); hug(pb);
+  var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
+  try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
+  btns.appendChild(sb); hug(sb);
+  inner.appendChild(btns);
+
+  comp.appendChild(inner);
+}
+
+function buildHeroSplit(comp, content, atoms) {
+  // section: bg px-8 py-24 → max-w-7xl grid-cols-2 gap-16 items-center
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 96; comp.paddingBottom = 96;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "HORIZONTAL", w: MAX_W['7xl'], g: 64, ca: "CENTER" });
+
+  // Text column — takes remaining space
+  var textColW = Math.floor((MAX_W['7xl'] - 64) / 2);
+  var textCol = frame("textContent", { dir: "VERTICAL", w: textColW });
+
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing today");
+  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { w: textColW });
+  textCol.appendChild(tn); linkText(tn, tk);
+
+  var sub = frame("subtitle_wrap", { dir: "VERTICAL", pt: 24 });
+  var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product or service.");
+  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { w: textColW });
+  sub.appendChild(sn); linkText(sn, stk);
+  textCol.appendChild(sub);
+
+  var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 40 });
+  var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
+  try { var props = pb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) pb.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch (e) {}
+  btns.appendChild(pb); hug(pb);
+  var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
+  try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
+  btns.appendChild(sb); hug(sb);
+  textCol.appendChild(btns);
+
+  inner.appendChild(textCol);
+  fillH(textCol);
+
+  // Image placeholder (aspect-[4/3]) — same width as text col
+  var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage";
+  img.resize(textColW, Math.round(textColW * 0.75));
+  inner.appendChild(img);
+
+  comp.appendChild(inner);
+}
+
+function buildHeroWithImage(comp, content, atoms) {
+  // section: bgAlt py-20 px-8 → max-w-5xl text-center
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['5xl'], ca: "CENTER" });
+
+
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Build something amazing today");
+  var tn = txt("title", content.title || "Build something amazing today", '5xl', FB, 'text', { w: MAX_W['5xl'], align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk);
+
+  var sub = frame("subtitle_wrap", { dir: "VERTICAL", pt: 24, ca: "CENTER" });
+  var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "A short description of your product or service.");
+  var sn = txt("subtitle", content.subtitle || "A short description of your product or service.", 'xl', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk);
+  inner.appendChild(sub);
+
+  var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 40, ca: "CENTER" });
+  var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
+  try { var props = pb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) pb.setProperties(makeObj(k, content.ctaText || "Get Started")); } } catch (e) {}
+  btns.appendChild(pb); hug(pb);
+  var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
+  try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText || "Learn More")); } } catch (e) {}
+  btns.appendChild(sb); hug(sb);
+  inner.appendChild(btns);
+
+  // mt-16 = 64px, image placeholder (w-full h-80 = 320px)
+  var imgWrap = frame("image_wrap", { dir: "VERTICAL", pt: 64 });
+  var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage";
+  img.resize(MAX_W['5xl'], 320);
+  imgWrap.appendChild(img); fillH(img);
+  inner.appendChild(imgWrap);
+
+  comp.appendChild(inner);
+}
+
+// ── FEATURES BUILDERS ──
+
+function buildFeaturesGrid(comp, content, atoms, molecules) {
+  // section: bg py-20 px-8 → max-w-7xl
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'] });
+
+
+  // Header: text-center max-w-2xl mx-auto
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Everything you need");
+  var tn = txt("title", content.title || "Everything you need", '3xl', FB, 'text', { w: MAX_W['2xl'], align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  if (content.subtitle) {
+    var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+    var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk);
+    header.appendChild(sub);
+  }
+  inner.appendChild(header); fillH(header);
+  fillH(header);
+
+  // mt-16 = 64px, grid gap-8 = 32px, 3 cols
+  var gridWrap = frame("grid_wrap", { dir: "VERTICAL", pt: 64 });
+  var grid = frame("grid", { dir: "HORIZONTAL", w: MAX_W['7xl'], g: 32, wrap: true });
+  grid.counterAxisSpacing = 32;
+
+  var features = Array.isArray(content.features) ? content.features : [];
+  var colW = Math.floor((MAX_W['7xl'] - 64) / 3);
+  for (var i = 0; i < features.length; i++) {
+    var card = molecules.FeatureCard.createInstance(); card.name = "feature_" + i;
+    card.resize(colW, card.height);
+    try {
+      var props = card.componentProperties;
+      for (var k in props) {
+        if (k.indexOf("Title") === 0) card.setProperties(makeObj(k, features[i].title || ''));
+        if (k.indexOf("Description") === 0) card.setProperties(makeObj(k, features[i].description || ''));
+      }
+    } catch (e) {}
+    grid.appendChild(card);
+    fillH(card);
+  }
+  gridWrap.appendChild(grid);
+  inner.appendChild(gridWrap);
+  comp.appendChild(inner);
+}
+
+function buildFeaturesAlternating(comp, content, atoms) {
+  // section: bgAlt px-8 py-24 → max-w-7xl
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 96; comp.paddingBottom = 96;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'] });
+
+
+  // Header
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
+  var tn = txt("title", content.title || "Features", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  if (content.subtitle) {
+    var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+    var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk);
+    header.appendChild(sub);
+  }
+  inner.appendChild(header); fillH(header);
+
+  // mt-20=80px, gap-24=96px between rows
+  var rows = frame("features", { dir: "VERTICAL", g: 96, pt: 80 });
+  setFixedW(rows, MAX_W['7xl']);
+  var features = Array.isArray(content.features) ? content.features : [];
+  for (var i = 0; i < features.length; i++) {
+    // grid-cols-2 gap-16=64px items-center
+    var row = frame("feature_" + i, { dir: "HORIZONTAL", g: 64, ca: "CENTER" });
+    setFixedW(row, MAX_W['7xl']);
+
+    var textBlock = frame("text_" + i, { dir: "VERTICAL" });
+    textBlock.appendChild(txt("featTitle_" + i, features[i].title || '', '2xl', FS, 'text'));
+    var descWrap = frame("desc_wrap", { dir: "VERTICAL", pt: 16 });
+    descWrap.appendChild(txt("featDesc_" + i, features[i].description || '', 'base', FR, 'textSecondary', { w: 500 }));
+    textBlock.appendChild(descWrap);
+
+    var img = atoms.ImagePlaceholder.createInstance(); img.name = "image_" + i;
+    img.resize(560, 420);
+
+    if (i % 2 === 0) { row.appendChild(textBlock); row.appendChild(img); }
+    else { row.appendChild(img); row.appendChild(textBlock); }
+    fillH(textBlock);
+
+    rows.appendChild(row);
+  }
+  inner.appendChild(rows);
+  comp.appendChild(inner);
+}
+
+function buildFeaturesWithImage(comp, content, atoms) {
+  // section: bg px-8 py-24 → max-w-7xl
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 96; comp.paddingBottom = 96;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['7xl'] });
+
+
+  // Header
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Features");
+  var tn = txt("title", content.title || "Features", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  if (content.subtitle) {
+    var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+    var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk);
+    header.appendChild(sub);
+  }
+  inner.appendChild(header); fillH(header);
+
+  // grid-cols-2 gap-12=48px items-center
+  var grid = frame("grid", { dir: "HORIZONTAL", g: 48, pt: 64, ca: "CENTER" });
+  setFixedW(grid, MAX_W['7xl']);
+
+  var img = atoms.ImagePlaceholder.createInstance(); img.name = "heroImage";
+  img.resize(560, 320);
+  grid.appendChild(img);
+
+  var featCol = frame("features", { dir: "VERTICAL", g: 32 });
+  var features = Array.isArray(content.features) ? content.features : [];
+  for (var i = 0; i < features.length; i++) {
+    var feat = frame("feat_" + i, { dir: "HORIZONTAL", g: 16 });
+    var icon = atoms.IconPlaceholder.createInstance(); icon.name = "icon_" + i;
+    feat.appendChild(icon); hug(icon);
+    var textBlock = frame("text_" + i, { dir: "VERTICAL", g: 4 });
+    textBlock.appendChild(txt("featTitle_" + i, features[i].title || '', 'lg', FS, 'text'));
+    textBlock.appendChild(txt("featDesc_" + i, features[i].description || '', 'sm', FR, 'textSecondary', { w: 400 }));
+    feat.appendChild(textBlock);
+    featCol.appendChild(feat);
+  }
+  grid.appendChild(featCol);
+  fillH(featCol);
+
+  inner.appendChild(grid);
+  comp.appendChild(inner);
+}
+
+// ── PRICING BUILDER ──
+
+function buildPricing3Col(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'] });
+
+
+  // Header
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Simple, transparent pricing");
+  var tn = txt("title", content.title || "Simple, transparent pricing", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+  var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Choose the plan that works best for you.");
+  var sn = txt("subtitle", content.subtitle || "Choose the plan that works best for you.", 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk);
+  header.appendChild(sub);
+  inner.appendChild(header); fillH(header);
+
+  // grid gap-8=32px, mt-16=64px
+  var grid = frame("plans", { dir: "HORIZONTAL", g: 32, pt: 64 });
+  setFixedW(grid, MAX_W['6xl']);
+
+  var plans = Array.isArray(content.plans) ? content.plans : [];
+  for (var i = 0; i < plans.length; i++) {
+    var p = plans[i];
+    var hl = p.highlighted;
+    var cardBg = hl ? 'hlBg' : 'bg';
+    var cardText = hl ? 'hlText' : 'text';
+    var cardTextSec = hl ? 'hlTextSec' : 'textSecondary';
+    var card = frame("plan_" + i, {
+      dir: "VERTICAL", p: 32, r: 16,
+      bg: cardBg,
+      stroke: hl ? null : 'border',
+    });
+    card.resize(350, 100); card.counterAxisSizingMode = "FIXED";
+
+    card.appendChild(txt("planName_" + i, p.name || 'Plan', 'xl', FS, cardText));
+
+    // Price row
+    var priceRow = frame("priceRow", { dir: "HORIZONTAL", g: 4, ca: "MAX", pt: 8 });
+    priceRow.appendChild(txt("planPrice_" + i, p.price || '$9', '4xl', FB, cardText));
+    priceRow.appendChild(txt("planPeriod_" + i, p.period || '/mo', 'sm', FR, cardTextSec));
+    card.appendChild(priceRow);
+
+    var descWrap = frame("desc_wrap", { dir: "VERTICAL", pt: 16 });
+    descWrap.appendChild(txt("planDesc_" + i, p.description || '', 'sm', FR, cardTextSec));
+    card.appendChild(descWrap);
+
+    // Features list
+    var feats = String(p.features || '').split(',');
+    var featList = frame("features", { dir: "VERTICAL", g: 12, pt: 24 });
+    for (var j = 0; j < feats.length && j < 6; j++) {
+      var f = feats[j].trim();
+      if (f) featList.appendChild(txt("planFeat_" + i + "_" + j, "✓  " + f, 'sm', FR, cardTextSec));
+    }
+    card.appendChild(featList);
+
+    // CTA button
+    var btnWrap = frame("btn_wrap", { dir: "VERTICAL", pt: 32 });
+    if (hl) {
+      var btn = frame("planCta_" + i, { dir: "HORIZONTAL", bg: 'hlBtnBg', px: 24, py: 12, r: 8, ca: "CENTER", ma: "CENTER" });
+      btn.resize(card.width - 64, 44); btn.counterAxisSizingMode = "FIXED";
+      btn.appendChild(txt("ctaText", p.ctaText || "Get Started", 'sm', FM, 'hlBtnText', { align: "CENTER" }));
+      btnWrap.appendChild(btn); fillH(btn);
+    } else {
+      var btn = findVariant(atoms.Button, "Primary").createInstance(); btn.name = "planCta_" + i;
+      try { var props = btn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) btn.setProperties(makeObj(k, p.ctaText || "Get Started")); } } catch (e) {}
+      btnWrap.appendChild(btn); fillH(btn);
+    }
+    card.appendChild(btnWrap);
+
+    grid.appendChild(card);
+    fillH(card);
+  }
+  inner.appendChild(grid);
+  comp.appendChild(inner);
+}
+
+// ── TESTIMONIALS BUILDER ──
+
+function buildTestimonialsCards(comp, content, atoms, molecules) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'] });
+
+
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "What our customers say");
+  var tn = txt("title", content.title || "What our customers say", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  inner.appendChild(header); fillH(header);
+
+  var grid = frame("testimonials", { dir: "HORIZONTAL", g: 32, pt: 64 });
+  setFixedW(grid, MAX_W['6xl']);
+  var items = Array.isArray(content.testimonials) ? content.testimonials : [];
+  for (var i = 0; i < items.length; i++) {
+    var card = molecules.TestimonialCard.createInstance(); card.name = "testimonial_" + i;
+    try {
+      var props = card.componentProperties;
+      for (var k in props) {
+        if (k.indexOf("Quote") === 0) card.setProperties(makeObj(k, items[i].quote || ''));
+        if (k.indexOf("Author") === 0) card.setProperties(makeObj(k, items[i].author || ''));
+        if (k.indexOf("Role") === 0) card.setProperties(makeObj(k, items[i].role || ''));
+      }
+    } catch (e) {}
+    grid.appendChild(card);
+    fillH(card);
+  }
+  inner.appendChild(grid);
+  comp.appendChild(inner);
+}
+
+// ── CTA BUILDER ──
+
+function buildCtaCentered(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['3xl'], ca: "CENTER" });
+
+
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Ready to get started?");
+  var tn = txt("title", content.title || "Ready to get started?", '3xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk);
+
+  var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+  var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle || "Join thousands of satisfied customers today.");
+  var sn = txt("subtitle", content.subtitle || "Join thousands of satisfied customers today.", 'lg', FR, 'textSecondary', { w: MAX_W['3xl'], align: "CENTER" });
+  sub.appendChild(sn); linkText(sn, stk);
+  inner.appendChild(sub);
+
+  var btns = frame("buttons", { dir: "HORIZONTAL", g: 16, pt: 32, ca: "CENTER" });
+  var pb = findVariant(atoms.Button, "Primary").createInstance(); pb.name = "primaryBtn";
+  try { var props = pb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) pb.setProperties(makeObj(k, content.ctaText || "Start Free Trial")); } } catch (e) {}
+  btns.appendChild(pb); hug(pb);
+  if (content.ctaSecondaryText) {
+    var sb = findVariant(atoms.Button, "Secondary").createInstance(); sb.name = "secondaryBtn";
+    try { var props = sb.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) sb.setProperties(makeObj(k, content.ctaSecondaryText)); } } catch (e) {}
+    btns.appendChild(sb); hug(sb);
+  }
+  inner.appendChild(btns);
+
+  comp.appendChild(inner);
+}
+
+// ── FAQ BUILDER ──
+
+function buildFaqAccordion(comp, content, atoms, molecules) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['3xl'] });
+
+  // Header: text-center mb-12
+  var header = frame("header", { dir: "VERTICAL", w: MAX_W['3xl'], ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Frequently asked questions");
+  var tn = txt("title", content.title || "Frequently asked questions", '3xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  if (content.subtitle) {
+    var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+    var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['3xl'], align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk);
+    header.appendChild(sub);
+  }
+  inner.appendChild(header); fillH(header);
+
+  // FAQ list: divide-y border-t border-b (only top/bottom borders, dividers between items)
+  var list = frame("questions", { dir: "VERTICAL", g: 0, pt: 48 });
+  setFixedW(list, MAX_W['3xl']);
+
+  // Top border line
+  var topLine = rect(MAX_W['3xl'], 1, 'border', 0);
+  list.appendChild(topLine); fillH(topLine);
+
+  var questions = Array.isArray(content.questions) ? content.questions : [];
+  for (var i = 0; i < questions.length; i++) {
+    // Build each FAQ item inline (not molecule instance) so content flows through
+    var item = frame("qa_" + i, { dir: "VERTICAL", g: 8, py: 24 });
+    setFixedW(item, MAX_W['3xl']);
+    item.appendChild(txt("question_" + i, questions[i].question || '', 'lg', FS, 'text', { w: MAX_W['3xl'] }));
+    item.appendChild(txt("answer_" + i, questions[i].answer || '', 'base', FR, 'textSecondary', { w: MAX_W['3xl'] }));
+    list.appendChild(item);
+    fillH(item);
+
+    // Divider line after each item
+    var divLine = rect(MAX_W['3xl'], 1, 'border', 0);
+    list.appendChild(divLine); fillH(divLine);
+  }
+
+  inner.appendChild(list);
+  comp.appendChild(inner);
+}
+
+// ── STATS BUILDER ──
+
+function buildStatsRow(comp, content, atoms, molecules) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'] });
+
+
+  var header = frame("header", { dir: "VERTICAL", ca: "CENTER" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Trusted by thousands");
+  var tn = txt("title", content.title || "Trusted by thousands", '3xl', FB, 'text', { align: "CENTER" });
+  header.appendChild(tn); linkText(tn, tk);
+  inner.appendChild(header); fillH(header);
+
+  var row = frame("stats", { dir: "HORIZONTAL", g: 32, pt: 64 });
+  setFixedW(row, MAX_W['6xl']);
+  var stats = Array.isArray(content.stats) ? content.stats : [];
+  for (var i = 0; i < stats.length; i++) {
+    var item = molecules.StatItem.createInstance(); item.name = "stat_" + i;
+    try {
+      var props = item.componentProperties;
+      for (var k in props) {
+        if (k.indexOf("Value") === 0) item.setProperties(makeObj(k, stats[i].value || ''));
+        if (k.indexOf("Label") === 0) item.setProperties(makeObj(k, stats[i].label || ''));
+      }
+    } catch (e) {}
+    row.appendChild(item);
+    fillH(item);
+  }
+  inner.appendChild(row);
+  comp.appendChild(inner);
+}
+
+// ── LOGOS BUILDER ──
+
+function buildLogosSimple(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 24; comp.paddingRight = 24;
+  comp.paddingTop = 64; comp.paddingBottom = 64;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['5xl'], ca: "CENTER" });
+
+
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Trusted by leading companies");
+  var tn = txt("title", content.title || "Trusted by leading companies", 'lg', FM, 'textSecondary', { w: MAX_W['5xl'], align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk);
+
+  var row = frame("logos", { dir: "HORIZONTAL", g: 32, pt: 40, ca: "CENTER", ma: "CENTER", wrap: true });
+  setFixedW(row, MAX_W['5xl']);
+  var logos = Array.isArray(content.logos) ? content.logos : [{},{},{},{},{}];
+  for (var i = 0; i < logos.length; i++) {
+    var logoItem = frame("logo_" + i, { dir: "VERTICAL", g: 8, ca: "CENTER" });
+    var r = rect(96, 48, 'bgPlaceholder', 8);
+    logoItem.appendChild(r);
+    if (logos[i].name) logoItem.appendChild(txt("name_" + i, logos[i].name, 'xs', FR, 'textMuted'));
+    row.appendChild(logoItem);
+  }
+  inner.appendChild(row);
+  comp.appendChild(inner);
+}
+
+// ── BANNER BUILDER ──
+
+function buildBannerSimple(comp, content) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 16; comp.paddingRight = 16;
+  comp.paddingTop = 12; comp.paddingBottom = 12;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+  comp.strokes = [{ type: 'SOLID', color: sc('border') }];
+  bindStroke(comp, 'border');
+  comp.strokeWeight = 1; comp.strokeAlign = "INSIDE";
+
+  var tk = comp.addComponentProperty("Text", "TEXT", content.text || "We just launched v2.0!");
+  var tn = txt("text", content.text || "We just launched v2.0!", 'sm', FR, 'textSecondary', { align: "CENTER" });
+  comp.appendChild(tn); linkText(tn, tk);
+}
+
+// ── CONTACT BUILDER ──
+
+function buildContactSplit(comp, content, atoms) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 24; comp.paddingRight = 24;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "HORIZONTAL", w: MAX_W['5xl'], g: 48 });
+
+
+  // Left column — info
+  var leftCol = frame("info", { dir: "VERTICAL" });
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || "Get in touch");
+  var tn = txt("title", content.title || "Get in touch", '3xl', FB, 'text');
+  leftCol.appendChild(tn); linkText(tn, tk);
+
+  if (content.subtitle) {
+    var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+    var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 'base', FR, 'textSecondary');
+    sub.appendChild(sn); linkText(sn, stk);
+    leftCol.appendChild(sub);
+  }
+
+  var infoGroup = frame("details", { dir: "VERTICAL", g: 16, pt: 32 });
+  if (content.email) {
+    var emailRow = frame("email", { dir: "HORIZONTAL", g: 12, ca: "CENTER" });
+    emailRow.appendChild(rect(20, 20, 'bgAvatar', 4));
+    emailRow.appendChild(txt("email", content.email, 'base', FR, 'textSecondary'));
+    infoGroup.appendChild(emailRow);
+  }
+  if (content.phone) {
+    var phoneRow = frame("phone", { dir: "HORIZONTAL", g: 12, ca: "CENTER" });
+    phoneRow.appendChild(rect(20, 20, 'bgAvatar', 4));
+    phoneRow.appendChild(txt("phone", content.phone, 'base', FR, 'textSecondary'));
+    infoGroup.appendChild(phoneRow);
+  }
+  leftCol.appendChild(infoGroup);
+  inner.appendChild(leftCol);
+  fillH(leftCol);
+
+  // Right column — form
+  var rightCol = frame("form", { dir: "VERTICAL", g: 16 });
+  var nameInput = atoms.InputField.createInstance(); nameInput.name = "nameInput";
+  try { var props = nameInput.componentProperties; for (var k in props) { if (k.indexOf("Placeholder") === 0) nameInput.setProperties(makeObj(k, "Your name")); } } catch (e) {}
+  rightCol.appendChild(nameInput); fillH(nameInput);
+  var emailInput = atoms.InputField.createInstance(); emailInput.name = "emailInput";
+  try { var props = emailInput.componentProperties; for (var k in props) { if (k.indexOf("Placeholder") === 0) emailInput.setProperties(makeObj(k, "Your email")); } } catch (e) {}
+  rightCol.appendChild(emailInput); fillH(emailInput);
+  // Textarea placeholder
+  var ta = frame("textarea", { dir: "VERTICAL", bg: 'bg', stroke: 'border', px: 16, py: 12, r: 8 });
+  ta.resize(400, 120); ta.counterAxisSizingMode = "FIXED";
+  ta.appendChild(txt("placeholder", "Your message", 'sm', FR, 'textMuted'));
+  rightCol.appendChild(ta); fillH(ta);
+  // Submit button
+  var submitBtn = findVariant(atoms.Button, "Primary").createInstance(); submitBtn.name = "submitBtn";
+  try { var props = submitBtn.componentProperties; for (var k in props) { if (k.indexOf("Label") === 0) submitBtn.setProperties(makeObj(k, "Send Message")); } } catch (e) {}
+  rightCol.appendChild(submitBtn); fillH(submitBtn);
+  inner.appendChild(rightCol);
+  fillH(rightCol);
+
+  comp.appendChild(inner);
+}
+
+// ── FOOTER BUILDERS ──
+
+function buildFooter4Col(comp, content, atoms, molecules) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 64; comp.paddingBottom = 64;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['5xl'] });
+
+
+  // Columns: grid-cols-4 gap-8=32px
+  var grid = frame("columns", { dir: "HORIZONTAL", g: 32 });
+  setFixedW(grid, MAX_W['5xl']);
+
+  // Logo column
+  var logoCol = frame("logoCol", { dir: "VERTICAL", g: 16 });
+  var lk = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
+  var ln = txt("logo", content.logo || "Logo", 'xl', FB, 'text');
+  logoCol.appendChild(ln); linkText(ln, lk);
+  if (content.description) {
+    var dk = comp.addComponentProperty("Description", "TEXT", content.description);
+    var dn = txt("description", content.description, 'sm', FR, 'textMuted', { w: 200 });
+    logoCol.appendChild(dn); linkText(dn, dk);
+  }
+  grid.appendChild(logoCol);
+  fillH(logoCol);
+
+  // Link columns
+  var columns = Array.isArray(content.columns) ? content.columns : [];
+  for (var i = 0; i < columns.length; i++) {
+    var colFrame = frame("column_" + i, { dir: "VERTICAL", g: 8 });
+    colFrame.appendChild(txt("columnTitle_" + i, columns[i].title || '', 'sm', FS, 'text'));
+    var linkList = frame("links_" + i, { dir: "VERTICAL", g: 8, pt: 8 });
+    var links = String(columns[i].links || '').split(',');
+    for (var j = 0; j < links.length; j++) {
+      var l = links[j].trim();
+      if (l) linkList.appendChild(txt("link_" + i + "_" + j, l, 'sm', FR, 'textMuted'));
+    }
+    colFrame.appendChild(linkList);
+    grid.appendChild(colFrame);
+    fillH(colFrame);
+  }
+  inner.appendChild(grid);
+
+  // Divider + copyright
+  var divider = frame("divider", { dir: "VERTICAL", pt: 48 });
+  var line = rect(MAX_W['5xl'], 1, 'border', 0);
+  divider.appendChild(line); fillH(line);
+  var cpWrap = frame("copyright_wrap", { dir: "VERTICAL", pt: 32, ca: "CENTER" });
+  var ck = comp.addComponentProperty("Copyright", "TEXT", content.copyright || "© 2024");
+  var cn = txt("copyright", content.copyright || "© 2024", 'sm', FR, 'textMuted', { align: "CENTER" });
+  cpWrap.appendChild(cn); linkText(cn, ck);
+  divider.appendChild(cpWrap);
+  inner.appendChild(divider);
+
+  comp.appendChild(inner);
+}
+
+function buildFooterSimple(comp, content) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 24; comp.paddingRight = 24;
+  comp.paddingTop = 48; comp.paddingBottom = 48;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bgAlt') }]; bindFill(comp, 'bgAlt');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['5xl'], ca: "CENTER" });
+
+
+  var lk = comp.addComponentProperty("Logo", "TEXT", content.logo || "Logo");
+  var ln = txt("logo", content.logo || "Logo", 'xl', FB, 'text');
+  inner.appendChild(ln); linkText(ln, lk);
+
+  // Links row
+  var linksWrap = frame("links_wrap", { dir: "HORIZONTAL", g: 24, pt: 24, ca: "CENTER", ma: "CENTER", wrap: true });
+  var links = Array.isArray(content.links) ? content.links : [];
+  for (var i = 0; i < links.length; i++) {
+    linksWrap.appendChild(txt("link_" + i, links[i].label || '', 'sm', FR, 'textMuted'));
+  }
+  // Also try columns format
+  if (!links.length) {
+    var columns = Array.isArray(content.columns) ? content.columns : [];
+    for (var i = 0; i < columns.length; i++) {
+      var cls = String(columns[i].links || '').split(',');
+      for (var j = 0; j < cls.length; j++) {
+        var l = cls[j].trim();
+        if (l) linksWrap.appendChild(txt("link_" + i + "_" + j, l, 'sm', FR, 'textMuted'));
+      }
+    }
+  }
+  inner.appendChild(linksWrap);
+
+  var cpWrap = frame("copyright_wrap", { dir: "VERTICAL", pt: 32 });
+  var ck = comp.addComponentProperty("Copyright", "TEXT", content.copyright || "© 2024");
+  var cn = txt("copyright", content.copyright || "© 2024", 'sm', FR, 'textMuted', { align: "CENTER" });
+  cpWrap.appendChild(cn); linkText(cn, ck);
+  inner.appendChild(cpWrap);
+
+  comp.appendChild(inner);
+}
+
+// ══════════════════════════════════════════════════════════════
+// GENERIC FALLBACK — Enhanced with container pattern
+// ══════════════════════════════════════════════════════════════
+
+function buildGenericOrganism(comp, content, category) {
+  comp.layoutMode = "VERTICAL"; comp.resize(W, 100);
+  comp.primaryAxisSizingMode = "AUTO"; comp.counterAxisSizingMode = "FIXED";
+  comp.paddingLeft = 32; comp.paddingRight = 32;
+  comp.paddingTop = 80; comp.paddingBottom = 80;
+  comp.counterAxisAlignItems = "CENTER";
+  comp.fills = [{ type: 'SOLID', color: sc('bg') }]; bindFill(comp, 'bg');
+
+  var inner = frame("content", { dir: "VERTICAL", w: MAX_W['6xl'], ca: "CENTER" });
+
+
+  var tk = comp.addComponentProperty("Title", "TEXT", content.title || getCategoryLabel(category));
+  var tn = txt("title", content.title || getCategoryLabel(category), '3xl', FB, 'text', { w: MAX_W['3xl'], align: "CENTER" });
+  inner.appendChild(tn); linkText(tn, tk);
+
+  if (content.subtitle) {
+    var sub = frame("sub_wrap", { dir: "VERTICAL", pt: 16 });
+    var stk = comp.addComponentProperty("Subtitle", "TEXT", content.subtitle);
+    var sn = txt("subtitle", content.subtitle, 'lg', FR, 'textSecondary', { w: MAX_W['2xl'], align: "CENTER" });
+    sub.appendChild(sn); linkText(sn, stk);
+    inner.appendChild(sub);
+  }
+
+  comp.appendChild(inner);
+}
+
+// ── BUILDER REGISTRY ──
+
+var VARIANT_BUILDERS = {
+  'header-simple': buildHeaderSimple,
+  'header-centered': buildHeaderCentered,
+  'hero-centered': buildHeroCentered,
+  'hero-split': buildHeroSplit,
+  'hero-with-image': buildHeroWithImage,
+  'features-grid': buildFeaturesGrid,
+  'features-alternating': buildFeaturesAlternating,
+  'features-with-image': buildFeaturesWithImage,
+  'pricing-3col': buildPricing3Col,
+  'testimonials-cards': buildTestimonialsCards,
+  'cta-centered': buildCtaCentered,
+  'faq-accordion': buildFaqAccordion,
+  'stats-row': buildStatsRow,
+  'logos-simple': buildLogosSimple,
+  'banner-simple': buildBannerSimple,
+  'banner-minimal': buildBannerSimple,
+  'contact-split': buildContactSplit,
+  'footer-4col': buildFooter4Col,
+  'footer-simple': buildFooterSimple,
+};
+
+var CATEGORY_BUILDERS = {
+  header: buildHeaderSimple,
+  hero: buildHeroCentered,
+  features: buildFeaturesGrid,
+  pricing: buildPricing3Col,
+  testimonials: buildTestimonialsCards,
+  cta: buildCtaCentered,
+  faq: buildFaqAccordion,
+  stats: buildStatsRow,
+  logos: buildLogosSimple,
+  banner: buildBannerSimple,
+  contact: buildContactSplit,
+  footer: buildFooter4Col,
+};
+
+function buildOrganism(comp, category, variantId, content, atoms, molecules) {
+  var builder = VARIANT_BUILDERS[variantId];
+  if (builder) { builder(comp, content, atoms, molecules); return; }
+  builder = CATEGORY_BUILDERS[category];
+  if (builder) { builder(comp, content, atoms, molecules); return; }
+  buildGenericOrganism(comp, content, category);
+}
+
+// ── Content defaults & helpers ──
+
 function getDefaultContent(cat) {
   var defaults = {
     header: { logo: 'Logo', links: [{ label: 'Features' }, { label: 'Pricing' }, { label: 'About' }], ctaText: 'Get Started' },
@@ -1258,19 +1566,19 @@ function getDefaultContent(cat) {
     logos: { title: 'Trusted by leading companies', logos: [{ name: 'Acme' }, { name: 'Globex' }, { name: 'Initech' }, { name: 'Umbrella' }, { name: 'Stark' }] },
     features: { title: 'Everything you need', subtitle: 'Our platform provides all the tools you need to succeed.', features: [{ title: 'Feature One', description: 'A brief description of this feature.' }, { title: 'Feature Two', description: 'A brief description of this feature.' }, { title: 'Feature Three', description: 'A brief description of this feature.' }] },
     stats: { title: 'Trusted by thousands', stats: [{ value: '10K+', label: 'Active Users' }, { value: '99.9%', label: 'Uptime' }, { value: '150+', label: 'Countries' }] },
-    pricing: { title: 'Simple, transparent pricing', subtitle: 'Choose the plan that works best for you.', plans: [{ name: 'Starter', price: '$9', period: '/mo', description: 'For individuals', features: 'Feature 1, Feature 2, Feature 3', ctaText: 'Get Started', highlighted: false }, { name: 'Pro', price: '$29', period: '/mo', description: 'For teams', features: 'Everything in Starter, Feature 4, Feature 5', ctaText: 'Get Started', highlighted: true }, { name: 'Enterprise', price: '$99', period: '/mo', description: 'For organizations', features: 'Everything in Pro, Feature 6, Priority support', ctaText: 'Contact Sales', highlighted: false }] },
+    pricing: { title: 'Simple, transparent pricing', subtitle: 'Choose the plan that works best for you.', plans: [{ name: 'Starter', price: '$9', period: '/mo', description: 'For individuals', features: 'Feature 1, Feature 2, Feature 3', ctaText: 'Get Started' }, { name: 'Pro', price: '$29', period: '/mo', description: 'For teams', features: 'Everything in Starter, Feature 4, Feature 5', ctaText: 'Get Started', highlighted: true }, { name: 'Enterprise', price: '$99', period: '/mo', description: 'For organizations', features: 'Everything in Pro, Feature 6, Priority support', ctaText: 'Contact Sales' }] },
     testimonials: { title: 'What our customers say', testimonials: [{ quote: 'This product has completely transformed how we work.', author: 'Jane Cooper', role: 'CEO at TechCorp' }, { quote: 'The best investment we made this year.', author: 'John Smith', role: 'CTO at StartupXYZ' }, { quote: 'Simple, effective, and beautifully designed.', author: 'Sarah Johnson', role: 'Designer at CreativeCo' }] },
     faq: { title: 'Frequently asked questions', subtitle: 'Find answers to common questions.', questions: [{ question: 'How do I get started?', answer: 'Simply sign up for a free account and follow the onboarding guide.' }, { question: 'Is there a free trial?', answer: 'Yes, we offer a 14-day free trial with full access to all features.' }, { question: 'Can I cancel anytime?', answer: 'Absolutely. Cancel your subscription at any time with no penalties.' }] },
     cta: { title: 'Ready to get started?', subtitle: 'Join thousands of satisfied customers today.', ctaText: 'Start Free Trial' },
-    blog: { title: 'Latest from the blog', subtitle: 'Insights, tips, and news.', posts: [{ title: 'Getting Started Guide', excerpt: 'Learn how to set up your account.' }, { title: '10 Productivity Tips', excerpt: 'Discover best practices.' }, { title: 'What is New in V2', excerpt: 'Explore the latest features.' }] },
-    about: { title: 'About our company', description: 'We are a team of passionate individuals dedicated to building the best products.', mission: 'Our mission is to make technology accessible to everyone.' },
+    blog: { title: 'Latest from the blog', subtitle: 'Insights, tips, and news.', posts: [{ title: 'Getting Started Guide', excerpt: 'Learn how to set up.' }, { title: '10 Productivity Tips', excerpt: 'Discover best practices.' }, { title: 'What is New in V2', excerpt: 'Explore the latest.' }] },
+    about: { title: 'About our company', description: 'We are a team of passionate individuals dedicated to building the best products.' },
     team: { title: 'Meet our team', subtitle: 'The people behind the product.', members: [{ name: 'Jane Cooper', role: 'CEO' }, { name: 'John Smith', role: 'CTO' }, { name: 'Sarah Johnson', role: 'Design Lead' }, { name: 'Michael Brown', role: 'Engineer' }] },
     contact: { title: 'Get in touch', subtitle: 'We would love to hear from you.', email: 'hello@example.com', phone: '+1 (555) 123-4567' },
-    footer: { logo: 'Structr', description: 'Building the future of web design.', copyright: '2024 Structr. All rights reserved.', columns: [{ title: 'Product', links: 'Features, Pricing, Changelog' }, { title: 'Company', links: 'About, Blog, Careers' }, { title: 'Resources', links: 'Docs, Help, API' }] },
+    footer: { logo: 'Structr', description: 'Building the future of web design.', copyright: '© 2024 Structr. All rights reserved.', columns: [{ title: 'Product', links: 'Features, Pricing, Changelog' }, { title: 'Company', links: 'About, Blog, Careers' }, { title: 'Resources', links: 'Docs, Help, API' }] },
     banner: { text: 'We just launched v2.0! Check out the new features.', ctaText: 'Learn More' },
-    process: { title: 'How it works', subtitle: 'Get started in a few simple steps.', steps: [{ title: 'Sign Up', description: 'Create your free account.' }, { title: 'Configure', description: 'Set up your workspace.' }, { title: 'Build', description: 'Start creating.' }, { title: 'Launch', description: 'Go live.' }] },
+    process: { title: 'How it works', subtitle: 'Get started in a few simple steps.', steps: [{ title: 'Sign Up', description: 'Create your free account.' }, { title: 'Configure', description: 'Set up your workspace.' }, { title: 'Build', description: 'Start creating.' }] },
     error: { title: 'Page not found', subtitle: 'Sorry, we could not find the page you are looking for.', ctaText: 'Go Home' },
-    store: { title: 'Our Products', subtitle: 'Browse our latest collection.', products: [{ title: 'Product Alpha', price: '$49.99' }, { title: 'Product Beta', price: '$29.99' }, { title: 'Product Gamma', price: '$39.99' }] },
+    store: { title: 'Our Products', subtitle: 'Browse our latest collection.' },
     gallery: { title: 'Our Work', subtitle: 'A showcase of what we have built.' },
     showcase: { title: 'Featured', subtitle: 'Our latest highlights.' },
     comparison: { title: 'Compare plans', subtitle: 'See which plan is right for you.' },
@@ -1280,43 +1588,41 @@ function getDefaultContent(cat) {
 }
 
 function getCategoryLabel(cat) {
-  var labels = { header:'Header', hero:'Hero', logos:'Logo Cloud', features:'Features', stats:'Stats', pricing:'Pricing', testimonials:'Testimonials', faq:'FAQ', cta:'CTA', footer:'Footer', blog:'Blog', about:'About', team:'Team', gallery:'Gallery', contact:'Contact', banner:'Banner', showcase:'Showcase', error:'Error Page', process:'How It Works', downloads:'Downloads', comparison:'Comparison', store:'Store' };
+  var labels = { header: 'Header', hero: 'Hero', logos: 'Logo Cloud', features: 'Features', stats: 'Stats', pricing: 'Pricing', testimonials: 'Testimonials', faq: 'FAQ', cta: 'CTA', footer: 'Footer', blog: 'Blog', about: 'About', team: 'Team', gallery: 'Gallery', contact: 'Contact', banner: 'Banner', showcase: 'Showcase', error: 'Error Page', process: 'How It Works', downloads: 'Downloads', comparison: 'Comparison', store: 'Store' };
   return labels[cat] || cat;
 }
 
 function getVariantName(vid) {
   var parts = vid.split('-').slice(1);
-  return parts.map(function(p) { return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ') || 'Default';
+  return parts.map(function (p) { return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ') || 'Default';
 }
 
-// ── Override instance ──
+// ── Override instance content ──
 async function overrideInstance(inst, content, cat) {
-  // Set text properties
   try {
     var props = inst.componentProperties;
     for (var k in props) {
       if (props[k].type !== 'TEXT') continue;
       var name = k.split('#')[0];
-      var map = { 'Title': content.title, 'Subtitle': content.subtitle, 'Logo': content.logo, 'Description': content.description, 'Copyright': content.copyright, 'Primary Button': content.ctaText, 'Secondary Button': content.ctaSecondaryText, 'Button Text': content.ctaText, 'CTA Text': content.ctaText };
+      var map = { 'Title': content.title, 'Subtitle': content.subtitle, 'Logo': content.logo, 'Description': content.description, 'Copyright': content.copyright, 'Button Text': content.ctaText, 'CTA': content.ctaText, 'Text': content.text };
       if (map[name]) inst.setProperties(makeObj(k, map[name]));
     }
-  } catch(e) {}
+  } catch (e) {}
 
-  // Override nested text nodes by name
-  var fields = ['title', 'subtitle', 'logo', 'description', 'copyright', 'ctaText'];
+  var fields = ['title', 'subtitle', 'logo', 'description', 'copyright', 'ctaText', 'text'];
   for (var i = 0; i < fields.length; i++) {
     if (content[fields[i]]) {
-      var n = inst.findOne(function(n) { return n.name === fields[i] && n.type === "TEXT"; });
-      if (n) { try { await figma.loadFontAsync(n.fontName); n.characters = String(content[fields[i]]); } catch(e) {} }
+      var n = inst.findOne(function (n) { return n.name === fields[i] && n.type === "TEXT"; });
+      if (n) { try { await figma.loadFontAsync(n.fontName); n.characters = String(content[fields[i]]); } catch (e) {} }
     }
   }
 }
 
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 // MAIN — Import Pipeline
-// ══════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 
-figma.ui.onmessage = async function(msg) {
+figma.ui.onmessage = async function (msg) {
   if (msg.type !== 'import') return;
   try {
     await loadFonts();
@@ -1325,8 +1631,11 @@ figma.ui.onmessage = async function(msg) {
       figma.ui.postMessage({ type: 'error', message: 'No pages found' }); return;
     }
 
-    // Phase 0: Analyze
-    figma.ui.postMessage({ type: 'progress', message: 'Analyzing sections...' });
+    // Phase 0: Create variable collections
+    figma.ui.postMessage({ type: 'progress', message: 'Creating design tokens...' });
+    createVariableCollections();
+
+    // Phase 1: Analyze used categories/variants
     var used = {};
     for (var p = 0; p < project.pages.length; p++) {
       var secs = project.pages[p].sections || [];
@@ -1339,46 +1648,49 @@ figma.ui.onmessage = async function(msg) {
     // ════════════════════════════════════════
     // PAGE 1: Components (Ions → Atoms → Molecules → Organisms)
     // ════════════════════════════════════════
-    var componentsPage = figma.createPage(); componentsPage.name = "Components";
+    var componentsPage = figma.createPage();
+    componentsPage.name = "Components";
 
-    // ── Section: Ions ──
+    // Ions
     figma.ui.postMessage({ type: 'progress', message: '🔬 Creating design tokens...' });
-    var ionsSection = figma.createSection(); ionsSection.name = "🔬 Ions — Design Tokens";
+    var ionsSection = figma.createSection();
+    ionsSection.name = "🔬 Ions — Design Tokens";
     createIons(ionsSection);
     componentsPage.appendChild(ionsSection);
     resizeSection(ionsSection);
     ionsSection.x = 0; ionsSection.y = 0;
 
-    // ── Section: Atoms ──
+    // Atoms
     figma.ui.postMessage({ type: 'progress', message: '⚛️ Building atoms...' });
-    var atomsSection = figma.createSection(); atomsSection.name = "⚛️ Atoms — Base Components";
+    var atomsSection = figma.createSection();
+    atomsSection.name = "⚛️ Atoms — Base Components";
     var atoms = createAtoms(atomsSection);
     componentsPage.appendChild(atomsSection);
     resizeSection(atomsSection);
     atomsSection.x = 0; atomsSection.y = ionsSection.y + ionsSection.height + 100;
 
-    // ── Section: Molecules ──
+    // Molecules
     figma.ui.postMessage({ type: 'progress', message: '🧬 Building molecules...' });
-    var moleculesSection = figma.createSection(); moleculesSection.name = "🧬 Molecules — Compound Components";
+    var moleculesSection = figma.createSection();
+    moleculesSection.name = "🧬 Molecules — Compound Components";
     var molecules = createMolecules(moleculesSection, atoms);
     componentsPage.appendChild(moleculesSection);
     resizeSection(moleculesSection);
     moleculesSection.x = 0; moleculesSection.y = atomsSection.y + atomsSection.height + 100;
 
-    // ── Section: Organisms ──
+    // Organisms
     figma.ui.postMessage({ type: 'progress', message: '🏗️ Building organisms...' });
-    var organismsSection = figma.createSection(); organismsSection.name = "🏗️ Organisms — Section Components";
+    var organismsSection = figma.createSection();
+    organismsSection.name = "🏗️ Organisms — Section Components";
     var compSets = {};
     var cy = 60;
 
-    var catIndex = 0;
     for (var cat in used) {
       var comps = [];
       var catComps = {};
       var vids = Object.keys(used[cat]);
 
-      // Add category label
-      var catLabel = txt("label_" + cat, getCategoryLabel(cat), 20, FB, C['text/primary']);
+      var catLabel = txt("label_" + cat, getCategoryLabel(cat), 'xl', FB, 'text');
       organismsSection.appendChild(catLabel);
       catLabel.x = 60; catLabel.y = cy;
       cy += 40;
@@ -1399,15 +1711,17 @@ figma.ui.onmessage = async function(msg) {
         try {
           var set = figma.combineAsVariants(comps, organismsSection);
           set.name = getCategoryLabel(cat);
+          set.layoutMode = "VERTICAL"; set.itemSpacing = 40;
+          set.paddingLeft = 40; set.paddingRight = 40; set.paddingTop = 40; set.paddingBottom = 40;
+          set.primaryAxisSizingMode = "AUTO"; set.counterAxisSizingMode = "AUTO";
           set.x = 60; set.y = catLabel.y + 40;
           cy = set.y + set.height + 100;
-        } catch(e) { console.error("combineAsVariants error for " + cat, e); }
+        } catch (e) { console.error("combineAsVariants error for " + cat, e); }
       } else if (comps.length === 1) {
         comps[0].name = getCategoryLabel(cat);
       }
       compSets[cat] = catComps;
       cy += 60;
-      catIndex++;
     }
 
     componentsPage.appendChild(organismsSection);
@@ -1415,9 +1729,10 @@ figma.ui.onmessage = async function(msg) {
     organismsSection.x = 0; organismsSection.y = moleculesSection.y + moleculesSection.height + 100;
 
     // ════════════════════════════════════════
-    // PAGE 2: Pages (template instances with sections per page)
+    // PAGE 2: Pages (template instances with dark mode support)
     // ════════════════════════════════════════
-    var pagesPage = figma.createPage(); pagesPage.name = "Pages";
+    var pagesPage = figma.createPage();
+    pagesPage.name = "Pages";
     var total = 0;
     var pageSectionY = 0;
 
@@ -1426,14 +1741,18 @@ figma.ui.onmessage = async function(msg) {
       var secs = pd.sections || [];
       figma.ui.postMessage({ type: 'progress', message: '📄 Building "' + pd.name + '" (' + secs.length + ' sections)...' });
 
-      // Create a Figma section for each page
       var pageSection = figma.createSection();
       pageSection.name = "📄 " + (pd.name || "Page " + (p + 1));
 
-      var pf = figma.createFrame(); pf.name = pd.name || 'Page';
-      pf.resize(W, 100); pf.layoutMode = "VERTICAL";
+      var pf = figma.createFrame();
+      pf.name = pd.name || 'Page';
+      pf.resize(W, 100);
+      pf.layoutMode = "VERTICAL";
+      pf.primaryAxisSizingMode = "AUTO";
       pf.primaryAxisSizingMode = "AUTO"; pf.counterAxisSizingMode = "FIXED";
-      pf.itemSpacing = 0; pf.fills = [{ type: 'SOLID', color: C['surface/default'] }];
+      pf.itemSpacing = 0;
+      pf.fills = [{ type: 'SOLID', color: sc('bg') }];
+      bindFill(pf, 'bg');
 
       for (var s = 0; s < secs.length; s++) {
         try {
@@ -1442,9 +1761,17 @@ figma.ui.onmessage = async function(msg) {
           var inst = cc[secs[s].variantId].createInstance();
           await overrideInstance(inst, secs[s].content, secs[s].category);
           pf.appendChild(inst);
-          inst.layoutSizingHorizontal = "FILL";
+          fillH(inst);
+
+          // Dark mode: set explicit variable mode on the instance
+          if (secs[s].colorMode === 'dark' && semCol && darkModeId) {
+            try {
+              inst.setExplicitVariableModeForCollection(semCol, darkModeId);
+            } catch (e) { console.log('Mode set error:', e.message); }
+          }
+
           total++;
-        } catch(e) { console.error("Error:", secs[s].category, e); }
+        } catch (e) { console.error("Error:", secs[s].category, e); }
       }
 
       pageSection.appendChild(pf);
@@ -1459,7 +1786,7 @@ figma.ui.onmessage = async function(msg) {
     if (firstSection) figma.viewport.scrollAndZoomIntoView([firstSection]);
 
     figma.ui.postMessage({ type: 'done', sectionCount: total, pageCount: project.pages.length });
-  } catch(e) {
+  } catch (e) {
     figma.ui.postMessage({ type: 'error', message: String(e) });
   }
 };

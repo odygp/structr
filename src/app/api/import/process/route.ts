@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchCleanContent } from '@/lib/import/html-analyzer';
 import { analyzePageWithAI, generateSectionsForPage } from '@/lib/import/ai-analyzer';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
+import { hasEnoughCredits } from '@/lib/db/credits';
 import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
@@ -19,6 +20,15 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Credit check
+    if (user) {
+      const creditCheck = await hasEnoughCredits(user.id);
+      if (!creditCheck.ok) {
+        return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+      }
+    }
 
     // Find oldest pending job for this project
     const { data: job, error: fetchErr } = await supabase

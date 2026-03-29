@@ -4,11 +4,11 @@
   "api": "1.0.0",
   "main": "code.js",
   "capabilities": [],
-  "enableProposedApi": false,
+  "enableProposedApi": true,
   "editorType": ["figma"],
   "ui": "ui.html",
   "networkAccess": {
     "allowedDomains": ["https://structr.vercel.app"],
-    "devAllowedDomains": ["http://localhost"]
+    "devAllowedDomains": ["http://localhost", "http://localhost:3000", "http://localhost:3001"]
   }
 }

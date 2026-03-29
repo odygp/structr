@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { generateSectionsForPage } from '@/lib/import/ai-analyzer';
 import { trackUsage } from '@/lib/ai/track-usage';
+import { hasEnoughCredits } from '@/lib/db/credits';
 
 export const maxDuration = 60;
 
@@ -15,6 +16,14 @@ export async function POST(request: Request) {
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+
+    // Credit check
+    if (user) {
+      const creditCheck = await hasEnoughCredits(user.id);
+      if (!creditCheck.ok) {
+        return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+      }
+    }
 
     // Generate sections using AI
     const startTime = Date.now();

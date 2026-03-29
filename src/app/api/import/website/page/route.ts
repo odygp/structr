@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchCleanContent } from '@/lib/import/html-analyzer';
 import { analyzePageWithAI } from '@/lib/import/ai-analyzer';
 import { trackUsage } from '@/lib/ai/track-usage';
+import { hasEnoughCredits } from '@/lib/db/credits';
 
 export const maxDuration = 60;
 
@@ -12,6 +13,12 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // Credit check
+    const creditCheck = await hasEnoughCredits(user.id);
+    if (!creditCheck.ok) {
+      return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+    }
 
     const { projectId, url, name, sortOrder } = await request.json();
     if (!projectId || !url) {

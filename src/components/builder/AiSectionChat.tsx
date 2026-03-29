@@ -74,7 +74,9 @@ export default function AiSectionChat({
 
       const data = await res.json();
 
-      if (data.error) {
+      if (res.status === 402) {
+        updateMessages([...updated, { role: 'assistant', content: 'You\'ve used all your free credits. Go to Settings > Usage to see your balance.', type: 'error' }]);
+      } else if (data.error) {
         updateMessages([...updated, { role: 'assistant', content: data.error, type: 'error' }]);
       } else if (data.mode === 'plan') {
         setPendingSuggestion(data.suggestion);

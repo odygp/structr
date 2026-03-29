@@ -1,0 +1,125 @@
+{
+  "id": "test-all-sections",
+  "name": "All Sections Test",
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "All Sections",
+      "sections": [
+        {
+          "id": "s1",
+          "category": "banner",
+          "variantId": "banner-simple",
+          "content": { "text": "We just launched v2.0! Check out the new features.", "ctaText": "Learn More" },
+          "colorMode": "light"
+        },
+        {
+          "id": "s2",
+          "category": "header",
+          "variantId": "header-simple",
+          "content": { "logo": "Structr", "links": [{"label": "Features"}, {"label": "Pricing"}, {"label": "About"}, {"label": "Blog"}], "ctaText": "Get Started" },
+          "colorMode": "light"
+        },
+        {
+          "id": "s3",
+          "category": "hero",
+          "variantId": "hero-centered",
+          "content": { "title": "Build beautiful websites faster", "subtitle": "The modern wireframe builder that helps you create pixel-perfect designs in minutes, not hours.", "ctaText": "Start Free Trial", "ctaSecondaryText": "Watch Demo", "showPrimaryButton": true, "showSecondaryButton": true },
+          "colorMode": "light"
+        },
+        {
+          "id": "s4",
+          "category": "logos",
+          "variantId": "logos-simple",
+          "content": { "title": "Trusted by 10,000+ teams worldwide", "logos": [{"name": "Acme"}, {"name": "Globex"}, {"name": "Initech"}, {"name": "Umbrella"}, {"name": "Stark"}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s5",
+          "category": "features",
+          "variantId": "features-grid",
+          "content": { "title": "Everything you need to ship faster", "subtitle": "Our platform provides all the tools you need to design, build, and deploy.", "features": [{"title": "Drag & Drop Builder", "description": "Visually build your pages with an intuitive drag-and-drop interface."}, {"title": "AI-Powered Content", "description": "Generate copy and layouts instantly with our AI assistant."}, {"title": "Export Anywhere", "description": "Export to HTML, Figma, or your favorite framework."}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s6",
+          "category": "features",
+          "variantId": "features-alternating",
+          "content": { "title": "Designed for modern teams", "subtitle": "Every feature is crafted to help your team move faster.", "features": [{"title": "Real-time Collaboration", "description": "Work together with your team in real-time. See changes as they happen and leave feedback directly on the canvas."}, {"title": "Version History", "description": "Never lose your work. Every change is tracked and you can restore any previous version with a single click."}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s7",
+          "category": "features",
+          "variantId": "features-with-image",
+          "content": { "title": "Powerful integrations", "subtitle": "Connect with the tools you already use.", "features": [{"title": "Figma Sync", "description": "Export your designs directly to Figma with pixel-perfect accuracy."}, {"title": "GitHub Deploy", "description": "Push your code to GitHub and deploy automatically."}, {"title": "Slack Notifications", "description": "Get notified about changes and feedback in Slack."}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s8",
+          "category": "stats",
+          "variantId": "stats-row",
+          "content": { "title": "Trusted by thousands", "stats": [{"value": "10K+", "label": "Active Users"}, {"value": "99.9%", "label": "Uptime"}, {"value": "50M+", "label": "Pages Built"}, {"value": "150+", "label": "Countries"}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s9",
+          "category": "pricing",
+          "variantId": "pricing-3col",
+          "content": { "title": "Simple, transparent pricing", "subtitle": "Choose the plan that works best for you. All plans include a 14-day free trial.", "plans": [{"name": "Starter", "price": "$9", "period": "/mo", "description": "Perfect for individuals", "features": "5 projects, Basic export, Email support", "ctaText": "Get Started", "highlighted": false}, {"name": "Pro", "price": "$29", "period": "/mo", "description": "For growing teams", "features": "Unlimited projects, All exports, Priority support, AI assistant", "ctaText": "Get Started", "highlighted": true}, {"name": "Enterprise", "price": "$99", "period": "/mo", "description": "For large organizations", "features": "Everything in Pro, Custom branding, SSO, Dedicated support", "ctaText": "Contact Sales", "highlighted": false}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s10",
+          "category": "testimonials",
+          "variantId": "testimonials-cards",
+          "content": { "title": "What our customers say", "testimonials": [{"quote": "Structr has completely transformed how we design. We ship 3x faster now.", "author": "Sarah Chen", "role": "Head of Design at Acme"}, {"quote": "The Figma export alone is worth the price. Pixel-perfect every time.", "author": "Marcus Johnson", "role": "CTO at Globex"}, {"quote": "Simple, powerful, and beautifully designed. Our whole team loves it.", "author": "Emily Rodriguez", "role": "Product Manager at Initech"}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s11",
+          "category": "faq",
+          "variantId": "faq-accordion",
+          "content": { "title": "Frequently asked questions", "subtitle": "Can't find what you're looking for? Contact our support team.", "questions": [{"question": "How do I get started?", "answer": "Simply sign up for a free account and follow our getting started guide. You'll be building your first page in under 5 minutes."}, {"question": "Is there a free trial?", "answer": "Yes! All plans come with a 14-day free trial with full access to all features. No credit card required."}, {"question": "Can I export to Figma?", "answer": "Absolutely. Our Figma plugin lets you export your wireframes with pixel-perfect accuracy, including design tokens and variables."}, {"question": "Can I cancel anytime?", "answer": "Yes, you can cancel your subscription at any time with no penalties or hidden fees."}] },
+          "colorMode": "light"
+        },
+        {
+          "id": "s12",
+          "category": "cta",
+          "variantId": "cta-centered",
+          "content": { "title": "Ready to build something amazing?", "subtitle": "Join thousands of designers and developers who ship faster with Structr.", "ctaText": "Start Free Trial", "ctaSecondaryText": "Talk to Sales" },
+          "colorMode": "light"
+        },
+        {
+          "id": "s13",
+          "category": "hero",
+          "variantId": "hero-split",
+          "content": { "title": "Design meets development", "subtitle": "Bridge the gap between design and code with our visual builder.", "ctaText": "Get Started", "ctaSecondaryText": "Learn More", "showPrimaryButton": true, "showSecondaryButton": true },
+          "colorMode": "dark"
+        },
+        {
+          "id": "s14",
+          "category": "hero",
+          "variantId": "hero-with-image",
+          "content": { "title": "Ship beautiful pages in minutes", "subtitle": "From wireframe to production in record time.", "ctaText": "Try It Free", "ctaSecondaryText": "See Examples", "showPrimaryButton": true, "showSecondaryButton": true },
+          "colorMode": "light"
+        },
+        {
+          "id": "s15",
+          "category": "contact",
+          "variantId": "contact-split",
+          "content": { "title": "Get in touch", "subtitle": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.", "email": "hello@structr.dev", "phone": "+1 (555) 123-4567" },
+          "colorMode": "light"
+        },
+        {
+          "id": "s16",
+          "category": "footer",
+          "variantId": "footer-4col",
+          "content": { "logo": "Structr", "description": "The modern wireframe builder for teams.", "copyright": "© 2024 Structr. All rights reserved.", "columns": [{"title": "Product", "links": "Features, Pricing, Changelog, Roadmap"}, {"title": "Company", "links": "About, Blog, Careers, Press"}, {"title": "Resources", "links": "Documentation, API, Community, Support"}] },
+          "colorMode": "light"
+        }
+      ]
+    }
+  ],
+  "activePageId": "page-1"
+}

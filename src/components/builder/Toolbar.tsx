@@ -17,6 +17,7 @@ import {
   Check,
   Globe,
   Clock,
+  History,
 } from 'lucide-react';
 import ShareModal from './ShareModal';
 import PublishPopover from './PublishPopover';
@@ -65,11 +66,13 @@ interface ToolbarProps {
   pendingPages?: PendingPageInfo[];
   onOpenAiChat?: () => void;
   onToggleActivity?: () => void;
+  onToggleVersionHistory?: () => void;
   projectSlug?: string | null;
   projectStatus?: string;
+  creditBalance?: number | null;
 }
 
-export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, projectSlug, projectStatus }: ToolbarProps) {
+export default function Toolbar({ commentsOpen, onToggleComments, commentCount = 0, pendingPages = [], onOpenAiChat, onToggleActivity, onToggleVersionHistory, projectSlug, projectStatus, creditBalance }: ToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
@@ -335,11 +338,13 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
             )}
           </div>
 
-          {/* Version pill */}
-          <Pill>
-            v1
-            <ChevronDown className="w-[16px] h-[16px]" />
-          </Pill>
+          {/* Version history */}
+          {isUUID && (
+            <Pill onClick={onToggleVersionHistory} aria-label="Version history">
+              <History className="w-[14px] h-[14px]" />
+              <ChevronDown className="w-[16px] h-[16px]" />
+            </Pill>
+          )}
         </div>
       </div>
 
@@ -479,6 +484,20 @@ export default function Toolbar({ commentsOpen, onToggleComments, commentCount =
               </>
             )}
           </div>
+
+          {/* Credit balance */}
+          {creditBalance !== null && creditBalance !== undefined && (
+            <span
+              className={`text-[11px] font-medium px-2 py-1 rounded-md ${
+                creditBalance > 1 ? 'text-[#808080] bg-[#f5f5f5]' :
+                creditBalance > 0 ? 'text-amber-600 bg-amber-50' :
+                'text-red-600 bg-red-50'
+              }`}
+              title="AI credit balance"
+            >
+              ${creditBalance.toFixed(2)}
+            </span>
+          )}
 
           {/* AI button */}
           <button

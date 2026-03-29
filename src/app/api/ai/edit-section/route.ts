@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
+import { hasEnoughCredits } from '@/lib/db/credits';
 
 export const maxDuration = 30;
 
@@ -11,6 +12,12 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // Credit check
+    const creditCheck = await hasEnoughCredits(user.id);
+    if (!creditCheck.ok) {
+      return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+    }
 
     const { sectionId, projectId, category, variantId, content, instruction, mode } = await request.json();
     if (!instruction?.trim()) return NextResponse.json({ error: 'Instruction required' }, { status: 400 });

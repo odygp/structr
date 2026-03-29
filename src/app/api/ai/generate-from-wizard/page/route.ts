@@ -5,6 +5,7 @@ import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
 import { buildWizardPrompt, type WizardData } from '@/lib/templates';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
+import { hasEnoughCredits } from '@/lib/db/credits';
 
 export const maxDuration = 60;
 
@@ -20,6 +21,12 @@ export async function POST(request: Request) {
       sortOrder: number;
       wizardData: WizardData;
     };
+
+    // Credit check
+    const creditCheck = await hasEnoughCredits(user.id);
+    if (!creditCheck.ok) {
+      return NextResponse.json({ error: 'Insufficient credits', balance: creditCheck.balance }, { status: 402 });
+    }
 
     if (!projectId || !pageName) {
       return NextResponse.json({ error: 'projectId and pageName required' }, { status: 400 });
