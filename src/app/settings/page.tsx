@@ -104,10 +104,12 @@ export default function SettingsPage() {
 
   const endpointLabels: Record<string, string> = {
     'ai/generate': 'Generate',
+    '/api/ai/generate': 'Generate',
     'ai/edit-section': 'Edit Section',
     'import/website/page': 'Website Import',
     'import/octopus/page': 'Octopus Import',
     'ai/generate-from-wizard/page': 'Wizard',
+    'import/wizard/page': 'Wizard',
     'import/process': 'Import Process',
   };
 
