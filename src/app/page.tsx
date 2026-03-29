@@ -42,7 +42,7 @@ export default function Home() {
           From idea to wireframe<br />in 30 seconds
         </h1>
         <p className="text-[19px] text-[#666] max-w-[560px] mx-auto mb-10 leading-relaxed">
-          Describe what you&apos;re building and AI generates a complete, multi-page wireframe. Import any website, edit with chat, publish with one click.
+          Plan your website&apos;s structure and content before touching design tools. AI generates section-based wireframes from a prompt, a URL, or a sitemap.
         </p>
         <div className="flex gap-4 justify-center mb-4">
           <Link
@@ -58,7 +58,7 @@ export default function Home() {
             See a live example
           </Link>
         </div>
-        <p className="text-[12px] text-[#a0a0a0]">Used by designers, founders, and product teams</p>
+        <p className="text-[12px] text-[#a0a0a0]">For UX designers, product teams, and founders planning their next site</p>
       </section>
 
       {/* Mock wireframe preview */}
@@ -113,8 +113,8 @@ export default function Home() {
 
       {/* Use cases */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">One tool, many ways to build</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-14 max-w-[500px] mx-auto">Whether you&apos;re starting from scratch, cloning a competitor, or working from a sitemap.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Plan your site structure, fast</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-14 max-w-[500px] mx-auto">Whether you&apos;re starting from scratch, analyzing a competitor, or working from an existing sitemap.</p>
         <div className="grid grid-cols-2 gap-5">
           {[
             { title: 'Prompt to wireframe', desc: 'Type "a SaaS landing page with pricing and testimonials" and get a full multi-page wireframe in seconds. AI picks the right sections, writes real copy, and structures everything.', tag: '10 ★', tagColor: 'bg-blue-50 text-blue-700' },
@@ -138,7 +138,7 @@ export default function Home() {
         <div className="max-w-[700px] mx-auto px-8 text-center">
           <h2 className="text-[32px] font-bold text-white mb-4">Edit every section with AI chat</h2>
           <p className="text-[16px] text-[#999] mb-10 max-w-[500px] mx-auto">
-            Click any section and tell AI what to change. &ldquo;Make the headline shorter&rdquo;, &ldquo;add a call-to-action button&rdquo;, &ldquo;switch to dark mode&rdquo;. Changes apply instantly.
+            Click any section and tell AI what to change. Refine copy, restructure content, add CTAs. Iterate on your UX without pixel-pushing.
           </p>
           <div className="bg-[#2a2a2a] rounded-xl p-5 text-left max-w-[400px] mx-auto border border-[#333]">
             <div className="text-[12px] text-[#666] mb-3">AI Support — Hero Section</div>
@@ -246,29 +246,30 @@ export default function Home() {
 
       {/* Comparison */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Why Structr?</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-10 max-w-[500px] mx-auto">Purpose-built for wireframing. Not a general app builder.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">How Structr compares</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-10 max-w-[550px] mx-auto">AI-powered wireframing that gets you from idea to structure in seconds, not hours of dragging boxes.</p>
         <div className="bg-white border border-[#ebebeb] rounded-2xl overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
               <tr className="border-b border-[#ebebeb]">
                 <th className="text-left px-6 py-4 text-[#808080] font-medium" />
                 <th className="text-center px-4 py-4 text-[#1a1a1a] font-semibold bg-[#fafafa]">Structr</th>
-                <th className="text-center px-4 py-4 text-[#808080] font-medium">Lovable</th>
-                <th className="text-center px-4 py-4 text-[#808080] font-medium">v0</th>
-                <th className="text-center px-4 py-4 text-[#808080] font-medium">Bolt</th>
+                <th className="text-center px-4 py-4 text-[#808080] font-medium">Balsamiq</th>
+                <th className="text-center px-4 py-4 text-[#808080] font-medium">Whimsical</th>
+                <th className="text-center px-4 py-4 text-[#808080] font-medium">Relume</th>
               </tr>
             </thead>
             <tbody className="text-[13px]">
               {[
-                ['Wireframe-first approach', 'Y', 'N', 'N', 'N'],
-                ['Section-based builder', 'Y', 'N', 'N', 'N'],
-                ['Website import/clone', 'Y', 'N', 'N', 'N'],
-                ['AI section editing', 'Y', 'Y', 'Y', 'Y'],
-                ['Multi-page projects', 'Y', 'Y', 'Y', 'Y'],
-                ['One-click publish', 'Y', 'Y', 'N', 'Y'],
-                ['Free tier', '50 stars', '30 credits', '$5', '1M tokens'],
-                ['Pro price', '$20/mo', '$25/mo', '$20/mo', '$25/mo'],
+                ['AI generates full wireframes', 'Y', 'N', 'Partial', 'Y'],
+                ['Website import & analysis', 'Y', 'N', 'N', 'N'],
+                ['Section-based building', 'Y', 'N', 'N', 'Y'],
+                ['AI content writing', 'Y', 'N', 'N', 'Y'],
+                ['Multi-page sitemaps', 'Y', 'N', 'Y', 'Y'],
+                ['Publish & share link', 'Y', 'N', 'Y', 'Y'],
+                ['Figma export', 'Y', 'Y', 'Y', 'Y'],
+                ['Team collaboration', 'Y', 'Y', 'Y', 'Y'],
+                ['Free tier', '50 stars', '$0 (2 projects)', '$0 (3 files)', 'None'],
               ].map(([feature, ...values], i) => (
                 <tr key={i} className="border-b border-[#f0f0f0] last:border-0">
                   <td className="px-6 py-3 text-[#1a1a1a] font-medium">{feature}</td>
@@ -309,7 +310,7 @@ export default function Home() {
         <div className="max-w-[600px] mx-auto px-8 text-center">
           <h2 className="text-[36px] font-bold text-white mb-4">Ready to build?</h2>
           <p className="text-[16px] text-[#999] mb-8">
-            Join designers and founders who wireframe 10x faster with AI. Free to start, no credit card required.
+            Join UX designers and product teams who plan their sites 10x faster. Free to start, no credit card required.
           </p>
           <Link
             href="/signup"

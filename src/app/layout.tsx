@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     default: "Structr",
     template: "%s | Structr",
   },
-  description: "AI-powered wireframe builder. Generate, import, and publish website wireframes in minutes.",
+  description: "AI-powered wireframe and UX planning tool. Generate section-based wireframes from a prompt, import any website, or build from a sitemap. Plan your site structure before design.",
 };
 
 export default function RootLayout({

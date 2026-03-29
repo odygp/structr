@@ -634,7 +634,7 @@ function createMolecules(page, atoms) {
   var fqQ = txt("question", "How does it work?", 'lg', FS, 'text');
   faqItem.appendChild(fqQ); linkText(fqQ, fqQk);
   var fqAk = faqItem.addComponentProperty("Answer", "TEXT", "It works like magic.");
-  var fqA = txt("answer", "It works like magic.", 'base', FR, 'textSecondary', { w: 650 });
+  var fqA = txt("answer", "It works like magic.", 'base', FR, 'textSecondary');
   faqItem.appendChild(fqA); linkText(fqA, fqAk);
   page.appendChild(faqItem); faqItem.x = 1060; faqItem.y = 60;
   molecules.FaqItem = faqItem;
@@ -934,10 +934,12 @@ function buildFeaturesAlternating(comp, content, atoms) {
     setFixedW(row, MAX_W['7xl']);
 
     var textBlock = frame("text_" + i, { dir: "VERTICAL" });
-    textBlock.appendChild(txt("featTitle_" + i, features[i].title || '', '2xl', FS, 'text'));
+    var ft = txt("featTitle_" + i, features[i].title || '', '2xl', FS, 'text');
+    textBlock.appendChild(ft); fillH(ft);
     var descWrap = frame("desc_wrap", { dir: "VERTICAL", pt: 16 });
-    descWrap.appendChild(txt("featDesc_" + i, features[i].description || '', 'base', FR, 'textSecondary', { w: 500 }));
-    textBlock.appendChild(descWrap);
+    var fd = txt("featDesc_" + i, features[i].description || '', 'base', FR, 'textSecondary');
+    descWrap.appendChild(fd); fillH(fd);
+    textBlock.appendChild(descWrap); fillH(descWrap);
 
     var img = atoms.ImagePlaceholder.createInstance(); img.name = "image_" + i;
     img.resize(560, 420);
@@ -993,7 +995,8 @@ function buildFeaturesWithImage(comp, content, atoms) {
     feat.appendChild(icon); hug(icon);
     var textBlock = frame("text_" + i, { dir: "VERTICAL", g: 4 });
     textBlock.appendChild(txt("featTitle_" + i, features[i].title || '', 'lg', FS, 'text'));
-    textBlock.appendChild(txt("featDesc_" + i, features[i].description || '', 'sm', FR, 'textSecondary', { w: 400 }));
+    var fwd = txt("featDesc_" + i, features[i].description || '', 'sm', FR, 'textSecondary');
+    textBlock.appendChild(fwd); fillH(fwd);
     feat.appendChild(textBlock);
     featCol.appendChild(feat);
   }
@@ -1205,8 +1208,10 @@ function buildFaqAccordion(comp, content, atoms, molecules) {
     // Build each FAQ item inline (not molecule instance) so content flows through
     var item = frame("qa_" + i, { dir: "VERTICAL", g: 8, py: 24 });
     setFixedW(item, MAX_W['3xl']);
-    item.appendChild(txt("question_" + i, questions[i].question || '', 'lg', FS, 'text', { w: MAX_W['3xl'] }));
-    item.appendChild(txt("answer_" + i, questions[i].answer || '', 'base', FR, 'textSecondary', { w: MAX_W['3xl'] }));
+    var qi = txt("question_" + i, questions[i].question || '', 'lg', FS, 'text');
+    item.appendChild(qi); fillH(qi);
+    var ai = txt("answer_" + i, questions[i].answer || '', 'base', FR, 'textSecondary');
+    item.appendChild(ai); fillH(ai);
     list.appendChild(item);
     fillH(item);
 
