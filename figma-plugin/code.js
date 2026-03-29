@@ -300,7 +300,13 @@ function linkText(node, key) {
 }
 function linkVis(node, key) {
   try {
-    var refs = node.componentPropertyReferences || {};
+    // Must create a fresh object — componentPropertyReferences can be null
+    var existing = node.componentPropertyReferences;
+    var refs = {};
+    if (existing) {
+      if (existing.characters) refs.characters = existing.characters;
+      if (existing.mainComponent) refs.mainComponent = existing.mainComponent;
+    }
     refs.visible = key;
     node.componentPropertyReferences = refs;
   } catch (e) { console.log('linkVis error for ' + node.name + ':', e.message); }
@@ -904,6 +910,7 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
   var features = Array.isArray(content.features) ? content.features : [];
   var maxCards = 6;
   var colW = Math.floor((MAX_W['7xl'] - 64) / 3);
+  var deferredVis = []; // defer linkVis until after comp.appendChild
   for (var i = 0; i < maxCards; i++) {
     var feat = features[i] || { title: 'Feature ' + (i + 1), description: 'Description for feature ' + (i + 1) + '.' };
     var card = molecules.FeatureCard.createInstance(); card.name = "feature_" + i;
@@ -915,12 +922,11 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
         if (k.indexOf("Description") === 0) card.setProperties(makeObj(k, feat.description || ''));
       }
     } catch (e) {}
-    // Cards beyond 3: wrap in a frame with boolean visibility toggle
     if (i >= 3) {
       var wrapper = frame("card_" + i + "_wrapper", { dir: "VERTICAL" });
       wrapper.appendChild(card); fillH(card);
       var showKey = comp.addComponentProperty("Show Card " + (i + 1), "BOOLEAN", i < features.length);
-      linkVis(wrapper, showKey);
+      deferredVis.push({ node: wrapper, key: showKey });
       grid.appendChild(wrapper);
       fillH(wrapper);
     } else {
@@ -931,6 +937,10 @@ function buildFeaturesGrid(comp, content, atoms, molecules) {
   gridWrap.appendChild(grid); fillH(grid);
   inner.appendChild(gridWrap); fillH(gridWrap);
   comp.appendChild(inner);
+  // Now that everything is in the component tree, bind visibility
+  for (var dv = 0; dv < deferredVis.length; dv++) {
+    linkVis(deferredVis[dv].node, deferredVis[dv].key);
+  }
 }
 
 function buildFeaturesAlternating(comp, content, atoms) {
