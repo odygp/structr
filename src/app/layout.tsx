@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     default: "Structr",
     template: "%s | Structr",
   },
-  description: "AI-powered wireframe and UX planning tool. Generate section-based wireframes from a prompt, import any website, or build from a sitemap. Plan your site structure before design.",
+  description: "The pre-design layer for websites. Build wireframes manually or with AI — plan your site's pages, sections, and content before touching Figma or code. Then hand off a clear structure to any design tool.",
 };
 
 export default function RootLayout({

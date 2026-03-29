@@ -39,10 +39,10 @@ export default function Home() {
           <StarIcon size={13} /> 50 free stars included — no credit card needed
         </div>
         <h1 className="text-[56px] font-bold text-[#1a1a1a] leading-[1.05] tracking-[-0.03em] mb-5">
-          From idea to wireframe<br />in 30 seconds
+          Before Figma. Before Lovable.<br />Before code.
         </h1>
-        <p className="text-[19px] text-[#666] max-w-[560px] mx-auto mb-10 leading-relaxed">
-          Plan your website&apos;s structure and content before touching design tools. AI generates section-based wireframes from a prompt, a URL, or a sitemap.
+        <p className="text-[19px] text-[#666] max-w-[580px] mx-auto mb-10 leading-relaxed">
+          Plan your website&apos;s pages, sections, and content — manually or with AI. Build from scratch, generate from a prompt, or import any URL. Then hand off a clear structure to any design or code tool.
         </p>
         <div className="flex gap-4 justify-center mb-4">
           <Link
@@ -122,7 +122,7 @@ export default function Home() {
               The pre-design layer<br />your workflow is missing
             </h2>
             <p className="text-[16px] text-[#999] leading-relaxed mb-8">
-              Design tools are for pixels. Code builders are for production. But before either — you need to decide <strong className="text-white">what pages, what sections, what content, and in what order</strong>. That&apos;s the hard part. That&apos;s what Structr does.
+              Design tools are for pixels. Code builders are for production. But before either — you need to decide <strong className="text-white">what pages, what sections, what content, and in what order</strong>. That&apos;s the hard part. Structr lets you figure this out — by building manually, with AI, or both.
             </p>
 
             {/* Workflow diagram */}
@@ -178,14 +178,14 @@ export default function Home() {
 
       {/* Use cases */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Plan your site structure, fast</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-14 max-w-[500px] mx-auto">Whether you&apos;re starting from scratch, analyzing a competitor, or working from an existing sitemap.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Multiple ways to start — you choose</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-14 max-w-[550px] mx-auto">Build wireframes manually from our section catalog, let AI generate them, or mix both. You&apos;re always in control.</p>
         <div className="grid grid-cols-2 gap-5">
           {[
-            { title: 'Prompt to wireframe', desc: 'Type "a SaaS landing page with pricing and testimonials" and get a full multi-page wireframe in seconds. AI picks the right sections, writes real copy, and structures everything.', tag: '10 ★', tagColor: 'bg-blue-50 text-blue-700' },
-            { title: 'Clone any website', desc: 'Paste a URL like stripe.com and we analyze every page — header, hero, features, pricing, footer. Then recreate it as editable wireframe sections you can customize.', tag: '5 ★/page', tagColor: 'bg-purple-50 text-purple-700' },
-            { title: 'Guided setup wizard', desc: 'Pick your industry (SaaS, restaurant, agency...), choose pages, add your business details, set the tone. AI generates a tailored multi-page site that actually fits your brand.', tag: '5 ★/page', tagColor: 'bg-green-50 text-green-700' },
-            { title: 'Import from Octopus.do', desc: 'Export your sitemap from Octopus.do and import it. We read every page name, description, and SEO data, then generate matching wireframe sections automatically.', tag: '3 ★/page', tagColor: 'bg-amber-50 text-amber-700' },
+            { title: 'Build manually', desc: 'Start with a blank project and drag sections from our catalog — 20+ types including headers, heroes, features, pricing, FAQ, and more. No AI needed. Full control.', tag: 'Free', tagColor: 'bg-gray-100 text-gray-700' },
+            { title: 'Generate with AI', desc: 'Describe your site in plain language and AI generates a complete multi-page wireframe with sections, content, and structure. Edit anything after.', tag: '10 ★', tagColor: 'bg-blue-50 text-blue-700' },
+            { title: 'Import any website', desc: 'Paste a URL and we analyze every page — header, hero, features, pricing, footer. Then recreate it as editable wireframe sections you can customize manually or with AI.', tag: '5 ★/page', tagColor: 'bg-purple-50 text-purple-700' },
+            { title: 'Guided setup wizard', desc: 'Pick your industry, choose pages, add business details, set the tone. AI generates a tailored site — then you refine it however you want.', tag: '5 ★/page', tagColor: 'bg-green-50 text-green-700' },
           ].map(c => (
             <div key={c.title} className="bg-white border border-[#ebebeb] rounded-2xl p-7 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-3">
@@ -201,9 +201,9 @@ export default function Home() {
       {/* AI editing */}
       <section className="bg-[#1a1a1a] py-20">
         <div className="max-w-[700px] mx-auto px-8 text-center">
-          <h2 className="text-[32px] font-bold text-white mb-4">Edit every section with AI chat</h2>
-          <p className="text-[16px] text-[#999] mb-10 max-w-[500px] mx-auto">
-            Click any section and tell AI what to change. Refine copy, restructure content, add CTAs. Iterate on your UX without pixel-pushing.
+          <h2 className="text-[32px] font-bold text-white mb-4">Edit manually, or let AI help</h2>
+          <p className="text-[16px] text-[#999] mb-10 max-w-[520px] mx-auto">
+            Click any section to edit content directly. Or open the AI chat and describe what to change — refine copy, restructure, add CTAs. Your choice, every time.
           </p>
           <div className="bg-[#2a2a2a] rounded-xl p-5 text-left max-w-[400px] mx-auto border border-[#333]">
             <div className="text-[12px] text-[#666] mb-3">AI Support — Hero Section</div>
@@ -277,12 +277,12 @@ export default function Home() {
         <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-14">Everything you need to wireframe fast</h2>
         <div className="grid grid-cols-3 gap-5">
           {[
+            { title: 'No AI required', desc: 'Build wireframes entirely by hand from our section catalog. Drag, reorder, edit content directly. AI is a power tool, not a dependency.' },
+            { title: '20+ section types', desc: 'Headers, heroes, features, pricing, testimonials, FAQ, CTA, footer, and more. Each with multiple variants to choose from.' },
+            { title: 'Publish & share', desc: 'One click publishes to a clean /p/your-project URL. Share with clients, stakeholders, or your team for feedback.' },
             { title: 'Version history', desc: 'Save snapshots, restore any version. Every publish creates a checkpoint you can roll back to.' },
-            { title: 'Multi-page projects', desc: 'Build complete sites with Home, About, Pricing, Contact — all in one project with page-level navigation.' },
-            { title: 'Publish instantly', desc: 'One click publishes to a clean /p/your-project URL. Share with clients, stakeholders, or your team.' },
             { title: 'Team collaboration', desc: 'Invite members as viewers, editors, or admins. Activity feed tracks every change across collaborators.' },
-            { title: 'Export everywhere', desc: 'Export to HTML, JSON, or Figma. Use the Figma plugin to import directly into your design workflow.' },
-            { title: '20+ section types', desc: 'Headers, heroes, features, pricing, testimonials, FAQ, CTA, footer, and more. Each with multiple variants.' },
+            { title: 'Export everywhere', desc: 'Export to HTML, JSON, or Figma. Hand off structure to any design tool or code builder in your stack.' },
           ].map(f => (
             <div key={f.title} className="p-5">
               <h3 className="text-[15px] font-semibold text-[#1a1a1a] mb-2">{f.title}</h3>

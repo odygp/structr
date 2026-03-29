@@ -84,7 +84,7 @@ export default function PersonaPage({ role, headline, subtitle, benefits, workfl
         <div className="bg-[#1a1a1a] rounded-2xl p-8 md:p-10">
           <h3 className="text-[22px] font-bold text-white mb-3">The pre-design layer your workflow is missing</h3>
           <p className="text-[14px] text-[#999] leading-relaxed mb-5">
-            Before you open Figma, before you prompt Lovable — you need to decide what pages, what sections, and what content. That exploration is expensive in design tools and code builders. In Structr, it costs 1 star per edit.
+            Before you open Figma, before you prompt Lovable — you need to decide what pages, what sections, and what content. Build that structure manually from our section catalog, use AI for speed, or mix both. That exploration is expensive in design tools. In Structr, it&apos;s free to build manually or 1 star per AI edit.
           </p>
           <div className="flex items-center gap-3 flex-wrap">
             <div className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-center">
