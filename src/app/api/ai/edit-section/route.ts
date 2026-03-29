@@ -36,6 +36,14 @@ export async function POST(request: Request) {
 
 Return ONLY valid JSON with the updated content fields. Keep the same JSON structure — only modify the fields that the user's instruction refers to. Do not add new fields unless specifically asked.
 
+CONTENT QUALITY: Write like a senior copywriter, not an AI.
+- NEVER use em dashes, "revolutionize", "seamless", "robust", "cutting-edge", "game-changer", "innovative", "leverage", "utilize", "empower", "holistic", "comprehensive", "Furthermore", "Moreover", "In today's world", "Whether you're", "unlock", "elevate", "streamline"
+- Use specific numbers ("340 teams" not "hundreds"), direct language, varied sentence lengths
+- CTAs must be specific ("Start your free project") not generic ("Get Started")
+- Subtitles add new info, never restate the title differently
+- Features: state what it does + why it matters with a specific benefit
+- Testimonials: specific result + full name + real-sounding title + company name
+
 Section type: ${category} (variant: ${variantId})
 
 ${mode === 'plan' ? 'IMPORTANT: Do NOT return the updated JSON yet. Instead, describe what changes you would make in plain text. List each change as a bullet point. The user will review and approve before you apply.' : 'Return the updated content JSON directly.'}`, cache_control: { type: 'ephemeral' } }],

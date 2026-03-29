@@ -303,7 +303,7 @@ function linkVis(node, key) {
     var refs = node.componentPropertyReferences || {};
     refs.visible = key;
     node.componentPropertyReferences = refs;
-  } catch (e) {}
+  } catch (e) { console.log('linkVis error for ' + node.name + ':', e.message); }
 }
 
 function resizeSection(section, padding) {
@@ -588,9 +588,11 @@ function createMolecules(page, atoms) {
 
   var tcAuth = frame("author", { dir: "HORIZONTAL", g: 12, ca: "CENTER" });
   var tcAvatar = atoms.Avatar.createInstance(); tcAvatar.name = "avatar";
-  tcAuth.appendChild(tcAvatar); hug(tcAvatar);
+  var tcAvatarWrap = frame("avatar_wrapper", { dir: "HORIZONTAL" });
+  tcAvatarWrap.appendChild(tcAvatar); hug(tcAvatar);
+  tcAuth.appendChild(tcAvatarWrap); hug(tcAvatarWrap);
   var tcShowAvatarKey = testCard.addComponentProperty("Show Avatar", "BOOLEAN", true);
-  linkVis(tcAvatar, tcShowAvatarKey);
+  linkVis(tcAvatarWrap, tcShowAvatarKey);
   var tcInfo = frame("info", { dir: "VERTICAL", g: 2 });
   var tcNk = testCard.addComponentProperty("Author", "TEXT", "Jane Cooper");
   var tcName = txt("author", "Jane Cooper", 'sm', FS, 'text');
