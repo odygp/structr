@@ -121,7 +121,7 @@ export default function SectionCatalog({ width = 240 }: { width?: number }) {
                       .map(s => (
                       <div key={s.id} className="relative group">
                         <button
-                          onClick={() => addSectionWithContent(s.category as SectionCategory, s.variant_id, s.content as Record<string, string>, s.color_mode as 'light' | 'dark')}
+                          onClick={() => addSectionWithContent(s.category as SectionCategory, s.variant_id, s.content as Record<string, string>, s.color_mode as 'light' | 'dark', s.id)}
                           aria-label={`Add ${s.name} section`}
                           className="flex flex-col items-center p-2 rounded-[8px] border border-[#e6e6e6] hover:border-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors w-full outline-none focus-visible:ring-2 focus-visible:ring-[#1c1c1c]"
                         >

@@ -73,6 +73,7 @@ export interface PlacedSection {
   variantId: string;
   content: SectionContent;
   colorMode: ColorMode;
+  reusableSourceId?: string; // Links to structr_reusable_sections.id for synced instances
 }
 
 // ── Figma Export Types ──────────────────────────────

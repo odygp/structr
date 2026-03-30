@@ -65,7 +65,7 @@ interface BuilderState {
 
   // Section actions
   addSection: (category: SectionCategory, variantId: string) => void;
-  addSectionWithContent: (category: SectionCategory, variantId: string, content: Record<string, ContentValue>, colorMode?: ColorMode) => void;
+  addSectionWithContent: (category: SectionCategory, variantId: string, content: Record<string, ContentValue>, colorMode?: ColorMode, reusableSourceId?: string) => void;
   insertSectionAt: (category: SectionCategory, variantId: string, index: number) => void;
   removeSection: (id: string) => void;
   moveSection: (fromIndex: number, toIndex: number) => void;
@@ -122,6 +122,20 @@ function createDefaultProject(name = 'My Website'): Project {
 function activePage(s: { projects: Project[]; activeProjectId: string }): Page | undefined {
   const proj = s.projects.find(p => p.id === s.activeProjectId);
   return proj?.pages.find(p => p.id === proj.activePageId);
+}
+
+/** Sync content from a section to all linked reusable instances across all pages */
+function syncReusableInstances(s: { projects: Project[]; activeProjectId: string }, sectionId: string) {
+  const proj = s.projects.find(p => p.id === s.activeProjectId);
+  if (!proj) return;
+  const allSections = proj.pages.flatMap(pg => pg.sections);
+  const source = allSections.find(x => x.id === sectionId);
+  if (!source?.reusableSourceId) return;
+  for (const sec of allSections) {
+    if (sec.id !== sectionId && sec.reusableSourceId === source.reusableSourceId) {
+      sec.content = deepClone(source.content) as Record<string, ContentValue>;
+    }
+  }
 }
 
 function deepClone<T>(obj: T): T {
@@ -241,7 +255,7 @@ export const useBuilderStore = create<BuilderState>()(
         s.selectedSectionId = newSection.id;
       }),
 
-      addSectionWithContent: (category, variantId, content, colorMode = 'light') => set((s) => {
+      addSectionWithContent: (category, variantId, content, colorMode = 'light', reusableSourceId?) => set((s) => {
         const page = activePage(s);
         if (!page) return;
         pushHistory(s);
@@ -251,6 +265,7 @@ export const useBuilderStore = create<BuilderState>()(
           variantId,
           content: deepClone(content) as Record<string, ContentValue>,
           colorMode,
+          reusableSourceId,
         };
         page.sections.push(newSection);
         s.selectedSectionId = newSection.id;
@@ -314,7 +329,9 @@ export const useBuilderStore = create<BuilderState>()(
       updateContent: (sectionId, key, value) => set((s) => {
         const page = activePage(s);
         const sec = page?.sections.find(x => x.id === sectionId);
-        if (sec) sec.content[key] = value;
+        if (!sec) return;
+        sec.content[key] = value;
+        syncReusableInstances(s, sectionId);
       }),
 
       updateItemField: (sectionId, arrayKey, itemIndex, fieldKey, value) => set((s) => {
@@ -324,6 +341,7 @@ export const useBuilderStore = create<BuilderState>()(
         const items = sec.content[arrayKey];
         if (!Array.isArray(items) || !items[itemIndex]) return;
         items[itemIndex][fieldKey] = value;
+        syncReusableInstances(s, sectionId);
       }),
 
       addItem: (sectionId, arrayKey) => set((s) => {
@@ -337,6 +355,7 @@ export const useBuilderStore = create<BuilderState>()(
           ? Object.fromEntries(Object.keys(items[0]).map(k => [k, typeof items[0][k] === 'boolean' ? false : '']))
           : {};
         items.push(template);
+        syncReusableInstances(s, sectionId);
       }),
 
       removeItem: (sectionId, arrayKey, itemIndex) => set((s) => {
@@ -347,6 +366,7 @@ export const useBuilderStore = create<BuilderState>()(
         const items = sec.content[arrayKey];
         if (!Array.isArray(items)) return;
         items.splice(itemIndex, 1);
+        syncReusableInstances(s, sectionId);
       }),
 
       duplicateSection: (id) => set((s) => {
