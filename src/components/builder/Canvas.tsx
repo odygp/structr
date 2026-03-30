@@ -72,6 +72,9 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, 
         }),
       });
       if (res.ok) {
+        const saved = await res.json();
+        // Tag the original section so it's linked to future instances
+        useBuilderStore.getState().linkToReusable(section.id, saved.id);
         const { showToast } = await import('@/lib/hooks/useToast');
         showToast('Section saved as reusable', 'success');
         window.dispatchEvent(new Event('reusable-sections-changed'));

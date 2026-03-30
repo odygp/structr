@@ -269,6 +269,8 @@ export default function ContentEditor({ onEditWithAi }: { onEditWithAi?: () => v
                   }),
                 });
                 if (res.ok) {
+                  const saved = await res.json();
+                  useBuilderStore.getState().linkToReusable(selectedSection.id, saved.id);
                   showToast('Section saved as reusable', 'success');
                   window.dispatchEvent(new Event('reusable-sections-changed'));
                 } else showToast('Failed to save section', 'error');

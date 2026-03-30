@@ -70,6 +70,7 @@ interface BuilderState {
   removeSection: (id: string) => void;
   moveSection: (fromIndex: number, toIndex: number) => void;
   selectSection: (id: string | null) => void;
+  linkToReusable: (sectionId: string, reusableSourceId: string) => void;
   changeVariant: (sectionId: string, newVariantId: string) => void;
   toggleColorMode: (sectionId: string) => void;
   updateContent: (sectionId: string, key: string, value: ContentValue) => void;
@@ -307,6 +308,15 @@ export const useBuilderStore = create<BuilderState>()(
       }),
 
       selectSection: (id) => set((s) => { s.selectedSectionId = id; }),
+
+      linkToReusable: (sectionId, reusableSourceId) => set((s) => {
+        const proj = s.projects.find(p => p.id === s.activeProjectId);
+        if (!proj) return;
+        for (const pg of proj.pages) {
+          const sec = pg.sections.find(x => x.id === sectionId);
+          if (sec) { sec.reusableSourceId = reusableSourceId; return; }
+        }
+      }),
 
       changeVariant: (sectionId, newVariantId) => set((s) => {
         const page = activePage(s);
