@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:sections": "node scripts/generate-section-index.mjs",
+    "validate:registry": "node scripts/validate-registry.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

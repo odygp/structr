@@ -1,6 +1,10 @@
 # Structr Component Building Guide
 
-This guide is the single reference for building new section components and updating existing ones. Follow these rules exactly — they ensure consistency across all 500+ components and all export targets.
+> **Use the dedicated playbooks instead:**
+> - **[NEW_SECTION.md](./NEW_SECTION.md)** — Full playbook for creating a brand new section category
+> - **[NEW_VARIANT.md](./NEW_VARIANT.md)** — Playbook for adding a variant to an existing category
+>
+> This file is kept as a quick-reference appendix for tokens and patterns.
 
 ## Token System (`src/lib/tokens/`)
 
