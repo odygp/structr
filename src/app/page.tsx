@@ -148,7 +148,7 @@ export default function Home() {
 
             {/* Cost comparison */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="text-[14px] font-semibold text-white mb-4">The cost of figuring out structure</div>
+              <div className="text-[14px] font-semibold text-white mb-4">The cost of one wireframe round</div>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="bg-white/5 rounded-lg p-3 text-center">
                   <div className="text-[11px] text-white/40 mb-1">Freelance designer</div>
@@ -156,18 +156,18 @@ export default function Home() {
                   <div className="text-[11px] text-white/30">per wireframe round</div>
                 </div>
                 <div className="bg-white/5 rounded-lg p-3 text-center">
-                  <div className="text-[11px] text-white/40 mb-1">Lovable / v0</div>
-                  <div className="text-[20px] font-bold text-white/70">$20+</div>
-                  <div className="text-[11px] text-white/30">per generation attempt</div>
+                  <div className="text-[11px] text-white/40 mb-1">AI code builder</div>
+                  <div className="text-[20px] font-bold text-white/70">$20-50</div>
+                  <div className="text-[11px] text-white/30">/mo subscription</div>
                 </div>
                 <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
                   <div className="text-[11px] text-green-400/70 mb-1">Structr</div>
-                  <div className="text-[20px] font-bold text-green-400">$0.04</div>
-                  <div className="text-[11px] text-green-400/50">per AI edit (1 star)</div>
+                  <div className="text-[20px] font-bold text-green-400">~$0.76</div>
+                  <div className="text-[11px] text-green-400/50">generate + refine (~20 stars)</div>
                 </div>
               </div>
               <p className="text-[12px] text-white/50 leading-relaxed">
-                A full project generation costs 10 stars (~$0.40). Restructuring 5 sections costs 5 stars (~$0.20). The same exploration in a design tool or with a freelancer costs 50-100x more. Decide <em className="text-white/70">what</em> to build in Structr, then use expensive tools only for <em className="text-white/70">how</em> it looks.
+                A typical wireframe round: generate a full project (10 stars), refine 5 sections with AI (5 stars), import a reference page (5 stars) = 20 stars. On the Pro plan that&apos;s about $0.76. On the free tier, your 50 stars cover 2-3 complete projects. Manual building is always free.
               </p>
             </div>
           </div>
