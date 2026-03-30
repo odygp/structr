@@ -266,6 +266,7 @@ export default function ContentEditor({ onEditWithAi }: { onEditWithAi?: () => v
                     variantId: selectedSection.variantId,
                     content: selectedSection.content,
                     colorMode: selectedSection.colorMode || 'light',
+                    sourceProjectName: useBuilderStore.getState().projects.find(p => p.id === useBuilderStore.getState().activeProjectId)?.name || '',
                   }),
                 });
                 if (res.ok) {

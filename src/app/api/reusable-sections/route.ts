@@ -28,36 +28,20 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { name, category, variantId, content, colorMode } = await request.json();
+    const { name, category, variantId, content, colorMode, sourceProjectName } = await request.json();
     if (!category || !variantId) return NextResponse.json({ error: 'category and variantId required' }, { status: 400 });
 
-    // Check if this variant already exists for this user — update instead of duplicate
-    const { data: existing } = await supabase
-      .from('structr_reusable_sections')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('variant_id', variantId)
-      .limit(1)
-      .single();
+    // Always create a new entry — users can save multiple versions of the same variant
+    // with different content (e.g., Hero Centered for Tally vs Hero Centered for a restaurant)
+    const displayName = sourceProjectName
+      ? `${name || variantId} (${sourceProjectName})`
+      : name || variantId.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-    if (existing) {
-      // Update existing entry with new content
-      const { data, error } = await supabase
-        .from('structr_reusable_sections')
-        .update({ content: content || {}, color_mode: colorMode || 'light', name: name || existing.id })
-        .eq('id', existing.id)
-        .select()
-        .single();
-      if (error) throw error;
-      return NextResponse.json(data);
-    }
-
-    // Create new entry
     const { data, error } = await supabase
       .from('structr_reusable_sections')
       .insert({
         user_id: user.id,
-        name: name || `${category} - ${variantId}`,
+        name: displayName,
         category,
         variant_id: variantId,
         content: content || {},

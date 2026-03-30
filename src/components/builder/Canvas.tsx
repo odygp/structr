@@ -44,6 +44,7 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, 
   onEditWithAi?: () => void; isAiGenerating?: boolean; isAiChanged?: boolean;
 }) {
   const { selectSection, selectedSectionId, duplicateSection, removeSection } = useBuilderStore();
+  const projectName = useBuilderStore(s => s.projects.find(p => p.id === s.activeProjectId)?.name || '');
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
 
   const style = {
@@ -69,6 +70,7 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, 
           variantId: section.variantId,
           content: section.content,
           colorMode: section.colorMode || 'light',
+          sourceProjectName: projectName,
         }),
       });
       if (res.ok) {
