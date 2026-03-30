@@ -4,7 +4,7 @@ import { sectionRegistry } from '@/lib/registry';
 import { useBuilderStore } from '@/lib/store';
 import { SectionCategory } from '@/lib/types';
 import * as Icons from 'lucide-react';
-import { ChevronRight, Search, Bookmark, Trash2 } from 'lucide-react';
+import { ChevronRight, Search, Recycle, Trash2 } from 'lucide-react';
 import VariantThumbnail from './VariantThumbnail';
 
 interface ReusableSection {
@@ -99,8 +99,8 @@ export default function SectionCatalog({ width = 240 }: { width?: number }) {
                 className="w-full flex items-center justify-between h-[36px] px-[12px] rounded-[8px] hover:bg-[#f5f5f5] transition-colors"
               >
                 <div className="flex items-center gap-[8px]">
-                  <Bookmark className="w-[14px] h-[14px] text-[#1c1c1c]" aria-hidden="true" />
-                  <span className="text-[12px] font-normal text-[#1c1c1c] whitespace-nowrap">Reusable</span>
+                  <Recycle className="w-[14px] h-[14px] text-[#1c1c1c]" aria-hidden="true" />
+                  <span className="text-[12px] font-normal text-[#1c1c1c] whitespace-nowrap">Reusable Sections</span>
                   <span className="text-[10px] text-[#808080] bg-[#f0f0f0] rounded-full px-[6px] py-[1px]">{reusableSections.length}</span>
                 </div>
                 <ChevronRight className={`w-[14px] h-[14px] text-[#1c1c1c] transition-transform ${openCategories.has('_reusable') || !!query ? 'rotate-90' : ''}`} aria-hidden="true" />
@@ -115,7 +115,7 @@ export default function SectionCatalog({ width = 240 }: { width?: number }) {
                         onClick={() => addSectionWithContent(s.category as SectionCategory, s.variant_id, s.content as Record<string, string>, s.color_mode as 'light' | 'dark')}
                         className="flex-1 flex items-center gap-[8px] h-[32px] px-[8px] rounded-[6px] hover:bg-[#f5f5f5] transition-colors text-left"
                       >
-                        <Bookmark className="w-[12px] h-[12px] text-[#808080] flex-shrink-0" />
+                        <Recycle className="w-[12px] h-[12px] text-[#808080] flex-shrink-0" />
                         <span className="text-[11px] text-[#1c1c1c] truncate">{s.name}</span>
                       </button>
                       <button

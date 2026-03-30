@@ -2,7 +2,8 @@
 import { useBuilderStore } from '@/lib/store';
 import { getDefinition } from '@/lib/registry';
 import { FieldSchema, ContentItem } from '@/lib/types';
-import { Plus, X, Minus, Save, Trash2, ChevronDown } from 'lucide-react';
+import { Plus, X, Minus, Recycle, Trash2, ChevronDown } from 'lucide-react';
+import { showToast } from '@/lib/hooks/useToast';
 import { useId } from 'react';
 
 /* ── Custom Switch (Figma spec) ── */
@@ -253,9 +254,28 @@ export default function ContentEditor({ onEditWithAi }: { onEditWithAi?: () => v
             <span className="text-[14px] text-[#1c1c1c]">Edit with AI</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.5L13 6l-3.5 1.5L8 11l-1.5-3.5L3 6l3.5-1.5L8 1zM3 11l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" stroke="#1c1c1c" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-          <button className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors">
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch('/api/reusable-sections', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: `${selectedSection.category} - ${selectedSection.variantId}`,
+                    category: selectedSection.category,
+                    variantId: selectedSection.variantId,
+                    content: selectedSection.content,
+                    colorMode: selectedSection.colorMode || 'light',
+                  }),
+                });
+                if (res.ok) showToast('Section saved as reusable', 'success');
+                else showToast('Failed to save section', 'error');
+              } catch { showToast('Failed to save section', 'error'); }
+            }}
+            className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors"
+          >
             <span className="text-[14px] text-[#1c1c1c]">Save as reusable</span>
-            <Save className="w-[16px] h-[16px] text-[#1c1c1c]" />
+            <Recycle className="w-[16px] h-[16px] text-[#1c1c1c]" />
           </button>
           <button
             onClick={() => removeSection(selectedSection.id)}

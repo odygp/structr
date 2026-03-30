@@ -60,18 +60,29 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, 
 
   const handleSaveReusable = async () => {
     try {
-      await fetch('/api/reusable-sections', {
+      const res = await fetch('/api/reusable-sections', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: `${def?.categoryLabel || section.category} — ${section.variantId}`,
+          name: `${def?.categoryLabel || section.category} - ${section.variantId}`,
           category: section.category,
           variantId: section.variantId,
           content: section.content,
           colorMode: section.colorMode || 'light',
         }),
       });
-    } catch {}
+      if (res.ok) {
+        const { showToast } = await import('@/lib/hooks/useToast');
+        showToast('Section saved as reusable', 'success');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        const { showToast } = await import('@/lib/hooks/useToast');
+        showToast(data.error || 'Failed to save section', 'error');
+      }
+    } catch {
+      const { showToast } = await import('@/lib/hooks/useToast');
+      showToast('Failed to save section', 'error');
+    }
   };
 
   return (
