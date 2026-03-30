@@ -12,7 +12,9 @@ const Logo = () => (
 );
 
 const NAV_LINKS = [
+  { href: '/#features', label: 'Features' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/#use-cases', label: 'Use Cases' },
   { href: '/changelog', label: 'Changelog' },
 ];
 
@@ -45,7 +47,7 @@ export default function MarketingNav() {
           Sign in
         </Link>
         <Link href="/signup" className="text-[14px] font-medium text-white bg-[#1a1a1a] hover:bg-[#333] px-5 py-2.5 rounded-xl transition-colors">
-          Get started free
+          Start your free project
         </Link>
       </div>
     </nav>

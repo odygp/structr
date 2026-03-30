@@ -12,16 +12,20 @@ const FOOTER_SECTIONS = [
   {
     title: 'Product',
     links: [
+      { label: 'Features', href: '/#features' },
       { label: 'Pricing', href: '/pricing' },
       { label: 'Changelog', href: '/changelog' },
       { label: 'Example Project', href: '/p/stripe-import' },
     ],
   },
   {
-    title: 'Resources',
+    title: 'Use Cases',
     links: [
-      { label: 'Get Started', href: '/signup' },
-      { label: 'Sign In', href: '/login' },
+      { label: 'For Designers', href: '/for/designers' },
+      { label: 'For Product Managers', href: '/for/product-managers' },
+      { label: 'For Marketers', href: '/for/marketers' },
+      { label: 'For Founders', href: '/for/founders' },
+      { label: 'For Agencies', href: '/for/agencies' },
     ],
   },
   {
@@ -45,7 +49,7 @@ export default function MarketingFooter() {
               <span className="text-[16px] font-semibold text-[#1a1a1a]">Structr</span>
             </Link>
             <p className="text-[13px] text-[#808080] leading-relaxed">
-              AI-powered wireframe builder. From idea to published site in minutes.
+              Plan your site&apos;s structure and content before you design or code.
             </p>
           </div>
 
@@ -68,7 +72,7 @@ export default function MarketingFooter() {
 
         <div className="border-t border-[#f0f0f0] pt-6 flex items-center justify-between">
           <p className="text-[12px] text-[#a0a0a0]">&copy; {new Date().getFullYear()} Structr. All rights reserved.</p>
-          <p className="text-[12px] text-[#a0a0a0]">Built with AI, for builders.</p>
+          <p className="text-[12px] text-[#a0a0a0]">Structure first, pixels later.</p>
         </div>
       </div>
     </footer>

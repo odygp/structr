@@ -36,20 +36,20 @@ export default function Home() {
       {/* Hero */}
       <section className="text-center pt-24 pb-20 px-8 max-w-[850px] mx-auto">
         <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-green-50 text-green-700 text-[13px] font-medium mb-8">
-          <StarIcon size={13} /> 50 free stars included — no credit card needed
+          <StarIcon size={13} /> 50 free stars included, no credit card needed
         </div>
         <h1 className="text-[56px] font-bold text-[#1a1a1a] leading-[1.05] tracking-[-0.03em] mb-5">
           Before Figma. Before Lovable.<br />Before code.
         </h1>
         <p className="text-[19px] text-[#666] max-w-[580px] mx-auto mb-10 leading-relaxed">
-          Plan your website&apos;s pages, sections, and content — manually or with AI. Build from scratch, generate from a prompt, or import any URL. Then hand off a clear structure to any design or code tool.
+          Describe your site, import a URL, or drag sections by hand. Structr generates the pages, content, and structure so your design and dev tools have a clear blueprint to follow.
         </p>
         <div className="flex gap-4 justify-center mb-4">
           <Link
             href="/signup"
             className="px-10 py-4 text-[16px] font-semibold text-white bg-[#1a1a1a] hover:bg-[#333] rounded-2xl transition-all hover:shadow-lg"
           >
-            Start building for free
+            Start your free project
           </Link>
           <Link
             href="/p/stripe-import"
@@ -58,7 +58,7 @@ export default function Home() {
             See a live example
           </Link>
         </div>
-        <p className="text-[12px] text-[#a0a0a0]">For designers, product managers, marketers, founders, and agencies</p>
+        <p className="text-[12px] text-[#a0a0a0]">Used by designers, PMs, marketers, founders, and agencies</p>
       </section>
 
       {/* Mock wireframe preview */}
@@ -98,10 +98,10 @@ export default function Home() {
       <section className="border-y border-[#ebebeb] bg-white py-12">
         <div className="max-w-[800px] mx-auto px-8 grid grid-cols-4 gap-8 text-center">
           {[
-            { number: '20+', label: 'Section types' },
-            { number: '4', label: 'Import methods' },
-            { number: '30s', label: 'Avg. generation time' },
-            { number: '1-click', label: 'Publish' },
+            { number: '23', label: 'Section types available' },
+            { number: '4', label: 'Ways to start a project' },
+            { number: '27s', label: 'Avg. generation time' },
+            { number: '1-click', label: 'Publish to a live URL' },
           ].map(s => (
             <div key={s.label}>
               <div className="text-[28px] font-bold text-[#1a1a1a]">{s.number}</div>
@@ -122,7 +122,7 @@ export default function Home() {
               The pre-design layer<br />your workflow is missing
             </h2>
             <p className="text-[16px] text-[#999] leading-relaxed mb-8">
-              Design tools are for pixels. Code builders are for production. But before either — you need to decide <strong className="text-white">what pages, what sections, what content, and in what order</strong>. That&apos;s the hard part. Structr lets you figure this out — by building manually, with AI, or both.
+              Design tools are for pixels. Code builders are for production. But before either, you need to decide <strong className="text-white">what pages, what sections, what content, and in what order</strong>. That&apos;s the hard part. Structr lets you figure this out by building manually, with AI, or both.
             </p>
 
             {/* Workflow diagram */}
@@ -156,17 +156,17 @@ export default function Home() {
       </section>
 
       {/* Who uses Structr */}
-      <section className="max-w-[900px] mx-auto px-8 py-20">
+      <section id="use-cases" className="max-w-[900px] mx-auto px-8 py-20">
         <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Built for every team that plans websites</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-12 max-w-[500px] mx-auto">From first idea to design handoff — Structr fits into your workflow.</p>
+        <p className="text-[16px] text-[#808080] text-center mb-12 max-w-[500px] mx-auto">Structr sits between your first idea and your design tool. Pick a role to see how it fits.</p>
         <div className="grid grid-cols-3 gap-4">
           {[
-            { role: 'UX Designers', desc: 'Plan information architecture and page structure before opening Figma. Export wireframes directly to your design tool.', href: '/for/designers' },
-            { role: 'Product Managers', desc: 'Spec out features visually instead of writing long docs. Share interactive wireframes with engineering to align faster.', href: '/for/product-managers' },
-            { role: 'Marketing Teams', desc: 'Plan landing pages and campaign sites in minutes. Brief agencies with actual wireframes instead of vague descriptions.', href: '/for/marketers' },
-            { role: 'Founders', desc: 'Go from idea to visual plan instantly. Show investors and cofounders what you\'re building before hiring a designer.', href: '/for/founders' },
-            { role: 'Agencies', desc: 'Win more pitches with rapid wireframe proposals. Import competitor sites for analysis. Iterate in client meetings.', href: '/for/agencies' },
-            { role: 'Content Strategists', desc: 'Map out content architecture across pages. Plan what copy goes where before writing a single word.', href: '/for/content-strategists' },
+            { role: 'UX Designers', desc: 'Map information architecture and page structure before you open Figma. Export wireframes directly into your design file.', href: '/for/designers' },
+            { role: 'Product Managers', desc: 'Spec features as interactive wireframes instead of 12-page PRDs. Share a link, align engineering in one meeting.', href: '/for/product-managers' },
+            { role: 'Marketing Teams', desc: 'Generate a campaign landing page in 30 seconds. Brief your agency or designer with an actual wireframe, not a bullet list.', href: '/for/marketers' },
+            { role: 'Founders', desc: 'Turn the site in your head into a visual plan you can share with investors and cofounders. No designer required yet.', href: '/for/founders' },
+            { role: 'Agencies', desc: 'Import a client\'s site, restructure it, and present a wireframe proposal before the first meeting ends.', href: '/for/agencies' },
+            { role: 'Content Strategists', desc: 'See where every headline, body block, and CTA lives across every page. Plan content architecture visually, not in spreadsheets.', href: '/for/content-strategists' },
           ].map(p => (
             <Link key={p.role} href={p.href} className="bg-white border border-[#ebebeb] rounded-2xl p-6 hover:shadow-md hover:border-[#d0d0d0] transition-all group">
               <h3 className="text-[15px] font-semibold text-[#1a1a1a] mb-2 group-hover:underline">{p.role}</h3>
@@ -178,14 +178,14 @@ export default function Home() {
 
       {/* Use cases */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Multiple ways to start — you choose</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-14 max-w-[550px] mx-auto">Build wireframes manually from our section catalog, let AI generate them, or mix both. You&apos;re always in control.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Four ways to start, zero blank-canvas anxiety</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-14 max-w-[550px] mx-auto">Drag sections by hand, let AI generate the whole site, import an existing URL, or answer a few questions in the wizard. Mix approaches on the same project.</p>
         <div className="grid grid-cols-2 gap-5">
           {[
-            { title: 'Build manually', desc: 'Start with a blank project and drag sections from our catalog — 20+ types including headers, heroes, features, pricing, FAQ, and more. No AI needed. Full control.', tag: 'Free', tagColor: 'bg-gray-100 text-gray-700' },
-            { title: 'Generate with AI', desc: 'Describe your site in plain language and AI generates a complete multi-page wireframe with sections, content, and structure. Edit anything after.', tag: '10 ★', tagColor: 'bg-blue-50 text-blue-700' },
-            { title: 'Import any website', desc: 'Paste a URL and we analyze every page — header, hero, features, pricing, footer. Then recreate it as editable wireframe sections you can customize manually or with AI.', tag: '5 ★/page', tagColor: 'bg-purple-50 text-purple-700' },
-            { title: 'Guided setup wizard', desc: 'Pick your industry, choose pages, add business details, set the tone. AI generates a tailored site — then you refine it however you want.', tag: '5 ★/page', tagColor: 'bg-green-50 text-green-700' },
+            { title: 'Build by hand', desc: 'Start blank and pick from 23 section types: headers, heroes, features, pricing, FAQ, and more. Drag to reorder. Edit content inline. No AI, no stars.', tag: 'Free', tagColor: 'bg-gray-100 text-gray-700' },
+            { title: 'Generate with AI', desc: 'Describe your site in one sentence. AI produces a multi-page wireframe with realistic copy, proper hierarchy, and the right section types for your business.', tag: '10 ★', tagColor: 'bg-blue-50 text-blue-700' },
+            { title: 'Import any URL', desc: 'Paste a website address and Structr analyzes every page, then recreates the structure as editable wireframe sections you can rearrange and rewrite.', tag: '5 ★/page', tagColor: 'bg-purple-50 text-purple-700' },
+            { title: 'Guided wizard', desc: 'Pick your industry, choose pages, add business details, set the tone. AI generates a tailored wireframe, then you refine it section by section.', tag: '5 ★/page', tagColor: 'bg-green-50 text-green-700' },
           ].map(c => (
             <div key={c.title} className="bg-white border border-[#ebebeb] rounded-2xl p-7 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-3">
@@ -201,36 +201,36 @@ export default function Home() {
       {/* AI editing */}
       <section className="bg-[#1a1a1a] py-20">
         <div className="max-w-[700px] mx-auto px-8 text-center">
-          <h2 className="text-[32px] font-bold text-white mb-4">Edit manually, or let AI help</h2>
+          <h2 className="text-[32px] font-bold text-white mb-4">Click to edit, or tell AI what to change</h2>
           <p className="text-[16px] text-[#999] mb-10 max-w-[520px] mx-auto">
-            Click any section to edit content directly. Or open the AI chat and describe what to change — refine copy, restructure, add CTAs. Your choice, every time.
+            Edit any section&apos;s content inline. Or open the AI chat and say &ldquo;shorten the subtitle&rdquo; or &ldquo;add a CTA after features.&rdquo; One star per AI edit.
           </p>
           <div className="bg-[#2a2a2a] rounded-xl p-5 text-left max-w-[400px] mx-auto border border-[#333]">
-            <div className="text-[12px] text-[#666] mb-3">AI Support — Hero Section</div>
+            <div className="text-[12px] text-[#666] mb-3">AI Chat: Hero Section</div>
             <div className="bg-[#333] rounded-lg px-3 py-2 text-[13px] text-[#ccc] mb-2">Make the subtitle shorter</div>
             <div className="text-[12px] text-green-400">Changes applied. <span className="text-[#666]">1 ★</span></div>
           </div>
         </div>
       </section>
 
-      {/* Feedback loop — coming soon */}
+      {/* Feedback loop */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
         <div className="grid grid-cols-2 gap-8 items-center">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[12px] font-medium mb-5">
-              Coming soon
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-[12px] font-medium mb-5">
+              Now available
             </div>
             <h2 className="text-[32px] font-bold text-[#1a1a1a] leading-[1.15] mb-4">
               Client feedback,<br />auto-applied
             </h2>
             <p className="text-[15px] text-[#808080] leading-relaxed mb-6">
-              Share your wireframe with clients. They leave comments like &ldquo;move pricing above testimonials&rdquo; or &ldquo;add a team section.&rdquo; Click one button and AI reads every comment, creates a plan, and applies the changes — reordering sections, editing content, even adding new ones.
+              Share your wireframe with clients. They leave comments like &ldquo;move pricing above testimonials&rdquo; or &ldquo;add a team section.&rdquo; Click one button and AI reads every comment, creates a plan, and applies the changes. Sections reorder, content updates, new blocks appear.
             </p>
             <div className="space-y-3">
               {[
                 'Clients comment directly on the published wireframe',
                 'AI reads all unresolved feedback and creates a change plan',
-                'You review and approve — changes auto-apply instantly',
+                'You review and approve, then changes apply instantly',
                 'New version created automatically for rollback safety',
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-2.5 text-[13px] text-[#666]">
@@ -273,16 +273,16 @@ export default function Home() {
       </section>
 
       {/* Features grid */}
-      <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-14">Everything you need to wireframe fast</h2>
+      <section id="features" className="max-w-[900px] mx-auto px-8 py-20">
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-14">Wireframe faster without cutting corners</h2>
         <div className="grid grid-cols-3 gap-5">
           {[
-            { title: 'No AI required', desc: 'Build wireframes entirely by hand from our section catalog. Drag, reorder, edit content directly. AI is a power tool, not a dependency.' },
-            { title: '20+ section types', desc: 'Headers, heroes, features, pricing, testimonials, FAQ, CTA, footer, and more. Each with multiple variants to choose from.' },
-            { title: 'Publish & share', desc: 'One click publishes to a clean /p/your-project URL. Share with clients, stakeholders, or your team for feedback.' },
-            { title: 'Version history', desc: 'Save snapshots, restore any version. Every publish creates a checkpoint you can roll back to.' },
-            { title: 'Team collaboration', desc: 'Invite members as viewers, editors, or admins. Activity feed tracks every change across collaborators.' },
-            { title: 'Export everywhere', desc: 'Export to HTML, JSON, or Figma. Hand off structure to any design tool or code builder in your stack.' },
+            { title: 'Works without AI', desc: 'Build wireframes entirely by hand from the section catalog. Drag, reorder, edit content inline. AI is a power tool, not a requirement.' },
+            { title: '23 section types', desc: 'Headers, heroes, features, pricing, testimonials, FAQ, CTA, blog, gallery, store, and 13 more. Each type has multiple layout variants.' },
+            { title: 'Publish in one click', desc: 'Generates a clean /p/your-project URL. Share with clients, stakeholders, or your team to collect comments directly on the wireframe.' },
+            { title: 'Version history', desc: 'Save snapshots before risky changes. Every publish creates a checkpoint. Roll back to any previous version in two clicks.' },
+            { title: 'Team collaboration', desc: 'Invite members as viewers, editors, or admins. The activity feed tracks who changed what, so you never lose context.' },
+            { title: 'Export to Figma, HTML, JSON', desc: 'Hand off your wireframe structure to any design tool or code builder. The content hierarchy and section order carry over.' },
           ].map(f => (
             <div key={f.title} className="p-5">
               <h3 className="text-[15px] font-semibold text-[#1a1a1a] mb-2">{f.title}</h3>
@@ -294,8 +294,8 @@ export default function Home() {
 
       {/* Pricing */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Simple, transparent pricing</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-14">Start free. Upgrade when you need more.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Pay for AI when you use it. Build by hand for free.</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-14">Stars are Structr&apos;s currency. Manual building costs nothing. AI actions cost 1-10 stars each.</p>
         <div className="grid grid-cols-3 gap-5">
           {/* Free */}
           <div className="bg-white border border-[#ebebeb] rounded-2xl p-7">
@@ -308,14 +308,14 @@ export default function Home() {
               <span className="text-[13px] text-[#808080]">stars included</span>
             </div>
             <ul className="space-y-2.5 text-[13px] text-[#666] mb-8">
-              <li>~5 project generations</li>
+              <li>~5 full project generations</li>
               <li>~10 page imports</li>
               <li>~50 AI section edits</li>
               <li>Publish to public URL</li>
-              <li>Export HTML / JSON / Figma</li>
+              <li>Export to Figma, HTML, JSON</li>
             </ul>
             <Link href="/signup" className="block text-center px-6 py-3 text-[14px] font-medium text-[#1a1a1a] border border-[#e0e0e0] rounded-xl hover:bg-[#fafafa] transition-colors">
-              Get started
+              Start your free project
             </Link>
           </div>
 
@@ -323,7 +323,7 @@ export default function Home() {
           <div className="bg-white border-2 border-[#1a1a1a] rounded-2xl p-7 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1a1a1a] text-white text-[11px] font-medium px-3 py-1 rounded-full">Most popular</div>
             <div className="text-[13px] font-medium text-[#808080] mb-1">Pro</div>
-            <div className="text-[36px] font-bold text-[#1a1a1a] mb-1">$20</div>
+            <div className="text-[36px] font-bold text-[#1a1a1a] mb-1">$19</div>
             <div className="text-[13px] text-[#a0a0a0] mb-6">/month</div>
             <div className="flex items-center gap-1.5 mb-6">
               <span className="text-[20px] font-bold text-[#1a1a1a]">500</span>
@@ -334,19 +334,19 @@ export default function Home() {
               <li>~50 project generations</li>
               <li>~100 page imports</li>
               <li>~500 AI section edits</li>
-              <li>Everything in Free</li>
+              <li>All Free features included</li>
               <li>Priority AI models</li>
               <li>Remove Structr badge</li>
             </ul>
-            <div className="block text-center px-6 py-3 text-[14px] font-medium text-white bg-[#1a1a1a] rounded-xl opacity-60 cursor-not-allowed">
-              Coming soon
-            </div>
+            <Link href="/signup" className="block text-center px-6 py-3 text-[14px] font-medium text-white bg-[#1a1a1a] hover:bg-[#333] rounded-xl transition-colors">
+              Upgrade to Pro
+            </Link>
           </div>
 
           {/* Team */}
           <div className="bg-white border border-[#ebebeb] rounded-2xl p-7">
             <div className="text-[13px] font-medium text-[#808080] mb-1">Team</div>
-            <div className="text-[36px] font-bold text-[#1a1a1a] mb-1">$50</div>
+            <div className="text-[36px] font-bold text-[#1a1a1a] mb-1">$49</div>
             <div className="text-[13px] text-[#a0a0a0] mb-6">/month</div>
             <div className="flex items-center gap-1.5 mb-6">
               <span className="text-[20px] font-bold text-[#1a1a1a]">1500</span>
@@ -357,21 +357,22 @@ export default function Home() {
               <li>~150 project generations</li>
               <li>~300 page imports</li>
               <li>~1500 AI section edits</li>
-              <li>Everything in Pro</li>
+              <li>All Pro features included</li>
               <li>Unlimited team members</li>
               <li>Custom domains</li>
             </ul>
-            <div className="block text-center px-6 py-3 text-[14px] font-medium text-[#1a1a1a] border border-[#e0e0e0] rounded-xl opacity-60 cursor-not-allowed">
-              Coming soon
-            </div>
+            <Link href="/signup" className="block text-center px-6 py-3 text-[14px] font-medium text-[#1a1a1a] border border-[#e0e0e0] rounded-xl hover:bg-[#fafafa] transition-colors">
+              Start with Team
+            </Link>
           </div>
         </div>
+        <p className="text-[13px] text-[#a0a0a0] text-center mt-6">All plans include: version history, team collaboration, Figma export, and public publishing.</p>
       </section>
 
       {/* Comparison */}
       <section className="max-w-[900px] mx-auto px-8 py-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">How Structr compares</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-10 max-w-[550px] mx-auto">AI-powered wireframing that gets you from idea to structure in seconds, not hours of dragging boxes.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Structr vs. existing wireframe tools</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-10 max-w-[550px] mx-auto">The only tool that combines AI generation, website import, section-based building, and one-click publishing in a single workflow.</p>
         <div className="bg-white border border-[#ebebeb] rounded-2xl overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
@@ -411,12 +412,12 @@ export default function Home() {
 
       {/* Showcase */}
       <section className="max-w-[900px] mx-auto px-8 pb-20">
-        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">See it in action</h2>
-        <p className="text-[16px] text-[#808080] text-center mb-10">Real projects built with Structr, published in minutes.</p>
+        <h2 className="text-[32px] font-bold text-[#1a1a1a] text-center mb-4">Real projects, published in minutes</h2>
+        <p className="text-[16px] text-[#808080] text-center mb-10">Click through live wireframes built with Structr. Each one took under 2 minutes to create.</p>
         <div className="grid grid-cols-2 gap-5">
           {[
-            { name: 'Stripe Import', desc: 'Full Stripe.com pricing page cloned via website import', slug: 'stripe-import' },
-            { name: 'Bean & Brew Coffee Shop', desc: 'Generated from a single prompt: "A coffee shop landing page"', slug: 'bean-brew-coffee-shop' },
+            { name: 'Stripe Import', desc: 'Stripe.com pricing page, imported and recreated as editable wireframe sections', slug: 'stripe-import' },
+            { name: 'Bean & Brew Coffee Shop', desc: 'Generated from one prompt: "A coffee shop landing page with menu, about, and contact"', slug: 'bean-brew-coffee-shop' },
           ].map(p => (
             <Link key={p.slug} href={`/p/${p.slug}`} className="group bg-white border border-[#ebebeb] rounded-2xl p-6 hover:shadow-md transition-all">
               <div className="h-24 bg-[#f5f5f5] rounded-lg mb-4 flex items-center justify-center text-[#a0a0a0] text-[12px] group-hover:bg-[#f0f0f0] transition-colors">
@@ -432,15 +433,15 @@ export default function Home() {
       {/* Final CTA */}
       <section className="bg-[#1a1a1a] py-20">
         <div className="max-w-[600px] mx-auto px-8 text-center">
-          <h2 className="text-[36px] font-bold text-white mb-4">Ready to build?</h2>
+          <h2 className="text-[36px] font-bold text-white mb-4">Your next wireframe is 30 seconds away</h2>
           <p className="text-[16px] text-[#999] mb-8">
-            Join UX designers and product teams who plan their sites 10x faster. Free to start, no credit card required.
+            50 free stars. No credit card. Cancel anytime.
           </p>
           <Link
             href="/signup"
             className="inline-block px-10 py-4 text-[16px] font-semibold text-[#1a1a1a] bg-white hover:bg-[#f0f0f0] rounded-2xl transition-all"
           >
-            Start building for free
+            Start your free project
           </Link>
         </div>
       </section>

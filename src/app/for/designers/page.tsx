@@ -7,19 +7,19 @@ export default function DesignersPage() {
   return (
     <PersonaPage
       role="UX Designers"
-      headline="Plan the structure,<br/>then design the pixels"
-      subtitle="Generate section-based wireframes in seconds. Map out information architecture, content hierarchy, and page flow — then export to Figma for the visual design phase."
+      headline="Nail the structure in minutes,<br/>not a full design sprint"
+      subtitle="Generate section-based wireframes with real content hierarchy. Map out information architecture, page flow, and content placement, then export to Figma for the pixel work."
       benefits={[
-        { title: 'Skip the blank canvas', description: 'Describe the site and AI generates a complete wireframe with proper section structure. No more starting from scratch with gray boxes.' },
-        { title: 'Export to Figma', description: 'One-click export to Figma-compatible JSON. Import directly into your design file as a starting layer to design on top of.' },
-        { title: 'Focus on UX, not layout', description: 'Structr handles section placement and content structure. You focus on the user experience decisions that matter.' },
-        { title: 'Rapid stakeholder alignment', description: 'Publish wireframes to a shareable URL in one click. Get feedback on structure before investing time in high-fidelity design.' },
+        { title: 'Skip the blank canvas', description: 'Describe the site and get a complete wireframe with proper section types, content blocks, and hierarchy. Start refining immediately instead of building from scratch.' },
+        { title: 'Export directly to Figma', description: 'One-click export to Figma-compatible JSON. Import it as a structural starting layer so you design on top of decided content and hierarchy.' },
+        { title: 'Separate structure from style', description: 'Structr handles the what-goes-where decisions. You focus on typography, color, spacing, and the visual details that make the design sing.' },
+        { title: 'Align stakeholders before pixels', description: 'Publish wireframes to a shareable URL and collect comments on structure. Get sign-off before investing hours in high-fidelity work.' },
       ]}
       workflow={[
-        { step: '1', title: 'Describe or import', description: 'Type what you\'re building ("SaaS pricing page with comparison table") or paste a competitor URL to analyze their structure.' },
-        { step: '2', title: 'Refine the structure', description: 'AI generates sections with real content. Reorder, edit copy with AI chat, add or remove sections from the catalog.' },
-        { step: '3', title: 'Share for feedback', description: 'Publish to a clean URL and share with stakeholders. Collect comments directly on the wireframe.' },
-        { step: '4', title: 'Hand off to design', description: 'Export to Figma or HTML. The wireframe becomes your design foundation — structure, copy, and hierarchy already decided.' },
+        { step: '1', title: 'Describe or import', description: 'Type what you\'re building ("SaaS pricing page with comparison table") or paste a competitor URL to analyze their section structure.' },
+        { step: '2', title: 'Refine the layout', description: 'AI generates sections with realistic placeholder content. Reorder them, swap variants, edit copy with the AI chat, or add sections from the catalog.' },
+        { step: '3', title: 'Collect feedback early', description: 'Publish to a clean URL and share with stakeholders. They comment directly on the wireframe. AI can auto-apply their feedback in one click.' },
+        { step: '4', title: 'Hand off to your design file', description: 'Export to Figma, HTML, or JSON. The wireframe becomes your design foundation with structure, copy, and content hierarchy already locked in.' },
       ]}
     />
   );

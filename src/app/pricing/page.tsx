@@ -21,32 +21,32 @@ const PLANS = [
     period: 'forever',
     stars: 50,
     starsLabel: 'stars included',
-    cta: 'Get started',
+    cta: 'Start your free project',
     ctaHref: '/signup',
     ctaStyle: 'border border-[#e0e0e0] text-[#1a1a1a] hover:bg-[#fafafa]',
     highlight: false,
   },
   {
     name: 'Pro',
-    price: '$20',
+    price: '$19',
     period: '/month',
     stars: 500,
     starsLabel: 'stars/month',
-    cta: 'Coming soon',
-    ctaHref: '#',
-    ctaStyle: 'bg-[#1a1a1a] text-white opacity-60 cursor-not-allowed',
+    cta: 'Upgrade to Pro',
+    ctaHref: '/signup',
+    ctaStyle: 'bg-[#1a1a1a] text-white hover:bg-[#333]',
     highlight: true,
     badge: 'Most popular',
   },
   {
     name: 'Team',
-    price: '$50',
+    price: '$49',
     period: '/month',
     stars: 1500,
     starsLabel: 'stars/month',
-    cta: 'Coming soon',
-    ctaHref: '#',
-    ctaStyle: 'border border-[#e0e0e0] text-[#1a1a1a] opacity-60 cursor-not-allowed',
+    cta: 'Start with Team',
+    ctaHref: '/signup',
+    ctaStyle: 'border border-[#e0e0e0] text-[#1a1a1a] hover:bg-[#fafafa]',
     highlight: false,
   },
 ];
@@ -69,14 +69,14 @@ const FEATURES = [
 ];
 
 const FAQ = [
-  { q: 'What are stars?', a: 'Stars are Structr\'s internal currency. Every AI action costs a specific number of stars: generating a project costs 10 stars, importing a page costs 5, and editing a section with AI costs 1. You can see star costs before every action.' },
-  { q: 'What happens when I run out of stars?', a: 'AI features are paused until you get more stars. You can still edit content manually, rearrange sections, and access all non-AI features. Your projects and published sites remain accessible.' },
-  { q: 'How many projects can I build with 50 stars?', a: 'Roughly 5 full projects from prompt, or 10 website page imports, or 50 AI section edits. A typical project with generation + a few edits costs about 15-20 stars.' },
-  { q: 'Can I use Structr without AI?', a: 'Yes. You can create blank projects, manually add sections from the catalog, edit content directly, and publish. AI features (generation, import, chat editing) are the only things that cost stars.' },
-  { q: 'When are Pro and Team plans available?', a: 'We\'re working on Stripe integration now. Pro and Team plans will be available soon. Sign up for free to be notified when they launch.' },
-  { q: 'Do unused stars roll over?', a: 'On the free tier, your 50 stars don\'t expire. On paid plans, unused stars will roll over for one month (details finalized with launch).' },
-  { q: 'Can I get more free stars?', a: 'Currently the free tier includes 50 stars. We may offer bonus stars for referrals, feedback, or community contributions in the future.' },
-  { q: 'Is my data private?', a: 'Yes. Your projects are private by default. Only you and invited team members can see them. Published projects are publicly accessible at their URL. See our Privacy Policy for details.' },
+  { q: 'What are stars and how do they work?', a: 'Stars are Structr\'s currency for AI actions. Generating a project costs 10, importing a page costs 5, and editing a section with AI costs 1. You see the cost before every action. Manual building is always free.' },
+  { q: 'What happens when I run out of stars?', a: 'AI features pause. Manual editing, section rearranging, publishing, and exporting all keep working. Your projects and published sites stay accessible. Upgrade or wait for your monthly refill on paid plans.' },
+  { q: 'How far do 50 stars go?', a: 'About 5 full project generations, or 10 page imports, or 50 AI section edits. A typical project with AI generation plus a few refinements costs 15-20 stars.' },
+  { q: 'Can I use Structr without AI?', a: 'Completely. Create blank projects, add sections from the catalog by hand, edit content inline, publish, and export. AI is optional. The only things that cost stars are AI-powered actions.' },
+  { q: 'Do unused stars roll over?', a: 'On the free tier, your 50 stars never expire. On paid plans, unused stars roll over for one billing cycle.' },
+  { q: 'Can I cancel or downgrade anytime?', a: 'Cancel from your account settings. Your plan stays active until the end of the billing period, then reverts to Free. Your projects and published sites are not deleted.' },
+  { q: 'Is my data private?', a: 'Projects are private by default. Only you and invited team members can view them. Published wireframes are publicly accessible at their URL. We never sell your data.' },
+  { q: 'Can I export to Figma?', a: 'One-click export to Figma-compatible JSON, raw HTML, or structured JSON. Your wireframe structure, content hierarchy, and section order carry over into whatever tool you use next.' },
 ];
 
 export default function PricingPage() {
@@ -86,8 +86,8 @@ export default function PricingPage() {
 
       {/* Hero */}
       <section className="text-center pt-16 pb-12 px-8 max-w-[800px] mx-auto">
-        <h1 className="text-[40px] font-bold text-[#1a1a1a] mb-3">Simple, transparent pricing</h1>
-        <p className="text-[16px] text-[#808080]">Start free with 50 stars. Upgrade when you need more.</p>
+        <h1 className="text-[40px] font-bold text-[#1a1a1a] mb-3">Pay for AI when you use it. Build by hand for free.</h1>
+        <p className="text-[16px] text-[#808080]">Stars are Structr&apos;s currency. Manual building costs nothing. AI actions cost 1-10 stars each.</p>
       </section>
 
       {/* Pricing cards */}
@@ -170,10 +170,10 @@ export default function PricingPage() {
       {/* CTA */}
       <section className="bg-[#1a1a1a] py-16">
         <div className="max-w-[600px] mx-auto px-8 text-center">
-          <h2 className="text-[28px] font-bold text-white mb-4">Start building for free</h2>
-          <p className="text-[15px] text-[#999] mb-8">50 stars included. No credit card required.</p>
+          <h2 className="text-[28px] font-bold text-white mb-4">Your next wireframe is 30 seconds away</h2>
+          <p className="text-[15px] text-[#999] mb-8">50 free stars. No credit card. Cancel anytime.</p>
           <Link href="/signup" className="inline-block px-10 py-4 text-[16px] font-semibold text-[#1a1a1a] bg-white hover:bg-[#f0f0f0] rounded-2xl transition-all">
-            Get started free
+            Start your free project
           </Link>
         </div>
       </section>
