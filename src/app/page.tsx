@@ -409,6 +409,8 @@ export default function Home() {
                 ['Website import & analysis', 'Y', 'N', 'N', 'N'],
                 ['Section-based building', 'Y', 'N', 'N', 'Y'],
                 ['AI content writing', 'Y', 'N', 'N', 'Y'],
+                ['Client feedback auto-apply', 'Y', 'N', 'N', 'N'],
+                ['Reusable linked sections', 'Y', 'N', 'N', 'N'],
                 ['Multi-page sitemaps', 'Y', 'N', 'Y', 'Y'],
                 ['Publish & share link', 'Y', 'N', 'Y', 'Y'],
                 ['Figma export', 'Y', 'Y', 'Y', 'Y'],
@@ -445,6 +447,25 @@ export default function Home() {
               <h3 className="text-[16px] font-semibold text-[#1a1a1a] mb-1">{p.name}</h3>
               <p className="text-[13px] text-[#808080]">{p.desc}</p>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="max-w-[700px] mx-auto px-8 py-20">
+        <h2 className="text-[28px] font-bold text-[#1a1a1a] text-center mb-10">Common questions</h2>
+        <div className="flex flex-col gap-5">
+          {[
+            { q: 'What is Structr?', a: 'A wireframe builder focused on structure and content. You decide what pages, sections, and copy your site needs. Then hand that blueprint to any design tool or code builder.' },
+            { q: 'Do I need design skills?', a: 'No. Structr uses pre-built section types (hero, features, pricing, FAQ, and 19 more). You pick sections, arrange them, and edit the content. The layout is handled.' },
+            { q: 'Is it really free?', a: 'Manual building is completely free, forever. AI features (generation, import, chat editing) cost stars. Every account starts with 50 free stars, no credit card needed.' },
+            { q: 'What can I export?', a: 'Figma-compatible JSON, raw HTML, or structured JSON. Your wireframe\'s section order, content hierarchy, and copy carry over into whatever tool you use next.' },
+            { q: 'How is this different from Figma or a page builder?', a: 'Figma is for visual design. Page builders produce production code. Structr sits before both. It\'s where you decide what goes on each page and in what order, before you invest in pixels or code.' },
+          ].map((item, i) => (
+            <div key={i} className="bg-white border border-[#ebebeb] rounded-xl p-6">
+              <h3 className="text-[15px] font-semibold text-[#1a1a1a] mb-2">{item.q}</h3>
+              <p className="text-[13px] text-[#808080] leading-relaxed">{item.a}</p>
+            </div>
           ))}
         </div>
       </section>

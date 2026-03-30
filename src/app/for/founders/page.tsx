@@ -1,7 +1,10 @@
 import PersonaPage from '@/components/marketing/PersonaPage';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Structr for Founders' };
+export const metadata: Metadata = {
+  title: 'Structr for Founders',
+  description: 'Turn the site in your head into a visual plan you can share with cofounders, investors, and your first designer in under a minute.',
+};
 
 export default function FoundersPage() {
   return (

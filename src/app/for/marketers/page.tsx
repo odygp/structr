@@ -1,7 +1,10 @@
 import PersonaPage from '@/components/marketing/PersonaPage';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Structr for Marketing Teams' };
+export const metadata: Metadata = {
+  title: 'Structr for Marketing Teams',
+  description: 'Generate a campaign landing page in 30 seconds. Share the wireframe as the brief itself instead of writing docs.',
+};
 
 export default function MarketersPage() {
   return (

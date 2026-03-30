@@ -1,7 +1,10 @@
 import PersonaPage from '@/components/marketing/PersonaPage';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Structr for UX Designers' };
+export const metadata: Metadata = {
+  title: 'Structr for UX Designers',
+  description: 'Nail your site structure in minutes, not a full design sprint. Generate wireframes with real content hierarchy, then export to Figma.',
+};
 
 export default function DesignersPage() {
   return (

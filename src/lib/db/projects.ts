@@ -71,7 +71,7 @@ export async function saveProjectData(
   projectId: string,
   pages: { id?: string; name: string; sort_order: number; sections: {
     id?: string; category: string; variant_id: string; content: Record<string, unknown>;
-    color_mode: string; sort_order: number;
+    color_mode: string; sort_order: number; reusable_source_id?: string;
   }[] }[]
 ): Promise<void> {
   const supabase = await createClient();
@@ -101,6 +101,7 @@ export async function saveProjectData(
         content: s.content,
         color_mode: s.color_mode,
         sort_order: s.sort_order ?? i,
+        reusable_source_id: s.reusable_source_id || null,
       }));
 
       await supabase.from('structr_sections').insert(sectionRows);
@@ -108,5 +109,5 @@ export async function saveProjectData(
   }
 
   // Touch updated_at
-  await supabase.from('structr_projects').update({ name: (await supabase.from('structr_projects').select('name').eq('id', projectId).single()).data?.name || 'Project' }).eq('id', projectId);
+  await supabase.from('structr_projects').update({ updated_at: new Date().toISOString() }).eq('id', projectId);
 }

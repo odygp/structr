@@ -392,6 +392,7 @@ export const useBuilderStore = create<BuilderState>()(
           variantId: original.variantId,
           content: deepClone(original.content),
           colorMode: original.colorMode,
+          reusableSourceId: original.reusableSourceId,
         };
         page.sections.splice(idx + 1, 0, duplicate);
         s.selectedSectionId = duplicate.id;
@@ -495,7 +496,7 @@ export const useBuilderStore = create<BuilderState>()(
       // ── Remote Project Loading ──
       loadRemoteProject: (dbProject: unknown) => set((s) => {
         try {
-          const dp = dbProject as { id: string; name: string; structr_pages?: { id: string; name: string; sort_order: number; structr_sections?: { id: string; category: string; variant_id: string; content: Record<string, unknown>; color_mode: string; sort_order: number; }[] }[] };
+          const dp = dbProject as { id: string; name: string; structr_pages?: { id: string; name: string; sort_order: number; structr_sections?: { id: string; category: string; variant_id: string; content: Record<string, unknown>; color_mode: string; sort_order: number; reusable_source_id?: string; }[] }[] };
           const pages: Page[] = (dp.structr_pages || [])
             .sort((a, b) => a.sort_order - b.sort_order)
             .map(p => ({
@@ -509,6 +510,7 @@ export const useBuilderStore = create<BuilderState>()(
                   variantId: sec.variant_id,
                   content: sec.content as Record<string, ContentValue>,
                   colorMode: (sec.color_mode || 'light') as ColorMode,
+                  reusableSourceId: sec.reusable_source_id || undefined,
                 })),
             }));
 

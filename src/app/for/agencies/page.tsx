@@ -1,7 +1,10 @@
 import PersonaPage from '@/components/marketing/PersonaPage';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Structr for Agencies' };
+export const metadata: Metadata = {
+  title: 'Structr for Agencies',
+  description: 'Import a client\'s site, restructure it, and present a wireframe proposal before the first meeting ends.',
+};
 
 export default function AgenciesPage() {
   return (

@@ -80,3 +80,26 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
+
+// PATCH — update a reusable section's content (called by auto-save to sync master template)
+export async function PATCH(request: Request) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { id, content } = await request.json();
+    if (!id || !content) return NextResponse.json({ error: 'id and content required' }, { status: 400 });
+
+    const { error } = await supabase
+      .from('structr_reusable_sections')
+      .update({ content })
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    if (error) throw error;
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    return NextResponse.json({ error: String(e) }, { status: 500 });
+  }
+}

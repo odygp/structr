@@ -103,6 +103,70 @@ function BuilderLayoutInner() {
       .catch(() => {});
   }, []);
 
+  // Auto-save: debounced save to DB after any section/page change
+  const autoSaveTimerRef = useRef<NodeJS.Timeout>(null);
+  const lastSavedRef = useRef<string>('');
+
+  useEffect(() => {
+    if (!projectId) return;
+    const activeProject = useBuilderStore.getState().projects.find(p => p.id === projectId);
+    if (!activeProject || activeProject.pages.length === 0) return;
+
+    // Create a fingerprint to detect changes
+    const fingerprint = JSON.stringify(activeProject.pages.map(p => ({
+      name: p.name,
+      sections: p.sections.map(s => ({ c: s.category, v: s.variantId, content: s.content, cm: s.colorMode, r: s.reusableSourceId })),
+    })));
+
+    if (fingerprint === lastSavedRef.current) return; // No changes
+
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(async () => {
+      try {
+        const proj = useBuilderStore.getState().projects.find(p => p.id === projectId);
+        if (!proj) return;
+        await fetch(`/api/projects/${projectId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pages: proj.pages.map((page, pageIdx) => ({
+              name: page.name,
+              sort_order: pageIdx,
+              sections: page.sections.map((sec, secIdx) => ({
+                category: sec.category,
+                variant_id: sec.variantId,
+                content: sec.content,
+                color_mode: sec.colorMode,
+                sort_order: secIdx,
+                reusable_source_id: sec.reusableSourceId || null,
+              })),
+            })),
+          }),
+        });
+        lastSavedRef.current = fingerprint;
+
+        // Also sync any reusable section edits back to the master catalog
+        const allSections = proj.pages.flatMap(p => p.sections);
+        const reusableSections = allSections.filter(s => s.reusableSourceId);
+        const uniqueReusableIds = [...new Set(reusableSections.map(s => s.reusableSourceId))];
+        for (const reusableId of uniqueReusableIds) {
+          const latest = reusableSections.find(s => s.reusableSourceId === reusableId);
+          if (latest) {
+            fetch('/api/reusable-sections', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: reusableId, content: latest.content }),
+            }).catch(() => {});
+          }
+        }
+      } catch (e) {
+        console.error('Auto-save failed:', e);
+      }
+    }, 2000); // 2 second debounce
+
+    return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
+  });
+
   // Load background color from project settings
   useEffect(() => {
     if (!projectId) return;

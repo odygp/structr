@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 const Logo = ({ size = 22 }: { size?: number }) => (
@@ -48,9 +50,22 @@ export default function MarketingFooter() {
               <Logo />
               <span className="text-[16px] font-semibold text-[#1a1a1a]">Structr</span>
             </Link>
-            <p className="text-[13px] text-[#808080] leading-relaxed">
+            <p className="text-[13px] text-[#808080] leading-relaxed mb-4">
               Plan your site&apos;s structure and content before you design or code.
             </p>
+            <div>
+              <p className="text-[11px] text-[#a0a0a0] mb-2">Product updates, no spam.</p>
+              <form onSubmit={(e) => e.preventDefault()} className="flex gap-1.5">
+                <input
+                  type="email"
+                  placeholder="you@email.com"
+                  className="flex-1 px-3 py-2 text-[12px] border border-[#e0e0e0] rounded-lg bg-[#fafafa] text-[#1a1a1a] placeholder:text-[#c0c0c0] focus:outline-none focus:border-[#999] min-w-0"
+                />
+                <button type="submit" className="px-3 py-2 text-[12px] font-medium text-white bg-[#1a1a1a] hover:bg-[#333] rounded-lg transition-colors whitespace-nowrap">
+                  Subscribe
+                </button>
+              </form>
+            </div>
           </div>
 
           {/* Link columns */}

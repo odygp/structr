@@ -3,7 +3,11 @@ import MarketingFooter from '@/components/marketing/MarketingFooter';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Pricing' };
+export const metadata: Metadata = {
+  title: 'Pricing',
+  description: 'Free to start with 50 stars. Pro $19/mo, Team $49/mo. Pay for AI when you use it, build wireframes by hand for free.',
+  openGraph: { title: 'Pricing | Structr', description: 'Free to start with 50 stars. Pro $19/mo, Team $49/mo. Pay for AI when you use it, build wireframes by hand for free.' },
+};
 
 const StarIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className="inline-block">

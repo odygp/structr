@@ -15,11 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://structr.app"),
   title: {
     default: "Structr",
     template: "%s | Structr",
   },
-  description: "The pre-design layer for websites. Build wireframes manually or with AI — plan your site's pages, sections, and content before touching Figma or code. Then hand off a clear structure to any design tool.",
+  description: "The pre-design layer for websites. Build wireframes manually or with AI. Plan your site's pages, sections, and content before touching Figma or code.",
+  openGraph: {
+    siteName: "Structr",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

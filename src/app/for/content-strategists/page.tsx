@@ -1,7 +1,10 @@
 import PersonaPage from '@/components/marketing/PersonaPage';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Structr for Content Strategists' };
+export const metadata: Metadata = {
+  title: 'Structr for Content Strategists',
+  description: 'See every content block across every page, visually. Plan what goes where before your writers type a word.',
+};
 
 export default function ContentStrategistsPage() {
   return (

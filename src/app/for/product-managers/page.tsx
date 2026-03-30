@@ -1,7 +1,10 @@
 import PersonaPage from '@/components/marketing/PersonaPage';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: 'Structr for Product Managers' };
+export const metadata: Metadata = {
+  title: 'Structr for Product Managers',
+  description: 'Spec features as interactive wireframes, not 12-page documents. Share one link with engineering and design to align before sprint planning.',
+};
 
 export default function ProductManagersPage() {
   return (
