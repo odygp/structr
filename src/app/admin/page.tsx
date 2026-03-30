@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { Check, X, Eye, EyeOff, ExternalLink, Clock, CheckCircle, XCircle, Hammer } from 'lucide-react';
+import { Check, X, Eye, EyeOff, ExternalLink, Clock, CheckCircle, XCircle, Hammer, Inbox } from 'lucide-react';
 import Image from 'next/image';
 
 interface ComponentRequest {
@@ -17,10 +17,15 @@ interface ComponentRequest {
   status: string;
   admin_notes: string | null;
   created_at: string;
+  group_id: string | null;
+  duplicate_count: number;
+  novelty_score: number | null;
+  agent_notes: string | null;
 }
 
 const STATUS_TABS = [
-  { value: 'pending', label: 'Pending', icon: Clock },
+  { value: 'inbox', label: 'Inbox', icon: Inbox },
+  { value: 'pending', label: 'Review Queue', icon: Clock },
   { value: 'approved', label: 'Approved', icon: CheckCircle },
   { value: 'rejected', label: 'Rejected', icon: XCircle },
   { value: 'built', label: 'Built', icon: Hammer },
@@ -40,7 +45,7 @@ export default function AdminPage() {
   const [section, setSection] = useState<'requests' | 'usage' | 'prompt' | 'competition'>('requests');
   const [requests, setRequests] = useState<ComponentRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('pending');
+  const [activeTab, setActiveTab] = useState('inbox');
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [usageData, setUsageData] = useState<UsageData | null>(null);
@@ -595,7 +600,9 @@ export default function AdminPage() {
           </div>
         ) : requests.length === 0 ? (
           <div className="text-center py-[64px] text-[#34322d] opacity-40 text-[14px]">
-            No {activeTab} requests
+            {activeTab === 'inbox' ? 'Inbox is empty. New requests from imports and the research agent will appear here.' :
+             activeTab === 'pending' ? 'Review queue is empty. The daily curation agent will move items here from the inbox.' :
+             `No ${activeTab} requests`}
           </div>
         ) : (
           <div className="flex flex-col gap-[16px]">
@@ -605,11 +612,25 @@ export default function AdminPage() {
                 <div className="p-[24px]">
                   <div className="flex items-start justify-between mb-[12px]">
                     <div>
-                      <div className="flex items-center gap-[8px] mb-[4px]">
+                      <div className="flex items-center gap-[8px] mb-[4px] flex-wrap">
                         <span className="bg-[#efefef] text-[#34322d] text-[12px] font-medium px-[8px] py-[2px] rounded-[6px]">
                           {req.suggested_category}
                         </span>
                         <h3 className="text-[16px] font-medium text-[#34322d]">{req.suggested_variant_name}</h3>
+                        {req.novelty_score != null && (
+                          <span className={`text-[11px] font-medium px-[6px] py-[1px] rounded-[4px] ${
+                            req.novelty_score >= 4 ? 'bg-green-50 text-green-700' :
+                            req.novelty_score >= 3 ? 'bg-yellow-50 text-yellow-700' :
+                            'bg-red-50 text-red-600'
+                          }`}>
+                            Novelty: {req.novelty_score}/5
+                          </span>
+                        )}
+                        {req.duplicate_count > 1 && (
+                          <span className="text-[11px] font-medium px-[6px] py-[1px] rounded-[4px] bg-blue-50 text-blue-700">
+                            Seen {req.duplicate_count}x
+                          </span>
+                        )}
                       </div>
                       {req.source_url && (
                         <a href={req.source_url} target="_blank" rel="noopener noreferrer"
@@ -626,6 +647,19 @@ export default function AdminPage() {
                   </div>
 
                   <p className="text-[14px] text-[#34322d] opacity-70 leading-[1.5] mb-[16px]">{req.description}</p>
+
+                  {/* Agent assessment */}
+                  {req.agent_notes && (
+                    <div className="flex items-start gap-[8px] p-[10px] bg-[#f0f7ff] border border-[#d0e3ff] rounded-[8px] mb-[16px]">
+                      <span className="text-[11px] font-semibold text-blue-600 shrink-0 mt-[1px]">AI</span>
+                      <p className="text-[12px] text-[#34322d] opacity-70 leading-[1.4]">{req.agent_notes}</p>
+                    </div>
+                  )}
+
+                  {/* Inbox status note */}
+                  {req.status === 'inbox' && !req.agent_notes && (
+                    <div className="text-[11px] text-[#808080] italic mb-[16px]">Waiting for daily curation agent</div>
+                  )}
 
                   {/* Extracted content preview */}
                   {req.extracted_content && Object.keys(req.extracted_content).length > 0 && (
@@ -651,7 +685,7 @@ export default function AdminPage() {
                   )}
 
                   {/* Action buttons */}
-                  {activeTab === 'pending' && (
+                  {(activeTab === 'pending' || activeTab === 'inbox') && (
                     <div className="flex items-center gap-[8px]">
                       <input
                         type="text"

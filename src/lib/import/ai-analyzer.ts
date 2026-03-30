@@ -370,7 +370,7 @@ async function saveUnmatchedSections(sections: UnmatchedSection[], sourceUrl?: s
         source_page_name: pageName || null,
         extracted_content: s.extractedContent || {},
         preview_html: s.previewHtml || null,
-        status: 'pending',
+        status: 'inbox',
       });
     }
   } catch (e) {

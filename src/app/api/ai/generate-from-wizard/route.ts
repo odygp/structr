@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         source_page_name: null,
         extracted_content: { wizardData },
         preview_html: null,
-        status: 'pending',
+        status: 'inbox',
       }).then(undefined, console.error);
     }
 
