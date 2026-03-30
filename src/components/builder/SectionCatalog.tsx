@@ -25,11 +25,19 @@ export default function SectionCatalog({ width = 240 }: { width?: number }) {
   const [reusableSections, setReusableSections] = useState<ReusableSection[]>([]);
 
   // Fetch reusable sections
-  useEffect(() => {
+  const loadReusable = () => {
     fetch('/api/reusable-sections')
       .then(r => r.ok ? r.json() : [])
       .then(setReusableSections)
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadReusable();
+    // Listen for saves from Canvas/ContentEditor
+    const handler = () => loadReusable();
+    window.addEventListener('reusable-sections-changed', handler);
+    return () => window.removeEventListener('reusable-sections-changed', handler);
   }, []);
 
   const deleteReusable = async (id: string) => {
@@ -92,43 +100,51 @@ export default function SectionCatalog({ width = 240 }: { width?: number }) {
         <div className="flex flex-col gap-[2px] p-[4px]">
           {/* Reusable sections */}
           {reusableSections.length > 0 && (!query || 'reusable'.includes(query)) && (
-            <div>
-              <button
-                onClick={() => toggleCategory('_reusable')}
-                aria-expanded={openCategories.has('_reusable') || !!query}
-                className="w-full flex items-center justify-between h-[36px] px-[12px] rounded-[8px] hover:bg-[#f5f5f5] transition-colors"
-              >
-                <div className="flex items-center gap-[8px]">
-                  <Recycle className="w-[14px] h-[14px] text-[#1c1c1c]" aria-hidden="true" />
-                  <span className="text-[12px] font-normal text-[#1c1c1c] whitespace-nowrap">Reusable Sections</span>
-                  <span className="text-[10px] text-[#808080] bg-[#f0f0f0] rounded-full px-[6px] py-[1px]">{reusableSections.length}</span>
-                </div>
-                <ChevronRight className={`w-[14px] h-[14px] text-[#1c1c1c] transition-transform ${openCategories.has('_reusable') || !!query ? 'rotate-90' : ''}`} aria-hidden="true" />
-              </button>
-              {(openCategories.has('_reusable') || !!query) && (
-                <div className="flex flex-col gap-[2px] px-[8px] mt-1 mb-2">
-                  {reusableSections
-                    .filter(s => !query || s.name.toLowerCase().includes(query) || s.category.toLowerCase().includes(query))
-                    .map(s => (
-                    <div key={s.id} className="flex items-center gap-[8px] group">
-                      <button
-                        onClick={() => addSectionWithContent(s.category as SectionCategory, s.variant_id, s.content as Record<string, string>, s.color_mode as 'light' | 'dark')}
-                        className="flex-1 flex items-center gap-[8px] h-[32px] px-[8px] rounded-[6px] hover:bg-[#f5f5f5] transition-colors text-left"
-                      >
-                        <Recycle className="w-[12px] h-[12px] text-[#808080] flex-shrink-0" />
-                        <span className="text-[11px] text-[#1c1c1c] truncate">{s.name}</span>
-                      </button>
-                      <button
-                        onClick={() => deleteReusable(s.id)}
-                        className="opacity-0 group-hover:opacity-100 w-[20px] h-[20px] flex items-center justify-center text-[#808080] hover:text-red-500 transition-all"
-                      >
-                        <Trash2 size={10} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <>
+              <div>
+                <button
+                  onClick={() => toggleCategory('_reusable')}
+                  aria-expanded={openCategories.has('_reusable') || !!query}
+                  className="w-full flex items-center justify-between h-[36px] px-[12px] rounded-[8px] hover:bg-[#f5f5f5] transition-colors"
+                >
+                  <div className="flex items-center gap-[8px]">
+                    <Recycle className="w-[14px] h-[14px] text-[#1c1c1c]" aria-hidden="true" />
+                    <span className="text-[12px] font-normal text-[#1c1c1c] whitespace-nowrap">Reusable Sections</span>
+                    <span className="text-[10px] text-[#808080] bg-[#f0f0f0] rounded-full px-[6px] py-[1px]">{reusableSections.length}</span>
+                  </div>
+                  <ChevronRight className={`w-[14px] h-[14px] text-[#1c1c1c] transition-transform ${openCategories.has('_reusable') || !!query ? 'rotate-90' : ''}`} aria-hidden="true" />
+                </button>
+                {(openCategories.has('_reusable') || !!query) && (
+                  <div className="grid grid-cols-2 gap-1.5 px-2 mt-1 mb-2" role="group" aria-label="Reusable section variants">
+                    {reusableSections
+                      .filter(s => !query || s.name.toLowerCase().includes(query) || s.category.toLowerCase().includes(query))
+                      .map(s => (
+                      <div key={s.id} className="relative group">
+                        <button
+                          onClick={() => addSectionWithContent(s.category as SectionCategory, s.variant_id, s.content as Record<string, string>, s.color_mode as 'light' | 'dark')}
+                          aria-label={`Add ${s.name} section`}
+                          className="flex flex-col items-center p-2 rounded-[8px] border border-[#e6e6e6] hover:border-[#1c1c1c] hover:bg-[#f5f5f5] transition-colors w-full outline-none focus-visible:ring-2 focus-visible:ring-[#1c1c1c]"
+                        >
+                          <VariantThumbnail variantId={s.variant_id} variantName={s.name} />
+                          <span className="text-[11px] text-[#808080] group-hover:text-[#1c1c1c] mt-1.5 text-center leading-tight truncate w-full">
+                            {s.name}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => deleteReusable(s.id)}
+                          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 w-[18px] h-[18px] flex items-center justify-center bg-white border border-[#e6e6e6] rounded-full text-[#808080] hover:text-red-500 hover:border-red-300 transition-all z-10"
+                          title="Remove from reusable"
+                        >
+                          <Trash2 size={9} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Divider after reusable sections */}
+              <div className="bg-[#e6e6e6] h-px opacity-60 w-full my-[4px]" />
+            </>
           )}
 
           {filteredRegistry.map((def) => {

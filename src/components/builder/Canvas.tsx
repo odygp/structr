@@ -64,7 +64,7 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: `${def?.categoryLabel || section.category} - ${section.variantId}`,
+          name: section.variantId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
           category: section.category,
           variantId: section.variantId,
           content: section.content,
@@ -74,6 +74,7 @@ function SortableSection({ section, index, total, onEditWithAi, isAiGenerating, 
       if (res.ok) {
         const { showToast } = await import('@/lib/hooks/useToast');
         showToast('Section saved as reusable', 'success');
+        window.dispatchEvent(new Event('reusable-sections-changed'));
       } else {
         const data = await res.json().catch(() => ({}));
         const { showToast } = await import('@/lib/hooks/useToast');

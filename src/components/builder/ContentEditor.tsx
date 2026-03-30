@@ -261,15 +261,17 @@ export default function ContentEditor({ onEditWithAi }: { onEditWithAi?: () => v
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    name: `${selectedSection.category} - ${selectedSection.variantId}`,
+                    name: selectedSection.variantId.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
                     category: selectedSection.category,
                     variantId: selectedSection.variantId,
                     content: selectedSection.content,
                     colorMode: selectedSection.colorMode || 'light',
                   }),
                 });
-                if (res.ok) showToast('Section saved as reusable', 'success');
-                else showToast('Failed to save section', 'error');
+                if (res.ok) {
+                  showToast('Section saved as reusable', 'success');
+                  window.dispatchEvent(new Event('reusable-sections-changed'));
+                } else showToast('Failed to save section', 'error');
               } catch { showToast('Failed to save section', 'error'); }
             }}
             className="h-[32px] flex items-center justify-between px-[10px] rounded-[8px] w-full hover:bg-[#f5f5f5] transition-colors"
