@@ -148,7 +148,7 @@ export default function Home() {
 
             {/* Cost comparison */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="text-[14px] font-semibold text-white mb-4">The cost of one wireframe round</div>
+              <div className="text-[14px] font-semibold text-white mb-4">The cost of figuring out your site structure</div>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="bg-white/5 rounded-lg p-3 text-center">
                   <div className="text-[11px] text-white/40 mb-1">Freelance designer</div>
@@ -157,8 +157,8 @@ export default function Home() {
                 </div>
                 <div className="bg-white/5 rounded-lg p-3 text-center">
                   <div className="text-[11px] text-white/40 mb-1">AI code builder</div>
-                  <div className="text-[20px] font-bold text-white/70">$20-50</div>
-                  <div className="text-[11px] text-white/30">/mo subscription</div>
+                  <div className="text-[20px] font-bold text-white/70">$3-10</div>
+                  <div className="text-[11px] text-white/30">15-20 generations to iterate</div>
                 </div>
                 <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-center">
                   <div className="text-[11px] text-green-400/70 mb-1">Structr</div>
@@ -167,7 +167,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-[12px] text-white/50 leading-relaxed">
-                A typical wireframe round: generate a full project (10 stars), refine 5 sections with AI (5 stars), import a reference page (5 stars) = 20 stars. On the Pro plan that&apos;s about $0.76. On the free tier, your 50 stars cover 2-3 complete projects. Manual building is always free.
+                A typical round in Structr: generate a full project (10 stars), refine 5 sections with AI (5 stars), import a reference page (5 stars) = 20 stars, about $0.76 on the Pro plan. AI code builders charge $0.10-$1.50 per generation, and you need 15-20 to iterate on structure, but they generate full code you don&apos;t need yet. Manual building in Structr is always free.
               </p>
             </div>
           </div>
