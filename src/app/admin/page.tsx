@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { Check, X, Eye, EyeOff, ExternalLink, Clock, CheckCircle, XCircle, Hammer, Inbox } from 'lucide-react';
+import { Check, X, Eye, EyeOff, ExternalLink, Clock, CheckCircle, XCircle, Hammer, Inbox, Copy, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
 interface ComponentRequest {
@@ -48,6 +48,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('inbox');
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
   const [promptText, setPromptText] = useState('');
@@ -131,6 +132,57 @@ export default function AdminPage() {
       });
       setRequests(prev => prev.filter(r => r.id !== id));
     } catch {}
+  };
+
+  const generateBuildPrompt = (req: ComponentRequest) => {
+    const variantId = `${req.suggested_category}-${req.suggested_variant_name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '')}`;
+
+    const prompt = `## Build a new Structr section: ${req.suggested_category} / ${req.suggested_variant_name}
+
+### What to build
+- **Category:** ${req.suggested_category}
+- **Variant ID:** ${variantId}
+- **Variant Name:** ${req.suggested_variant_name}
+- **Description:** ${req.description}
+${req.source_url ? `- **Source URL:** ${req.source_url} (visit this page and analyze the section's HTML structure)` : ''}
+${req.source_page_name ? `- **Source Page:** ${req.source_page_name}` : ''}
+
+### Instructions
+
+1. ${req.source_url ? `**Visit the source URL** and analyze the actual HTML/CSS of this section pattern. Understand the layout grid, content hierarchy, and responsive behavior.` : 'Use the description and preview HTML below as reference.'}
+
+2. **Read an existing component** as a pattern reference:
+   - Read \`src/components/sections/hero/HeroCentered.tsx\` for the standard component structure
+   - Read \`src/components/sections/features/FeaturesGrid.tsx\` for array content patterns
+   - Read \`src/lib/registry.ts\` to understand the contentSchema format
+
+3. **Create the component file:** \`src/components/sections/${req.suggested_category}/${req.suggested_variant_name.replace(/[^a-zA-Z0-9]+/g, '')}.tsx\`
+   - Use \`'use client'\` directive
+   - Import: \`getColors\` from \`@/lib/colors\`, \`getSpacingClasses\` from \`@/lib/spacing\`, \`EditableText\` from \`@/components/builder/EditableText\`
+   - Props: \`{ content, colorMode, sectionId }\`
+   - Use Tailwind CSS with \`@md:\` container query prefixes for responsive
+   - Support light/dark color modes via \`getColors()\`
+   - Wrap all text in \`<EditableText>\` for inline editing
+   - Use gray placeholder rectangles for images (\`bg-[#e5e5e5] rounded-lg\`)
+
+4. **Register the component:**
+   - Add import + registry entry in \`src/components/sections/index.ts\`
+   - Add variant definition in \`src/lib/registry.ts\` (contentSchema + defaultContent)
+   - Add variant ID to \`VALID_VARIANTS\` in \`src/lib/ai/parse-response.ts\`
+   - Add variant to the AI system prompt category list in \`src/lib/ai/system-prompt.ts\`
+
+5. **Test:** Run the dev server and add the section from the catalog. Verify it renders, content is editable, and light/dark modes work.
+
+${req.preview_html ? `### Reference preview HTML\n\`\`\`html\n${req.preview_html.slice(0, 2000)}\n\`\`\`` : ''}
+
+After building, update the component request status to 'built' in the database:
+\`\`\`sql
+UPDATE structr_component_requests SET status = 'built', admin_notes = 'Built as ${variantId}', updated_at = now() WHERE id = '${req.id}';
+\`\`\``;
+
+    navigator.clipboard.writeText(prompt);
+    setCopiedId(req.id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   if (authLoading) {
@@ -682,6 +734,24 @@ export default function AdminPage() {
                       {previewId === req.id ? <EyeOff size={14} /> : <Eye size={14} />}
                       {previewId === req.id ? 'Hide Preview' : 'Show Live Preview'}
                     </button>
+                  )}
+
+                  {/* Build prompt button for approved items */}
+                  {activeTab === 'approved' && (
+                    <div className="flex items-center gap-[8px] mb-[16px]">
+                      <button
+                        onClick={() => generateBuildPrompt(req)}
+                        className="flex items-center gap-[6px] px-[16px] py-[8px] bg-[#34322d] text-white text-[13px] font-medium rounded-[8px] hover:bg-[#1c1c1c] transition-colors"
+                      >
+                        {copiedId === req.id ? <><Check size={14} /> Copied to clipboard</> : <><Sparkles size={14} /> Generate Build Prompt</>}
+                      </button>
+                      <button
+                        onClick={() => updateStatus(req.id, 'built')}
+                        className="flex items-center gap-[6px] px-[16px] py-[8px] border border-[#ebebeb] text-[#34322d] text-[13px] font-medium rounded-[8px] hover:bg-[#f8f8f8] transition-colors"
+                      >
+                        <Hammer size={14} /> Mark as Built
+                      </button>
+                    </div>
                   )}
 
                   {/* Action buttons */}
