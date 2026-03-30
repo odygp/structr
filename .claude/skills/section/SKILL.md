@@ -21,15 +21,54 @@ Creates a brand new section category (e.g., newsletter, careers, integrations) w
 
 ### Full reference: @NEW_SECTION.md
 
-### Workflow
+### Phase 1: Discovery (ask before doing anything)
 
-**1. Gather requirements** — ask the user:
-- Category name (if not in arguments)
-- "Do you have a Figma design?" (if no URL in arguments)
-- How many variants to create initially
-- Key content fields the section needs
+Use AskUserQuestion or direct questions to gather ALL of the following before writing any code. Do NOT proceed to planning until you have answers for each.
 
-**2. If Figma URL provided** — extract design specs:
+**Q1 — Category name**
+What is the section category called? (e.g., "newsletter", "careers", "integrations", "portfolio")
+
+**Q2 — Description & purpose**
+What is this section for? What problem does it solve on the page? Where does it typically appear in the page flow? (e.g., "A newsletter signup section that captures email addresses. Usually placed before the footer as a final conversion point.")
+
+**Q3 — Content fields**
+What content should be editable in this section? List every field the user should be able to customize. For each field, clarify:
+- Field name and what it's for
+- Type: short text, long text, on/off toggle, or a repeating list of items
+- Example default value
+
+Examples from existing categories:
+- Hero: title, subtitle, primary CTA text, secondary CTA text, show/hide buttons
+- Pricing: title, subtitle, plans (each with name, price, period, features, CTA, highlighted flag)
+- FAQ: title, subtitle, questions (each with question + answer)
+
+**Q4 — Variants**
+How many layout variants do you want initially? Describe each briefly.
+(e.g., "Two: one centered with a simple form, one split with image on the left and form on the right")
+
+**Q5 — Figma design**
+Do you have a Figma design for this section? If yes, paste the Figma URL(s).
+- If Figma URL is provided, I will extract exact spacing, colors, typography, and build pixel-perfect
+- If no Figma URL, I will use standard Structr layout patterns and tokens
+
+**Q6 — Special behavior**
+Anything unusual? (e.g., toggle between monthly/yearly, accordion expand/collapse, carousel, category filters, form validation)
+
+### Phase 2: Plan
+
+After gathering answers, enter plan mode and present an implementation plan:
+
+1. **Content schema** — list every field with its type (`text`, `textarea`, `boolean`, `items` with `itemFields`)
+2. **Default content** — the realistic placeholder values each variant starts with
+3. **Layout description** — for each variant, describe the visual structure (grid, flexbox, centered, split, etc.)
+4. **Figma mapping** (if URL provided) — show which Figma values map to which tokens
+5. **Files to create/modify** — exact file paths
+
+Wait for user approval before writing code.
+
+### Phase 3: If Figma URL was provided
+
+Extract design specs using Figma MCP tools:
 - `get_design_context` with the Figma URL to fetch layout, spacing, colors, typography
 - `get_screenshot` for visual reference
 - `get_variable_defs` for design token usage
@@ -40,22 +79,27 @@ Creates a brand new section category (e.g., newsletter, careers, integrations) w
   - Spacing → Tailwind gap/padding values
 - Build pixel-perfect to the design
 
-**3. Execute these steps:**
-1. Design content schema — field types: `text`, `textarea`, `boolean`, `items` (with `itemFields`)
-2. Create `src/components/sections/{category}/{VariantName}.tsx` — see component template below
-3. Add full category to `src/lib/registry.ts` — `category`, `categoryLabel`, `icon`, `contentSchema`, `variants` array
-4. Add to AI prompt in `src/lib/ai/system-prompt.ts` — add variants under "Available Section Categories and Variants" AND fields under "Content Fields Per Category" in `STRUCTURE_PROMPT`
-5. Add HTML renderer in `src/lib/export-html.ts` — one per variant
-6. Optional: Add thumbnail in `src/components/builder/VariantThumbnail.tsx`
+### Phase 4: Execute
 
-**4. Auto-generate and validate:**
+1. Create `src/components/sections/{category}/{VariantName}.tsx` — see component template below
+2. Add full category to `src/lib/registry.ts` — `category`, `categoryLabel`, `icon`, `contentSchema`, `variants` array
+3. Add to AI prompt in `src/lib/ai/system-prompt.ts` — add variants under "Available Section Categories and Variants" AND fields under "Content Fields Per Category" in `STRUCTURE_PROMPT`
+4. Add HTML renderer in `src/lib/export-html.ts` — one per variant
+5. Optional: Add thumbnail in `src/components/builder/VariantThumbnail.tsx`
+
+### Phase 5: Auto-generate and validate
+
 ```bash
 npm run generate:sections
 npm run validate:registry
 npm run build
 ```
 
-**5. Verify** — preview in dev server (light + dark mode). If Figma design was provided, compare screenshots.
+### Phase 6: Verify
+
+- Preview in dev server (light + dark mode)
+- If Figma design was provided, compare preview screenshot with Figma screenshot
+- Confirm HTML export renders correctly
 
 ---
 
@@ -65,33 +109,51 @@ Adds a new variant (different layout) to an existing section category. Reuses th
 
 ### Full reference: @NEW_VARIANT.md
 
-### Workflow
+### Phase 1: Discovery
 
-**1. Gather requirements** — ask the user:
-- Parent category (if not in arguments): header, hero, features, pricing, etc.
-- Variant name: e.g., "with-video", "tabs", "minimal"
-- "Do you have a Figma design?"
+**Q1 — Parent category**
+Which existing category? (header, hero, features, pricing, testimonials, faq, cta, blog, about, contact, team, footer, gallery, store, showcase, process, downloads, comparison, error, banner, logos, stats)
 
-**2. If Figma URL provided** — same Figma MCP workflow as `create`.
+**Q2 — Variant name & description**
+What should this variant be called and what makes it different from existing variants?
+(e.g., "hero-video — like hero-centered but with a full-width video embed instead of an image placeholder")
 
-**3. Check parent category** — read `src/lib/registry.ts`:
-- Find the parent's `contentSchema` (the fields your variant MUST use)
-- Check existing variants to avoid duplicating layouts
-- Use `defaultContent` as starting point
+**Q3 — Figma design**
+Do you have a Figma design? Paste the URL if yes.
 
-**4. Execute these steps:**
+**Q4 — Special behavior**
+Anything beyond a layout change? (e.g., new interactive elements, animations)
+
+### Phase 2: Plan
+
+Read `src/lib/registry.ts` and find the parent category's `contentSchema` and existing variants. Then present a plan:
+
+1. **Parent fields** — confirm which content fields from the schema this variant will use
+2. **Layout description** — how this variant arranges the fields differently
+3. **Figma mapping** (if URL provided)
+4. **Files to create/modify**
+
+Wait for approval.
+
+### Phase 3: If Figma URL provided — same workflow as `create`.
+
+### Phase 4: Execute
+
 1. Create `src/components/sections/{category}/{VariantName}.tsx`
 2. Add variant to parent's `variants` array in `src/lib/registry.ts`
 3. Add HTML renderer in `src/lib/export-html.ts`
 
-**5. Auto-generate and validate:**
+### Phase 5: Auto-generate and validate
+
 ```bash
 npm run generate:sections
 npm run validate:registry
 npm run build
 ```
 
-**6. Verify** — preview in dev server (light + dark mode). No AI prompt changes needed (registry auto-syncs to validation).
+### Phase 6: Verify
+
+Preview in dev server (light + dark mode). No AI prompt changes needed (registry auto-syncs).
 
 ---
 
