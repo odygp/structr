@@ -1,21 +1,42 @@
 import { createClient } from '@/lib/supabase/server';
 
-// In-memory cache for the system prompt (5 min TTL)
-let cachedPrompt: string | null = null;
+// In-memory cache for prompts (5 min TTL)
+let cachedStructure: string | null = null;
+let cachedCopy: string | null = null;
 let cacheTimestamp = 0;
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /** Clear the prompt cache (called after admin edits) */
 export function clearPromptCache() {
-  cachedPrompt = null;
+  cachedStructure = null;
+  cachedCopy = null;
   cacheTimestamp = 0;
 }
 
-/** Get the system prompt — reads from DB with fallback to hardcoded default */
+/** Get the full system prompt — composes structure + copy prompts from DB */
 export async function getSystemPrompt(): Promise<string> {
+  const [structure, copy] = await Promise.all([
+    getPromptPart('structure_prompt', STRUCTURE_PROMPT),
+    getPromptPart('copy_prompt', COPY_PROMPT),
+  ]);
+  return `${structure}\n\n${copy}`;
+}
+
+/** Get the structure prompt only */
+export async function getStructurePrompt(): Promise<string> {
+  return getPromptPart('structure_prompt', STRUCTURE_PROMPT);
+}
+
+/** Get the copy prompt only */
+export async function getCopyPrompt(): Promise<string> {
+  return getPromptPart('copy_prompt', COPY_PROMPT);
+}
+
+async function getPromptPart(key: 'structure_prompt' | 'copy_prompt', fallback: string): Promise<string> {
   // Return cache if fresh
-  if (cachedPrompt && Date.now() - cacheTimestamp < CACHE_TTL) {
-    return cachedPrompt;
+  const cached = key === 'structure_prompt' ? cachedStructure : cachedCopy;
+  if (cached && Date.now() - cacheTimestamp < CACHE_TTL) {
+    return cached;
   }
 
   try {
@@ -23,11 +44,12 @@ export async function getSystemPrompt(): Promise<string> {
     const { data } = await supabase
       .from('structr_admin_settings')
       .select('value')
-      .eq('key', 'system_prompt')
+      .eq('key', key)
       .single();
 
     if (data?.value) {
-      cachedPrompt = data.value;
+      if (key === 'structure_prompt') cachedStructure = data.value;
+      else cachedCopy = data.value;
       cacheTimestamp = Date.now();
       return data.value;
     }
@@ -35,13 +57,12 @@ export async function getSystemPrompt(): Promise<string> {
     // Fall through to hardcoded default
   }
 
-  return SYSTEM_PROMPT;
+  return fallback;
 }
 
-// Builds the system prompt for Claude to generate wireframe structures
-// This is the hardcoded default — can be overridden via admin settings
+// ── Structure Prompt: section catalog, content fields, structure rules, JSON format ──
 
-export const SYSTEM_PROMPT = `You are Structr AI, a wireframe generation assistant. Given a user's description of a website, you generate a structured JSON response that defines the pages and sections of that website.
+export const STRUCTURE_PROMPT = `You are Structr AI, a wireframe generation assistant. Given a user's description of a website, you generate a structured JSON response that defines the pages and sections of that website.
 
 ## Available Section Categories and Variants
 
@@ -203,7 +224,36 @@ Each section needs a "content" object. Here are the key fields:
 - **Error**: title, subtitle, ctaText
 - **Comparison**: title, items (array of {feature, option1, option2, option3})
 
-## Content Quality Rules (CRITICAL)
+## Structure Rules
+1. Generate realistic, contextual content grounded in the business type from the prompt.
+2. Every page MUST start with a header and end with a footer.
+3. A typical landing page has: header, hero, logos, features, stats, pricing, testimonials, faq, cta, footer.
+4. Choose variants based on the business type and content amount.
+5. Generate 1-8 pages depending on complexity.
+6. Page names should be descriptive: "Home", "About", "Pricing", "Products", "Contact", "Blog".
+
+## Response Format
+Return ONLY valid JSON (no markdown, no explanation):
+{
+  "projectName": "Business Name Website",
+  "pages": [
+    {
+      "name": "Home",
+      "sections": [
+        {
+          "category": "header",
+          "variantId": "header-simple",
+          "content": { ... },
+          "colorMode": "light"
+        }
+      ]
+    }
+  ]
+}`;
+
+// ── Copy Prompt: writing quality, banned words, per-section copy frameworks ──
+
+export const COPY_PROMPT = `## Content Quality Rules (CRITICAL)
 
 You are a senior conversion copywriter with 15 years of experience. Write copy that sounds like it was written by a human who deeply understands the business, its customers, and what makes them buy. Every piece of text must be specific, intentional, and grounded in the business context from the prompt.
 
@@ -381,31 +431,7 @@ You are a senior conversion copywriter with 15 years of experience. Write copy t
 - Subtitles MUST add new information. Never restate the title in different words
 - Invent realistic business details: company names that sound real, specific job titles, concrete metrics, plausible pricing for the industry
 - Every section should feel written for THIS specific business. Use industry jargon, relevant pain points, realistic numbers
-- When the user mentions a business type, deeply inhabit that world. A restaurant wireframe should mention dishes, reservations, delivery. A SaaS wireframe should mention integrations, API, deployment
+- When the user mentions a business type, deeply inhabit that world. A restaurant wireframe should mention dishes, reservations, delivery. A SaaS wireframe should mention integrations, API, deployment`;
 
-## Structure Rules
-1. Generate realistic, contextual content grounded in the business type from the prompt.
-2. Every page MUST start with a header and end with a footer.
-3. A typical landing page has: header, hero, logos, features, stats, pricing, testimonials, faq, cta, footer.
-4. Choose variants based on the business type and content amount.
-5. Generate 1-8 pages depending on complexity.
-6. Page names should be descriptive: "Home", "About", "Pricing", "Products", "Contact", "Blog".
-
-## Response Format
-Return ONLY valid JSON (no markdown, no explanation):
-{
-  "projectName": "Business Name Website",
-  "pages": [
-    {
-      "name": "Home",
-      "sections": [
-        {
-          "category": "header",
-          "variantId": "header-simple",
-          "content": { ... },
-          "colorMode": "light"
-        }
-      ]
-    }
-  ]
-}`;
+// Legacy: full combined prompt (kept for backward compatibility with DB migration)
+export const SYSTEM_PROMPT = `${STRUCTURE_PROMPT}\n\n${COPY_PROMPT}`;

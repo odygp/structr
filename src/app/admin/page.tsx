@@ -51,11 +51,20 @@ export default function AdminPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
-  const [promptText, setPromptText] = useState('');
+  const [promptTab, setPromptTab] = useState<'structure' | 'copy'>('structure');
+  const [structureText, setStructureText] = useState('');
+  const [copyText, setCopyText] = useState('');
   const [promptLoading, setPromptLoading] = useState(false);
   const [promptSaving, setPromptSaving] = useState(false);
   const [promptSaved, setPromptSaved] = useState(false);
-  const [promptUpdatedAt, setPromptUpdatedAt] = useState<string | null>(null);
+  const [structureUpdatedAt, setStructureUpdatedAt] = useState<string | null>(null);
+  const [copyUpdatedAt, setCopyUpdatedAt] = useState<string | null>(null);
+
+  // Derived values based on active prompt tab
+  const promptText = promptTab === 'structure' ? structureText : copyText;
+  const setPromptText = promptTab === 'structure' ? setStructureText : setCopyText;
+  const promptUpdatedAt = promptTab === 'structure' ? structureUpdatedAt : copyUpdatedAt;
+  const promptKey = promptTab === 'structure' ? 'structure_prompt' : 'copy_prompt';
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -67,11 +76,19 @@ export default function AdminPage() {
   const loadPrompt = async () => {
     setPromptLoading(true);
     try {
-      const res = await fetch('/api/admin/settings?key=system_prompt');
-      if (res.ok) {
-        const data = await res.json();
-        setPromptText(data.value);
-        setPromptUpdatedAt(data.updated_at);
+      const [structRes, copyRes] = await Promise.all([
+        fetch('/api/admin/settings?key=structure_prompt'),
+        fetch('/api/admin/settings?key=copy_prompt'),
+      ]);
+      if (structRes.ok) {
+        const data = await structRes.json();
+        setStructureText(data.value);
+        setStructureUpdatedAt(data.updated_at);
+      }
+      if (copyRes.ok) {
+        const data = await copyRes.json();
+        setCopyText(data.value);
+        setCopyUpdatedAt(data.updated_at);
       }
     } catch {}
     setPromptLoading(false);
@@ -83,11 +100,12 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'system_prompt', value: promptText }),
+        body: JSON.stringify({ key: promptKey, value: promptText }),
       });
       if (res.ok) {
         setPromptSaved(true);
-        setPromptUpdatedAt(new Date().toISOString());
+        if (promptTab === 'structure') setStructureUpdatedAt(new Date().toISOString());
+        else setCopyUpdatedAt(new Date().toISOString());
         setTimeout(() => setPromptSaved(false), 2000);
       }
     } catch {}
@@ -99,7 +117,7 @@ export default function AdminPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `structr-system-prompt-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `structr-${promptTab}-prompt-${new Date().toISOString().split('T')[0]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -374,7 +392,7 @@ UPDATE structr_component_requests SET status = 'built', admin_notes = 'Built as 
               <div>
                 <h1 className="text-[24px] font-medium tracking-[-0.48px] text-[#34322d]">System Prompt</h1>
                 <p className="text-[13px] text-[#808080] mt-1">
-                  Edit the AI system prompt used for all wireframe generation. Changes apply immediately.
+                  Two prompts compose the AI instructions. Structure defines sections and JSON format. Copy defines writing quality rules.
                 </p>
               </div>
               <div className="flex items-center gap-[8px]">
@@ -393,6 +411,27 @@ UPDATE structr_component_requests SET status = 'built', admin_notes = 'Built as 
                   {promptSaving ? 'Saving...' : promptSaved ? 'Saved!' : 'Save changes'}
                 </button>
               </div>
+            </div>
+
+            {/* Sub-tabs: Structure vs Copy */}
+            <div className="flex items-center gap-[4px] border-b border-[#ebebeb]">
+              {([
+                { key: 'structure' as const, label: 'Structure', desc: 'Sections, variants, fields, JSON format' },
+                { key: 'copy' as const, label: 'Copy', desc: 'Writing quality, banned words, per-section frameworks' },
+              ]).map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => setPromptTab(tab.key)}
+                  className={`px-[16px] py-[10px] text-[13px] font-medium border-b-2 transition-colors ${
+                    promptTab === tab.key
+                      ? 'border-[#34322d] text-[#34322d]'
+                      : 'border-transparent text-[#808080] hover:text-[#34322d]'
+                  }`}
+                  title={tab.desc}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
             {promptLoading ? (

@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
+import { STRUCTURE_PROMPT, COPY_PROMPT, SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 
 const ADMIN_EMAILS = ['odysseas@holy.gd', 'odysseasgp@gmail.com'];
 
-// GET /api/admin/settings?key=system_prompt
+// Default values for each known key
+const DEFAULTS: Record<string, string> = {
+  system_prompt: SYSTEM_PROMPT,
+  structure_prompt: STRUCTURE_PROMPT,
+  copy_prompt: COPY_PROMPT,
+};
+
+// GET /api/admin/settings?key=structure_prompt
 export async function GET(request: Request) {
   try {
     const supabase = await createClient();
@@ -14,7 +21,7 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const key = searchParams.get('key') || 'system_prompt';
+    const key = searchParams.get('key') || 'structure_prompt';
 
     const { data } = await supabase
       .from('structr_admin_settings')
@@ -23,16 +30,17 @@ export async function GET(request: Request) {
       .single();
 
     if (!data) {
-      // Seed with default on first read
-      if (key === 'system_prompt') {
+      // Seed with default on first read if we have a default
+      const defaultValue = DEFAULTS[key];
+      if (defaultValue) {
         await supabase.from('structr_admin_settings').insert({
-          key: 'system_prompt',
-          value: SYSTEM_PROMPT,
+          key,
+          value: defaultValue,
           updated_by: user.id,
         });
         return NextResponse.json({
-          key: 'system_prompt',
-          value: SYSTEM_PROMPT,
+          key,
+          value: defaultValue,
           updated_at: new Date().toISOString(),
           is_default: true,
         });
