@@ -31,11 +31,33 @@ export async function POST(request: Request) {
     const { name, category, variantId, content, colorMode } = await request.json();
     if (!category || !variantId) return NextResponse.json({ error: 'category and variantId required' }, { status: 400 });
 
+    // Check if this variant already exists for this user — update instead of duplicate
+    const { data: existing } = await supabase
+      .from('structr_reusable_sections')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('variant_id', variantId)
+      .limit(1)
+      .single();
+
+    if (existing) {
+      // Update existing entry with new content
+      const { data, error } = await supabase
+        .from('structr_reusable_sections')
+        .update({ content: content || {}, color_mode: colorMode || 'light', name: name || existing.id })
+        .eq('id', existing.id)
+        .select()
+        .single();
+      if (error) throw error;
+      return NextResponse.json(data);
+    }
+
+    // Create new entry
     const { data, error } = await supabase
       .from('structr_reusable_sections')
       .insert({
         user_id: user.id,
-        name: name || `${category} — ${variantId}`,
+        name: name || `${category} - ${variantId}`,
         category,
         variant_id: variantId,
         content: content || {},
