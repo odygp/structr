@@ -43,7 +43,7 @@ export default function MarketingFooter() {
   return (
     <footer className="border-t border-[#ebebeb] py-12 px-8 bg-white">
       <div className="max-w-[1100px] mx-auto">
-        <div className="grid grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
           {/* Brand column */}
           <div>
             <Link href="/" className="flex items-center gap-2.5 mb-3">
