@@ -37,7 +37,7 @@ interface UsageData {
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const [section, setSection] = useState<'requests' | 'usage' | 'prompt'>('requests');
+  const [section, setSection] = useState<'requests' | 'usage' | 'prompt' | 'competition'>('requests');
   const [requests, setRequests] = useState<ComponentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pending');
@@ -174,6 +174,14 @@ export default function AdminPage() {
             }`}
           >
             System Prompt
+          </button>
+          <button
+            onClick={() => setSection('competition')}
+            className={`px-[20px] py-[10px] rounded-[12px] text-[14px] font-medium transition-colors ${
+              section === 'competition' ? 'bg-[#34322d] text-white' : 'bg-[#efefef] text-[#34322d] hover:bg-[#e6e6e6]'
+            }`}
+          >
+            Competition
           </button>
         </div>
 
@@ -352,6 +360,200 @@ export default function AdminPage() {
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {/* Competition Analysis */}
+        {section === 'competition' && (
+          <div className="flex flex-col gap-[24px]">
+            <div>
+              <h1 className="text-[24px] font-medium tracking-[-0.48px] text-[#34322d]">Competitive Analysis</h1>
+              <p className="text-[13px] text-[#808080] mt-1">Honest feature-by-feature comparison. Last updated: March 2026.</p>
+            </div>
+
+            {/* Overview cards */}
+            <div className="grid grid-cols-3 gap-[12px]">
+              {[
+                { name: 'Relume', focus: 'AI wireframes + component library', price: '$20-250/mo', threat: 'High', color: 'bg-red-50 text-red-700' },
+                { name: 'Balsamiq', focus: 'Low-fi sketch wireframes', price: '$12-18/mo', threat: 'Low', color: 'bg-green-50 text-green-700' },
+                { name: 'Whimsical', focus: 'Visual workspace (wireframes + flowcharts)', price: '$10-15/mo', threat: 'Medium', color: 'bg-yellow-50 text-yellow-700' },
+              ].map(c => (
+                <div key={c.name} className="bg-white border border-[#ebebeb] rounded-[16px] p-[20px]">
+                  <div className="flex items-center justify-between mb-[8px]">
+                    <span className="text-[16px] font-medium text-[#34322d]">{c.name}</span>
+                    <span className={`text-[11px] font-medium px-[8px] py-[2px] rounded-[6px] ${c.color}`}>{c.threat} threat</span>
+                  </div>
+                  <p className="text-[12px] text-[#34322d] opacity-50 mb-[4px]">{c.focus}</p>
+                  <p className="text-[13px] font-medium text-[#34322d]">{c.price}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-[12px]">
+              {[
+                { name: 'Figma', focus: 'Full design tool + First Draft AI', price: '$0-15/editor/mo', threat: 'Medium', color: 'bg-yellow-50 text-yellow-700' },
+                { name: 'Claritee', focus: 'AI wireframes + client approvals', price: '$10-32/mo', threat: 'Medium', color: 'bg-yellow-50 text-yellow-700' },
+                { name: 'Octopus.do', focus: 'Sitemap planning', price: '$0-10/mo', threat: 'Low', color: 'bg-green-50 text-green-700' },
+              ].map(c => (
+                <div key={c.name} className="bg-white border border-[#ebebeb] rounded-[16px] p-[20px]">
+                  <div className="flex items-center justify-between mb-[8px]">
+                    <span className="text-[16px] font-medium text-[#34322d]">{c.name}</span>
+                    <span className={`text-[11px] font-medium px-[8px] py-[2px] rounded-[6px] ${c.color}`}>{c.threat} threat</span>
+                  </div>
+                  <p className="text-[12px] text-[#34322d] opacity-50 mb-[4px]">{c.focus}</p>
+                  <p className="text-[13px] font-medium text-[#34322d]">{c.price}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Full comparison table */}
+            <div className="bg-white border border-[#ebebeb] rounded-[16px] overflow-hidden">
+              <div className="px-[20px] py-[14px] border-b border-[#ebebeb] bg-[#fafafa]">
+                <span className="text-[14px] font-medium text-[#34322d]">Feature Comparison Matrix</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="border-b border-[#ebebeb]">
+                      <th className="text-left px-[16px] py-[10px] text-[#808080] font-medium min-w-[200px]">Feature</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#34322d] font-semibold bg-[#f0fdf4] min-w-[90px]">Structr</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#808080] font-medium min-w-[90px]">Relume</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#808080] font-medium min-w-[90px]">Balsamiq</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#808080] font-medium min-w-[90px]">Whimsical</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#808080] font-medium min-w-[90px]">Figma</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#808080] font-medium min-w-[90px]">Claritee</th>
+                      <th className="text-center px-[12px] py-[10px] text-[#808080] font-medium min-w-[90px]">Octopus.do</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { category: 'AI Generation', features: [
+                        ['AI full wireframe generation', 'Y', 'Y', 'Y', 'N', 'Y (First Draft)', 'Y', 'N'],
+                        ['AI sitemap generation', 'Y', 'Y', 'N', 'N', 'N', 'Y', 'N'],
+                        ['AI copy/content writing', 'Y', 'Y', 'N', 'N', 'N', 'N', 'N'],
+                        ['AI section-level editing (chat)', 'Y', 'Y (Ask AI)', 'Y', 'N', 'N', 'Y', 'N'],
+                        ['AI style guide generation', 'N', 'Y', 'N', 'N', 'N', 'N', 'N'],
+                        ['Screenshot to wireframe', 'N', 'N', 'Y', 'N', 'N', 'N', 'N'],
+                        ['Multi-language AI generation', 'N', 'Y (20+ langs)', 'N', 'N', 'N', 'N', 'N'],
+                      ]},
+                      { category: 'Building & Editing', features: [
+                        ['Section-based building', 'Y (23 types)', 'Y (1500+ components)', 'N', 'N', 'N', 'Y', 'N'],
+                        ['Manual drag-and-drop', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'],
+                        ['Website URL import', 'Y', 'N', 'N', 'N', 'N', 'N', 'N'],
+                        ['Guided setup wizard', 'Y', 'N', 'N', 'N', 'N', 'N', 'N'],
+                        ['Octopus.do import', 'Y', 'N', 'N', 'N', 'N', 'N', 'N'],
+                        ['Reusable linked sections', 'Y', 'N', 'Y (Symbols)', 'N', 'Y (Components)', 'N', 'Y (Symbols)'],
+                        ['Client feedback auto-apply', 'Y', 'N', 'N', 'N', 'N', 'N', 'N'],
+                        ['Inline content editing', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'],
+                        ['Multi-page projects', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y'],
+                      ]},
+                      { category: 'Export & Handoff', features: [
+                        ['Figma export (structured)', 'Y (JSON)', 'Y (Plugin, detached)', 'N', 'N', 'Native', 'N', 'N'],
+                        ['HTML export', 'Y', 'Y (React)', 'N', 'N', 'N', 'N', 'N'],
+                        ['JSON export', 'Y', 'N', 'N', 'N', 'N', 'N', 'N'],
+                        ['React/Tailwind export', 'N', 'Y (1400+ components)', 'N', 'N', 'N', 'N', 'N'],
+                        ['Webflow export', 'N', 'Y', 'N', 'N', 'N', 'N', 'N'],
+                        ['PNG/PDF export', 'N', 'N', 'Y', 'Y', 'Y', 'Y', 'Y'],
+                        ['SVG export', 'N', 'N', 'N', 'Y', 'Y', 'N', 'N'],
+                      ]},
+                      { category: 'Collaboration & Sharing', features: [
+                        ['Publish to shareable URL', 'Y', 'N', 'N', 'Y (link share)', 'N', 'N', 'N'],
+                        ['Team collaboration', 'Y', 'Y (Pro $250/mo)', 'Y (unlimited users)', 'Y (per editor)', 'Y (per editor)', 'Y', 'Y'],
+                        ['Client commenting on wireframe', 'Y', 'Y (free viewers)', 'Y', 'Y', 'Y', 'Y', 'N'],
+                        ['Version history', 'Y', 'Y', 'Y', 'Y (7d-unlimited)', 'Y', 'N', 'N'],
+                        ['Client approval workflow', 'N', 'N', 'N', 'N', 'N', 'Y (audit trail)', 'N'],
+                      ]},
+                      { category: 'Beyond Wireframing', features: [
+                        ['Flowcharts / mind maps', 'N', 'N', 'N', 'Y', 'Y (FigJam)', 'N', 'N'],
+                        ['High-fidelity design', 'N', 'N', 'N', 'N', 'Y', 'N', 'N'],
+                        ['Interactive prototyping', 'N', 'N', 'Y (AI-powered)', 'N', 'Y (Figma Make)', 'N', 'N'],
+                        ['Design system management', 'N', 'Y (style guide)', 'N', 'N', 'Y', 'N', 'N'],
+                        ['Docs with embedded diagrams', 'N', 'N', 'N', 'Y', 'N', 'N', 'N'],
+                        ['SEO sitemap XML generation', 'N', 'N', 'N', 'N', 'N', 'N', 'Y'],
+                      ]},
+                      { category: 'Pricing', features: [
+                        ['Free tier', '50 stars', 'Homepage only', '14-day trial', '3 boards', '3 files', 'Limited AI', 'Y'],
+                        ['Starting paid price', '$19/mo', '$20/mo', '$12/mo', '$10/mo/editor', '$12/mo/editor', '$10/mo', '$10/mo'],
+                        ['Pricing model', 'Per account', 'Per project', 'Per project', 'Per editor', 'Per editor', 'Per account', 'Per seat'],
+                      ]},
+                    ].map(group => (
+                      <>
+                        <tr key={group.category} className="bg-[#fafafa]">
+                          <td colSpan={8} className="px-[16px] py-[8px] text-[11px] font-semibold text-[#34322d] uppercase tracking-wider">{group.category}</td>
+                        </tr>
+                        {group.features.map(([feature, ...vals], i) => (
+                          <tr key={`${group.category}-${i}`} className="border-b border-[#f5f5f5]">
+                            <td className="px-[16px] py-[8px] text-[#34322d] font-medium">{feature}</td>
+                            {vals.map((v, j) => (
+                              <td key={j} className={`text-center px-[12px] py-[8px] ${j === 0 ? 'bg-[#f0fdf4]' : ''} ${
+                                v === 'Y' ? 'text-green-600 font-medium' : v === 'N' ? 'text-[#d0d0d0]' : 'text-[#808080]'
+                              }`}>
+                                {v === 'Y' ? '✓' : v === 'N' ? '—' : v}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Feature gaps / opportunities */}
+            <div className="grid grid-cols-2 gap-[12px]">
+              <div className="bg-white border border-[#ebebeb] rounded-[16px] p-[20px]">
+                <h3 className="text-[14px] font-medium text-[#34322d] mb-[12px]">Features they have, we don&apos;t</h3>
+                <div className="flex flex-col gap-[8px] text-[12px]">
+                  {[
+                    { feature: 'React/Tailwind export', who: 'Relume', priority: 'High', note: 'Relume has 1,400+ React+Tailwind components. Developers can copy-paste.' },
+                    { feature: 'Webflow export', who: 'Relume', priority: 'Medium', note: 'Direct paste into Webflow. Huge for agencies.' },
+                    { feature: 'AI style guide generation', who: 'Relume', priority: 'Low', note: 'Generates colors, fonts, spacing from brand input. Nice but not core.' },
+                    { feature: 'Multi-language AI generation', who: 'Relume', priority: 'Medium', note: '20+ languages for sitemap + copy. Useful for international teams.' },
+                    { feature: 'Screenshot to wireframe', who: 'Balsamiq', priority: 'Medium', note: 'Drop in a screenshot, get wireframe elements. Useful for reverse-engineering.' },
+                    { feature: 'Interactive prototyping', who: 'Balsamiq, Figma', priority: 'Low', note: 'Clickable prototypes. Out of scope for our positioning.' },
+                    { feature: 'Flowcharts / mind maps', who: 'Whimsical, Figma', priority: 'Low', note: 'Different tool category. Not our lane.' },
+                    { feature: 'Client approval audit trail', who: 'Claritee', priority: 'Medium', note: 'Timestamped sign-off. Prevents scope creep for agencies.' },
+                    { feature: 'PNG/PDF export', who: 'All except Structr', priority: 'High', note: 'Basic export format we\'re missing. Clients often want a PDF.' },
+                  ].map(item => (
+                    <div key={item.feature} className="flex items-start gap-[8px] p-[8px] bg-[#fafafa] rounded-[8px]">
+                      <span className={`shrink-0 text-[10px] font-medium px-[6px] py-[1px] rounded-[4px] ${
+                        item.priority === 'High' ? 'bg-red-50 text-red-600' : item.priority === 'Medium' ? 'bg-yellow-50 text-yellow-700' : 'bg-gray-100 text-gray-500'
+                      }`}>{item.priority}</span>
+                      <div>
+                        <span className="font-medium text-[#34322d]">{item.feature}</span>
+                        <span className="text-[#808080]"> ({item.who})</span>
+                        <p className="text-[#808080] mt-[2px]">{item.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#ebebeb] rounded-[16px] p-[20px]">
+                <h3 className="text-[14px] font-medium text-[#34322d] mb-[12px]">Our unique advantages</h3>
+                <div className="flex flex-col gap-[8px] text-[12px]">
+                  {[
+                    { feature: 'Website URL import & analysis', note: 'No competitor can paste a URL and recreate the section structure. Relume has nothing like this.' },
+                    { feature: 'Client feedback auto-apply', note: 'AI reads comments and applies changes in one click. Completely unique.' },
+                    { feature: 'Reusable linked sections (synced)', note: 'Edit one instance, all linked sections update. Relume detaches components on Figma import.' },
+                    { feature: 'Structured JSON export', note: 'Section types, content hierarchy, variant IDs. Not flat images or detached layers.' },
+                    { feature: 'Guided setup wizard', note: 'Pick industry, choose pages, set tone. No other wireframe tool has this onboarding.' },
+                    { feature: 'Octopus.do import', note: 'Niche but valuable. Users can plan in Octopus.do and finish in Structr.' },
+                    { feature: 'Manual building is free', note: 'Most competitors require paid plans for core features. We only charge for AI.' },
+                    { feature: 'Per-action pricing (stars)', note: 'Pay for what you use. No monthly seat tax. Unique model in this space.' },
+                    { feature: 'Publish to public URL', note: 'One-click publish to /p/slug. Clients can view without accounts. Relume requires export first.' },
+                  ].map(item => (
+                    <div key={item.feature} className="flex items-start gap-[8px] p-[8px] bg-[#f0fdf4] rounded-[8px]">
+                      <span className="shrink-0 text-green-600 mt-[2px]">✓</span>
+                      <div>
+                        <span className="font-medium text-[#34322d]">{item.feature}</span>
+                        <p className="text-[#808080] mt-[2px]">{item.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

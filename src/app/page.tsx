@@ -413,7 +413,7 @@ export default function Home() {
                 ['Reusable linked sections', 'Y', 'N', 'N', 'N'],
                 ['Multi-page sitemaps', 'Y', 'N', 'Y', 'Y'],
                 ['Publish & share link', 'Y', 'N', 'Y', 'Y'],
-                ['Figma export', 'Y', 'Y', 'Y', 'Y'],
+                ['Structured export (Figma/HTML/JSON)', 'Y', 'PNG only', 'PNG only', 'Y'],
                 ['Team collaboration', 'Y', 'Y', 'Y', 'Y'],
                 ['Free tier', '50 stars', '$0 (2 projects)', '$0 (3 files)', 'None'],
               ].map(([feature, ...values], i) => (
