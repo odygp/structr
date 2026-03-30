@@ -37,7 +37,7 @@ interface UsageData {
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const [section, setSection] = useState<'requests' | 'usage'>('requests');
+  const [section, setSection] = useState<'requests' | 'usage' | 'prompt'>('requests');
   const [requests, setRequests] = useState<ComponentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pending');
@@ -45,12 +45,58 @@ export default function AdminPage() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
+  const [promptText, setPromptText] = useState('');
+  const [promptLoading, setPromptLoading] = useState(false);
+  const [promptSaving, setPromptSaving] = useState(false);
+  const [promptSaved, setPromptSaved] = useState(false);
+  const [promptUpdatedAt, setPromptUpdatedAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading || !user) return;
     if (section === 'requests') loadRequests(activeTab);
     if (section === 'usage') loadUsage();
+    if (section === 'prompt') loadPrompt();
   }, [user, authLoading, activeTab, section]);
+
+  const loadPrompt = async () => {
+    setPromptLoading(true);
+    try {
+      const res = await fetch('/api/admin/settings?key=system_prompt');
+      if (res.ok) {
+        const data = await res.json();
+        setPromptText(data.value);
+        setPromptUpdatedAt(data.updated_at);
+      }
+    } catch {}
+    setPromptLoading(false);
+  };
+
+  const savePrompt = async () => {
+    setPromptSaving(true);
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'system_prompt', value: promptText }),
+      });
+      if (res.ok) {
+        setPromptSaved(true);
+        setPromptUpdatedAt(new Date().toISOString());
+        setTimeout(() => setPromptSaved(false), 2000);
+      }
+    } catch {}
+    setPromptSaving(false);
+  };
+
+  const downloadPrompt = () => {
+    const blob = new Blob([promptText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `structr-system-prompt-${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const loadUsage = async () => {
     setUsageLoading(true);
@@ -120,6 +166,14 @@ export default function AdminPage() {
             }`}
           >
             AI Usage & Costs
+          </button>
+          <button
+            onClick={() => setSection('prompt')}
+            className={`px-[20px] py-[10px] rounded-[12px] text-[14px] font-medium transition-colors ${
+              section === 'prompt' ? 'bg-[#34322d] text-white' : 'bg-[#efefef] text-[#34322d] hover:bg-[#e6e6e6]'
+            }`}
+          >
+            System Prompt
           </button>
         </div>
 
@@ -248,6 +302,59 @@ export default function AdminPage() {
         )}
 
         {/* Component Requests Section */}
+        {/* System Prompt Editor */}
+        {section === 'prompt' && (
+          <div className="flex flex-col gap-[20px]">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-[24px] font-medium tracking-[-0.48px] text-[#34322d]">System Prompt</h1>
+                <p className="text-[13px] text-[#808080] mt-1">
+                  Edit the AI system prompt used for all wireframe generation. Changes apply immediately.
+                </p>
+              </div>
+              <div className="flex items-center gap-[8px]">
+                <button
+                  onClick={downloadPrompt}
+                  disabled={!promptText}
+                  className="px-[16px] py-[8px] text-[13px] font-medium text-[#34322d] bg-[#efefef] hover:bg-[#e6e6e6] rounded-[8px] transition-colors disabled:opacity-40"
+                >
+                  Download .txt
+                </button>
+                <button
+                  onClick={savePrompt}
+                  disabled={promptSaving || !promptText}
+                  className="px-[16px] py-[8px] text-[13px] font-medium text-white bg-[#34322d] hover:bg-[#1c1c1c] rounded-[8px] transition-colors disabled:opacity-50"
+                >
+                  {promptSaving ? 'Saving...' : promptSaved ? 'Saved!' : 'Save changes'}
+                </button>
+              </div>
+            </div>
+
+            {promptLoading ? (
+              <div className="bg-white border border-[#ebebeb] rounded-[12px] h-[600px] animate-pulse" />
+            ) : (
+              <>
+                <textarea
+                  value={promptText}
+                  onChange={e => setPromptText(e.target.value)}
+                  className="w-full h-[600px] bg-white border border-[#ebebeb] rounded-[12px] p-[16px] text-[13px] font-mono text-[#34322d] leading-relaxed resize-y focus:outline-none focus:border-[#34322d]"
+                  placeholder="System prompt will load here..."
+                  spellCheck={false}
+                />
+                <div className="flex items-center justify-between text-[12px] text-[#808080]">
+                  <div className="flex items-center gap-[16px]">
+                    <span>{promptText.length.toLocaleString()} characters</span>
+                    <span>~{Math.round(promptText.length / 4).toLocaleString()} tokens</span>
+                  </div>
+                  {promptUpdatedAt && (
+                    <span>Last updated: {new Date(promptUpdatedAt).toLocaleString()}</span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {section === 'requests' && (
           <>
         <h1 className="text-[24px] font-medium tracking-[-0.48px] text-[#34322d] mb-[32px]">Component Requests</h1>

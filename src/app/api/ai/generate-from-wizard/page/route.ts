@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
+import { getSystemPrompt } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
 import { buildWizardPrompt, type WizardData } from '@/lib/templates';
 import { trackUsage, MODELS } from '@/lib/ai/track-usage';
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     const message = await anthropic.messages.create({
       model,
       max_tokens: 3000,
-      system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+      system: [{ type: 'text', text: await getSystemPrompt(), cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: focusedPrompt }],
     });
 

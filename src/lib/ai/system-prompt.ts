@@ -1,4 +1,45 @@
+import { createClient } from '@/lib/supabase/server';
+
+// In-memory cache for the system prompt (5 min TTL)
+let cachedPrompt: string | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+/** Clear the prompt cache (called after admin edits) */
+export function clearPromptCache() {
+  cachedPrompt = null;
+  cacheTimestamp = 0;
+}
+
+/** Get the system prompt — reads from DB with fallback to hardcoded default */
+export async function getSystemPrompt(): Promise<string> {
+  // Return cache if fresh
+  if (cachedPrompt && Date.now() - cacheTimestamp < CACHE_TTL) {
+    return cachedPrompt;
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from('structr_admin_settings')
+      .select('value')
+      .eq('key', 'system_prompt')
+      .single();
+
+    if (data?.value) {
+      cachedPrompt = data.value;
+      cacheTimestamp = Date.now();
+      return data.value;
+    }
+  } catch {
+    // Fall through to hardcoded default
+  }
+
+  return SYSTEM_PROMPT;
+}
+
 // Builds the system prompt for Claude to generate wireframe structures
+// This is the hardcoded default — can be overridden via admin settings
 
 export const SYSTEM_PROMPT = `You are Structr AI, a wireframe generation assistant. Given a user's description of a website, you generate a structured JSON response that defines the pages and sections of that website.
 

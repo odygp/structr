@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { hasEnoughStars } from '@/lib/db/credits';
 import { getProject } from '@/lib/db/projects';
-import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
+import { getSystemPrompt } from '@/lib/ai/system-prompt';
 import { calculateResolveCost } from '@/lib/credits/star-config';
 
 export const maxDuration = 60;
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     const resolverPrompt = `You are analyzing client feedback comments on a wireframe project and generating a JSON action plan to address them.
 
 ## Available section types for new sections:
-${SYSTEM_PROMPT.split('## Available Section Categories and Variants')[1]?.split('## Response Format')[0] || '(see section catalog)'}
+${(await getSystemPrompt()).split('## Available Section Categories and Variants')[1]?.split('## Response Format')[0] || '(see section catalog)'}
 
 ## Rules:
 - Each action must reference which comment ID(s) it resolves via "resolvesComments" array

@@ -6,7 +6,7 @@ import { trackUsage, MODELS } from '@/lib/ai/track-usage';
 import { hasEnoughStars } from '@/lib/db/credits';
 import { getStarCost } from '@/lib/credits/star-config';
 import Anthropic from '@anthropic-ai/sdk';
-import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
+import { getSystemPrompt } from '@/lib/ai/system-prompt';
 import { parseAiResponse } from '@/lib/ai/parse-response';
 import { buildWizardPrompt } from '@/lib/templates';
 
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
         const message = await anthropic.messages.create({
           model,
           max_tokens: 3000,
-          system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+          system: [{ type: 'text', text: await getSystemPrompt(), cache_control: { type: 'ephemeral' } }],
           messages: [{ role: 'user', content: focusedPrompt }],
         });
 
